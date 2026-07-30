@@ -40,7 +40,22 @@ button {
 
 <input type="tel" placeholder="WhatsApp">
 
-<button>Escolher número</button>
+<button onclick="irParaNumeros()">Escolher número</button>
+<script src="participantes.js"></script>
 
+<script>
+function irParaNumeros(){
+    let nome = document.querySelector("input[type=text]").value;
+    let whatsapp = document.querySelector("input[type=tel]").value;
+
+    if(nome == "" || whatsapp == ""){
+        alert("Preencha seus dados");
+    } else {
+        localStorage.setItem("nome", nome);
+        localStorage.setItem("whatsapp", whatsapp);
+        window.location.href="numeros.html";
+    }
+}
+</script>
 </body>
 </html>
