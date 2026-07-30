@@ -37,10 +37,14 @@ button {
 
 <h1>🍀 Escolha seu número</h1>
 
-<div>
+<div><script src="dados.js"></script>
 <script>
-for(let i=1;i<=15;i++){
- document.write("<span class='numero'>"+i+"</span>");
+for(let i=0;i<numeros.length;i++){
+ document.write("<button class='numero' onclick='escolher("+numeros[i]+")'>"+numeros[i]+"</button>");
+}
+
+function escolher(numero){
+ alert("Você escolheu o número: " + numero);
 }
 </script>
 </div>
