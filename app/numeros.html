@@ -42,9 +42,18 @@ button {
 for(let i=0;i<numeros.length;i++){
  document.write("<button class='numero' onclick='escolher("+numeros[i]+")'>"+numeros[i]+"</button>");
 }
-
 function escolher(numero){
- alert("Você escolheu o número: " + numero);
+
+let nome = localStorage.getItem("nome");
+let whatsapp = localStorage.getItem("whatsapp");
+
+alert(
+"🍀 Trevo4Folhas\n\n" +
+"Participante: " + nome +
+"\nWhatsApp: " + whatsapp +
+"\nNúmero escolhido: " + numero
+);
+
 }
 </script>
 </div>
