@@ -7,27 +7,35 @@
 <style>
 body {
   font-family: Arial;
-  background: #111;
-  color: white;
-  text-align: center;
+  background:#111;
+  color:white;
+  text-align:center;
 }
 
 .numero {
-  display: inline-block;
-  background: green;
-  padding: 15px;
-  margin: 5px;
-  border-radius: 50%;
-  width: 20px;
+  display:inline-block;
+  background:#0a0;
+  color:white;
+  padding:15px;
+  margin:5px;
+  border-radius:50%;
+  width:20px;
+  cursor:pointer;
+}
+
+.selecionado {
+  background:#ffd700;
+  color:black;
 }
 
 button {
-  padding: 15px;
-  margin-top: 20px;
-  background: #0a0;
-  color: white;
-  border: none;
-  border-radius: 10px;
+  padding:15px;
+  margin-top:20px;
+  background:#0a0;
+  color:white;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
 }
 </style>
 
@@ -35,30 +43,71 @@ button {
 
 <body>
 
-<h1>🍀 Escolha seu número</h1>
+<h1>🍀 Escolha 4 números</h1>
 
-<div><script src="dados.js"></script>
+<div id="lista"></div>
+
+<h3 id="contador">Selecionados: 0/4</h3>
+
+<button onclick="confirmar()">Confirmar aposta</button>
+
 <script>
-for(let i=0;i<numeros.length;i++){
- document.write("<button class='numero' onclick='escolher("+numeros[i]+")'>"+numeros[i]+"</button>");
+
+let escolhidos = [];
+
+for(let i = 1; i <= 15; i++){
+
+ let botao = document.createElement("button");
+
+ botao.className = "numero";
+ botao.innerHTML = i;
+
+ botao.onclick = function(){
+
+   if(escolhidos.includes(i)){
+
+     escolhidos = escolhidos.filter(n => n != i);
+     botao.classList.remove("selecionado");
+
+   } else if(escolhidos.length < 4){
+
+     escolhidos.push(i);
+     botao.classList.add("selecionado");
+
+   }
+
+   document.getElementById("contador").innerHTML =
+   "Selecionados: " + escolhidos.length + "/4";
+
+ };
+
+ document.getElementById("lista").appendChild(botao);
+
 }
-function escolher(numero){
 
-let nome = localStorage.getItem("nome");
-let whatsapp = localStorage.getItem("whatsapp");
 
-alert(
-"🍀 Trevo4Folhas\n\n" +
-"Participante: " + nome +
-"\nWhatsApp: " + whatsapp +
-"\nNúmero escolhido: " + numero
-);
+function confirmar(){
+
+ if(escolhidos.length != 4){
+
+   alert("Escolha exatamente 4 números 🍀");
+   return;
+
+ }
+
+ let nome = localStorage.getItem("nome");
+ let whatsapp = localStorage.getItem("whatsapp");
+
+ alert(
+ "🍀 Trevo4Folhas\n\n" +
+ "Participante: " + nome +
+ "\nWhatsApp: " + whatsapp +
+ "\nNúmeros: " + escolhidos.join(", ")
+ );
 
 }
+
 </script>
-</div>
-
-<button>Confirmar número</button>
 
 </body>
 </html>
