@@ -116,7 +116,27 @@ alert("Chave Pix copiada!");
 
 function confirmarPagamento(){
 
-alert("Recebemos sua confirmação. Aguarde a validação do administrador.");
+let participantes =
+JSON.parse(localStorage.getItem("participantes")) || [];
+
+let nome = localStorage.getItem("nome");
+
+participantes.forEach(function(p){
+
+    if(p.nome == nome){
+
+        p.pagamento = "🟡 Aguardando confirmação";
+
+    }
+
+});
+
+localStorage.setItem(
+"participantes",
+JSON.stringify(participantes)
+);
+
+alert("Pagamento informado com sucesso! Aguarde a confirmação do administrador.");
 
 location.href="index.html";
 
