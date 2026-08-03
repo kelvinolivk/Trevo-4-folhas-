@@ -6,8 +6,17 @@ reservas.push({
 nome: nome,
 whatsapp: whatsapp,
 numero: numero,
-pago: false
+status: "🟢 Participando",
+pagamento: "🟡 Aguardando confirmação"
 });
+
+}
+
+function confirmarPagamento(indice){
+
+reservas[indice].pagamento = "✅ Pago";
+
+mostrarReservas();
 
 }
 
@@ -22,13 +31,23 @@ return;
 
 lista.innerHTML = "";
 
-reservas.forEach(r => {
+reservas.forEach((r, i) => {
 
-lista.innerHTML +=
-"👤 " + r.nome +
-"<br>📱 " + r.whatsapp +
-"<br>🎟️ Número: " + r.numero +
-"<br>💰 Pago: Não<br><br>";
+lista.innerHTML += `
+<div style="background:#333;padding:15px;border-radius:10px;margin-bottom:15px;">
+👤 <b>${r.nome}</b><br>
+📱 ${r.whatsapp}<br>
+🎟️ Número: ${r.numero}<br>
+📌 ${r.status}<br>
+💳 ${r.pagamento}<br><br>
+
+<button onclick="confirmarPagamento(${i})"
+style="background:green;color:white;border:none;padding:10px;border-radius:8px;">
+✅ Confirmar pagamento
+</button>
+
+</div>
+`;
 
 });
 
