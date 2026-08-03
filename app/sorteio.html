@@ -1,1 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sorteio - Trevo4Folhas 🍀</title>
 
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#111;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+
+button{
+    width:100%;
+    max-width:350px;
+    padding:15px;
+    background:#0b8f3a;
+    color:white;
+    border:none;
+    border-radius:10px;
+    font-size:18px;
+    margin-top:20px;
+}
+
+#resultado{
+    margin-top:30px;
+    font-size:22px;
+    font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>🍀 Sorteio Trevo4Folhas</h1>
+
+<p>Clique para realizar o sorteio.</p>
+
+<button onclick="sortear()">
+🎲 Realizar Sorteio
+</button>
+
+<div id="resultado"></div>
+
+<script>
+
+function sortear(){
+
+let numeros=[];
+
+while(numeros.length<4){
+
+let n=Math.floor(Math.random()*15)+1;
+
+if(!numeros.includes(n)){
+numeros.push(n);
+}
+
+}
+
+numeros.sort((a,b)=>a-b);
+
+document.getElementById("resultado").innerHTML=
+"🍀 Números sorteados:<br><br><b>"+numeros.join(" - ")+"</b>";
+
+localStorage.setItem(
+"resultadoSorteio",
+JSON.stringify(numeros)
+);
+
+}
+
+</script>
+
+</body>
+</html>
