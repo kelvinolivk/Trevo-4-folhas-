@@ -24,8 +24,11 @@ function mostrarReservas(){
 
 let lista = document.getElementById("lista");
 
+let reservas =
+JSON.parse(localStorage.getItem("participantes")) || [];
+
 if(reservas.length === 0){
-lista.innerHTML = "Nenhuma reserva ainda";
+lista.innerHTML = "Nenhuma aposta ainda";
 return;
 }
 
@@ -35,11 +38,18 @@ reservas.forEach((r, i) => {
 
 lista.innerHTML += `
 <div style="background:#333;padding:15px;border-radius:10px;margin-bottom:15px;">
+
 👤 <b>${r.nome}</b><br>
+
 📱 ${r.whatsapp}<br>
-🎟️ Número: ${r.numero}<br>
+
+🎟️ Números: ${r.numeros.join(", ")}<br>
+
 📌 ${r.status}<br>
-💳 ${r.pagamento}<br><br>
+
+💳 ${r.pagamento || "🟡 Aguardando confirmação"}<br>
+
+📅 ${r.data}<br><br>
 
 <button onclick="confirmarPagamento(${i})"
 style="background:green;color:white;border:none;padding:10px;border-radius:8px;">
