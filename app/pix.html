@@ -121,7 +121,14 @@ alert("Recebemos sua confirmação. Aguarde a validação do administrador.");
 location.href="index.html";
 
 }
+let nome = localStorage.getItem("nome") || "";
+let numero = localStorage.getItem("numeroEscolhido") || "";
 
+document.getElementById("nome").innerHTML =
+"👤 Participante: " + nome;
+
+document.getElementById("numero").innerHTML =
+"🍀 Número escolhido: " + numero;
 </script>
 
 </body>
