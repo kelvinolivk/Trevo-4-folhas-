@@ -14,7 +14,15 @@ pagamento: "🟡 Aguardando confirmação"
 
 function confirmarPagamento(indice){
 
+let reservas =
+JSON.parse(localStorage.getItem("participantes")) || [];
+
 reservas[indice].pagamento = "✅ Pago";
+
+localStorage.setItem(
+"participantes",
+JSON.stringify(reservas)
+);
 
 mostrarReservas();
 
