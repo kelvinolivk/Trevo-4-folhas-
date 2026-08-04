@@ -65,14 +65,20 @@ if(participantes.length == 0){
 
     participantes.forEach(function(p){
 
-        lista.innerHTML += `
-        <div class="caixa">
-        👤 ${p.nome}<br>
-        📱 ${p.whatsapp}<br>
-        🍀 Números: ${p.numero}<br>
-        💰 ${p.pagamento}
-        </div>
-        `;
+    lista.innerHTML += `
+<div class="caixa">
+
+👤 ${p.nome}<br>
+📱 ${p.whatsapp}<br>
+🍀 Números: ${p.numero}<br>
+💰 <span id="status${p.nome}">${p.pagamento}</span><br><br>
+
+<button onclick="confirmarPagamento('${p.nome}')">
+✅ Confirmar Pagamento
+</button>
+
+</div>
+`;
 
     });
 
