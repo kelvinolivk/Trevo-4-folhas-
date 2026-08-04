@@ -1,11 +1,22 @@
-let participantes = [];
+let participantes = JSON.parse(
+    localStorage.getItem("participantes")
+) || [];
 
 function salvarParticipante(nome, whatsapp, numero) {
+
     participantes.push({
+
         nome: nome,
         whatsapp: whatsapp,
-        numero: numero
+        numero: numero,
+        pagamento: "🟡 Aguardando pagamento"
+
     });
 
-    alert("Número reservado com sucesso 🍀");
+    localStorage.setItem(
+        "participantes",
+        JSON.stringify(participantes)
+    );
+
+    alert("Aposta reservada com sucesso 🍀");
 }
