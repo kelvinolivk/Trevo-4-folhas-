@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
+
 body {
     font-family: Arial;
     background: #111;
@@ -17,6 +18,14 @@ h1 {
     font-size: 40px;
 }
 
+.caixa{
+    background:#222;
+    padding:15px;
+    border-radius:10px;
+    margin:20px auto;
+    max-width:400px;
+}
+
 button {
     width: 90%;
     padding: 15px;
@@ -27,37 +36,98 @@ button {
     color: white;
     font-size: 18px;
 }
+
 </style>
 
 </head>
 
+
 <body>
+
 
 <h1>🍀 Trevo4Folhas</h1>
 
+
+<div class="caixa" id="informacoes">
+
+Carregando informações do sorteio...
+
+</div>
+
+
 <p>Loteria privada do grupo</p>
+
 
 <button onclick="location.href='app/cadastro.html'">
 👤 Cadastro
 </button>
 
+
 <button onclick="location.href='app/numeros.html'">
 🎟️ Escolher número
 </button>
+
+
 <button onclick="location.href='app/minhas-apostas.html'">
 📋 Minhas Apostas
 </button>
+
+
 <button onclick="location.href='app/pix.html'">
 💰 Pagamento Pix
 </button>
+
 
 <button onclick="location.href='app/sorteio.html'">
 🎲 Sorteio
 </button>
 
+
 <button onclick="location.href='app/admin.html'">
 🔐 Área do Administrador
 </button>
+
+
+
+<script>
+
+
+let configuracao =
+JSON.parse(localStorage.getItem("configuracao")) || {};
+
+
+
+document.getElementById("informacoes").innerHTML = `
+
+
+🏆 <b>Prêmio atual:</b><br>
+
+${configuracao.premio || "A definir"}
+
+<br><br>
+
+
+📅 <b>Próximo sorteio:</b><br>
+
+${configuracao.data || "A definir"}
+
+<br><br>
+
+
+⏰ <b>Horário:</b><br>
+
+${configuracao.hora || "A definir"}
+
+<br><br>
+
+
+🍀 ${configuracao.mensagem || "Boa sorte!"}
+
+
+`;
+
+</script>
+
 
 </body>
 </html>
