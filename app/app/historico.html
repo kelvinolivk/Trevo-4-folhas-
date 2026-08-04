@@ -1,1 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
 
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Histórico - Trevo4Folhas 🍀</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#111;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+
+.caixa{
+    background:#222;
+    padding:15px;
+    border-radius:10px;
+    margin:15px auto;
+    max-width:400px;
+}
+
+.numero{
+    display:inline-block;
+    background:#0b8f3a;
+    padding:10px;
+    margin:4px;
+    border-radius:50%;
+    font-weight:bold;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<h1>📚 Histórico Trevo4Folhas 🍀</h1>
+
+
+<div id="historico">
+
+Carregando histórico...
+
+</div>
+
+
+
+<script>
+
+
+let historico =
+
+JSON.parse(localStorage.getItem("historicoSorteios")) || [];
+
+
+
+let tela = document.getElementById("historico");
+
+
+
+if(historico.length === 0){
+
+
+tela.innerHTML =
+
+"<div class='caixa'>🍀 Nenhum sorteio realizado ainda.</div>";
+
+
+}else{
+
+
+tela.innerHTML = "";
+
+
+
+historico.forEach(function(sorteio, indice){
+
+
+
+let html = `
+
+<div class="caixa">
+
+
+🏆 <b>Sorteio #${indice + 1}</b>
+
+<br><br>
+
+
+📅 Data:
+
+<br>
+
+${sorteio.data}
+
+
+<br><br>
+
+
+🏆 Prêmio:
+
+<br>
+
+${sorteio.premio}
+
+
+<br><br>
+
+
+🎲 Números:
+
+<br><br>
+
+`;
+
+
+
+sorteio.numeros.forEach(function(n){
+
+
+html +=
+
+"<span class='numero'>"+n+"</span>";
+
+
+});
+
+
+
+html += `
+
+</div>
+
+`;
+
+
+
+tela.innerHTML += html;
+
+
+
+});
+
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
