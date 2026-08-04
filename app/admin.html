@@ -66,39 +66,29 @@ function confirmarPagamento(indice){
 
 <h1>🔐 Admin Trevo4Folhas 🍀</h1>
 
-<div id="lista"></div>
+<div class="caixa">
 
-<script>
+<h3>⚙️ Configurações do Sorteio</h3>
 
-let lista = document.getElementById("lista");
+<input id="premio" placeholder="Valor do prêmio">
+<br>
 
-let participantes =
-JSON.parse(localStorage.getItem("participantes")) || [];
+<input id="data" placeholder="Data do sorteio">
+<br>
 
-if(participantes.length === 0){
+<input id="hora" placeholder="Hora do sorteio">
+<br>
 
-    lista.innerHTML = "<div class='caixa'>Nenhuma aposta registrada 🍀</div>";
+<input id="mensagem" placeholder="Mensagem do sorteio">
+<br>
 
-}else{
-
-    participantes.forEach(function(p, indice){
-
-        lista.innerHTML += `
-        <div class="caixa">
-
-        👤 <b>${p.nome}</b><br><br>
-
-        📱 ${p.whatsapp}<br><br>
-
-        🍀 ${p.numero}<br><br>
-
-        💰 ${p.pagamento}<br><br>
-
-        <button onclick="confirmarPagamento(${indice})">
-✅ Confirmar Pagamento
+<button onclick="salvarConfiguracoes()">
+💾 Salvar Configurações
 </button>
 
-        </div>
+</div>
+
+<div id="lista"></div>
         `;
 
     });
