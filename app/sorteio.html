@@ -50,14 +50,24 @@ button{
 <div id="resultado"></div>
 
 <script>
-
 function sortear(){
+
+let participantes =
+JSON.parse(localStorage.getItem("participantes")) || [];
+
+if(participantes.length == 0){
+
+alert("Ainda não existem apostas cadastradas 🍀");
+return;
+
+}
+
 
 let numeros=[];
 
-while(numeros.length<4){
+while(numeros.length < 4){
 
-let n=Math.floor(Math.random()*15)+1;
+let n = Math.floor(Math.random()*15)+1;
 
 if(!numeros.includes(n)){
 numeros.push(n);
@@ -67,8 +77,33 @@ numeros.push(n);
 
 numeros.sort((a,b)=>a-b);
 
-document.getElementById("resultado").innerHTML=
-"🍀 Números sorteados:<br><br><b>"+numeros.join(" - ")+"</b>";
+
+let vencedor = "Nenhum ganhador";
+
+participantes.forEach(function(p){
+
+let aposta = JSON.parse(p.numero);
+
+let acertos = aposta.filter(
+numero => numeros.includes(numero)
+);
+
+
+if(acertos.length == 4){
+
+vencedor = p.nome;
+
+}
+
+});
+
+
+document.getElementById("resultado").innerHTML =
+"🍀 Números sorteados:<br><br><b>" +
+numeros.join(" - ") +
+"</b><br><br>🏆 Vencedor: " +
+vencedor;
+
 
 localStorage.setItem(
 "resultadoSorteio",
