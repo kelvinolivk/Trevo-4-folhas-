@@ -42,18 +42,12 @@ if(senha !== "trevo123"){
     window.location.href="../index.html";
 }
 
-function confirmarPagamento(nome){
+function confirmarPagamento(indice){
 
     let participantes =
     JSON.parse(localStorage.getItem("participantes")) || [];
 
-    participantes.forEach(function(p){
-
-        if(p.nome === nome){
-            p.pagamento = "🟢 Pagamento confirmado";
-        }
-
-    });
+    participantes[indice].pagamento = "🟢 Pagamento confirmado";
 
     localStorage.setItem(
         "participantes",
