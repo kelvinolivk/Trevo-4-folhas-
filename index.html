@@ -39,7 +39,6 @@ button {
 
 #contador{
     font-size:22px;
-    margin-top:15px;
 }
 
 </style>
@@ -54,16 +53,12 @@ button {
 
 
 <div class="caixa" id="informacoes">
-
-Carregando sorteio...
-
+Carregando informações...
 </div>
 
 
 <div class="caixa" id="contador">
-
 Calculando tempo...
-
 </div>
 
 
@@ -136,11 +131,10 @@ ${configuracao.hora || "A definir"}
 
 🍀 ${configuracao.mensagem || "Boa sorte!"}
 
+
 `;
 
 
-
-// CONTADOR
 
 function atualizarContador(){
 
@@ -155,10 +149,27 @@ return;
 }
 
 
+// Converte data brasileira
 
-let dataSorteio =
-new Date(
-configuracao.data + " " + configuracao.hora
+let partesData = configuracao.data.split("/");
+
+
+let hora = configuracao.hora.split(":");
+
+
+
+let dataSorteio = new Date(
+
+partesData[2],
+
+partesData[1] - 1,
+
+partesData[0],
+
+hora[0],
+
+hora[1]
+
 );
 
 
@@ -166,8 +177,7 @@ configuracao.data + " " + configuracao.hora
 let agora = new Date();
 
 
-let diferenca =
-dataSorteio - agora;
+let diferenca = dataSorteio - agora;
 
 
 
@@ -182,46 +192,45 @@ return;
 
 
 
-let dias =
-Math.floor(diferenca / (1000*60*60*24));
-
-
-let horas =
-Math.floor(
-(diferenca % (1000*60*60*24))
-/(1000*60*60)
+let dias = Math.floor(
+diferenca / (1000 * 60 * 60 * 24)
 );
 
 
-let minutos =
-Math.floor(
-(diferenca % (1000*60*60))
-/(1000*60)
+let horas = Math.floor(
+(diferenca % (1000 * 60 * 60 * 24))
+/ (1000 * 60 * 60)
 );
 
 
-let segundos =
-Math.floor(
-(diferenca % (1000*60))
-/1000
+let minutos = Math.floor(
+(diferenca % (1000 * 60 * 60))
+/ (1000 * 60)
+);
+
+
+let segundos = Math.floor(
+(diferenca % (1000 * 60))
+/ 1000
 );
 
 
 
 document.getElementById("contador").innerHTML =
 
-"⏳ Faltam:<br>" +
+"⏳ Faltam:<br><br>" +
 
-dias+" dias | "+
+dias + " dias | " +
 
-horas+" horas | "+
+horas + " horas | " +
 
-minutos+" min | "+
+minutos + " min | " +
 
-segundos+" seg";
+segundos + " seg";
 
 
 }
+
 
 
 setInterval(atualizarContador,1000);
