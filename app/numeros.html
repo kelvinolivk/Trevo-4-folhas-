@@ -98,7 +98,25 @@ function confirmar(){
  let nome = localStorage.getItem("nome");
 let whatsapp = localStorage.getItem("whatsapp");
 
-localStorage.setItem("numeroEscolhido", JSON.stringify(escolhidos));
+let participantes =
+JSON.parse(localStorage.getItem("participantes")) || [];
+
+participantes.push({
+    nome: nome,
+    whatsapp: whatsapp,
+    numero: JSON.stringify(escolhidos),
+    pagamento: "🟡 Aguardando pagamento"
+});
+
+localStorage.setItem(
+"participantes",
+JSON.stringify(participantes)
+);
+
+localStorage.setItem(
+"numeroEscolhido",
+JSON.stringify(escolhidos)
+);
 
 location.href="pix.html";
 
