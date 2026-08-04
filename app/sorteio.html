@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Sorteio - Trevo4Folhas 🍀</title>
 
 <style>
+
 body{
     font-family:Arial,sans-serif;
     background:#111;
@@ -27,113 +30,287 @@ button{
     cursor:pointer;
 }
 
-#resultado{
-    margin-top:30px;
-    font-size:22px;
-    font-weight:bold;
-}
-
 .caixa{
     margin-top:20px;
     background:#222;
     padding:15px;
     border-radius:10px;
 }
+
+.numero{
+    display:inline-block;
+    background:#0b8f3a;
+    padding:15px;
+    margin:5px;
+    border-radius:50%;
+    font-size:25px;
+    font-weight:bold;
+}
+
 </style>
 
 </head>
 
+
 <body>
+
 
 <h1>🍀 Sorteio Trevo4Folhas</h1>
 
-<p>Clique para realizar o sorteio.</p>
+
+<p id="status">
+Clique para realizar o sorteio.
+</p>
+
 
 <button onclick="sortear()">
 🎲 Realizar Sorteio
 </button>
 
+
 <div id="resultado"></div>
+
+
 
 <script>
 
-function sortear(){
 
-let participantes =
-JSON.parse(localStorage.getItem("participantes")) || [];
+function gerarNumeros(){
 
-if(participantes.length === 0){
-
-    alert("Ainda não existem apostas cadastradas 🍀");
-    return;
-
-}
 
 let numeros=[];
 
+
 while(numeros.length < 4){
 
-    let n=Math.floor(Math.random()*15)+1;
 
-    if(!numeros.includes(n)){
-        numeros.push(n);
-    }
+let n = Math.floor(Math.random()*15)+1;
+
+
+if(!numeros.includes(n)){
+
+numeros.push(n);
 
 }
 
-numeros.sort((a,b)=>a-b);
 
-let vencedores=[];
+}
 
-participantes.forEach(function(p){
 
-    let aposta = p.numero;
+return numeros.sort((a,b)=>a-b);
 
-    if(typeof aposta === "string"){
-        aposta = JSON.parse(aposta);
-    }
 
-    let ganhou = aposta.every(function(numero){
-        return numeros.includes(numero);
-    });
+}
 
-    if(ganhou){
-        vencedores.push(p.nome);
-    }
+
+
+function sortear(){
+
+
+let resultado =
+document.getElementById("resultado");
+
+
+let status =
+document.getElementById("status");
+
+
+
+status.innerHTML =
+"🎲 Sorteando números...";
+
+
+
+resultado.innerHTML = "";
+
+
+
+let contador = 0;
+
+
+
+let animacao = setInterval(function(){
+
+
+let numeros = gerarNumeros();
+
+
+resultado.innerHTML = "";
+
+
+numeros.forEach(function(n){
+
+
+resultado.innerHTML +=
+
+"<div class='numero'>"+n+"</div>";
+
 
 });
 
+
+contador++;
+
+
+
+if(contador >= 15){
+
+
+clearInterval(animacao);
+
+
+finalizarSorteio();
+
+
+}
+
+
+
+},200);
+
+
+
+}
+
+
+
+function finalizarSorteio(){
+
+
+let numeros = gerarNumeros();
+
+
+
+let participantes =
+
+JSON.parse(localStorage.getItem("participantes")) || [];
+
+
+
+let vencedores=[];
+
+
+
+participantes.forEach(function(p){
+
+
+
+if(p.pagamento === "🟢 Pagamento confirmado"){
+
+
+
+let aposta=p.numero;
+
+
+
+if(typeof aposta === "string"){
+
+aposta=JSON.parse(aposta);
+
+}
+
+
+
+let ganhou = aposta.every(function(n){
+
+return numeros.includes(n);
+
+});
+
+
+
+if(ganhou){
+
+vencedores.push(p.nome);
+
+}
+
+
+}
+
+
+
+});
+
+
+
 let html =
-"🍀 Números sorteados:<br><br><b>" +
-numeros.join(" - ") +
-"</b>";
+
+"<div class='caixa'>🍀 Números sorteados:<br><br>";
+
+
+
+numeros.forEach(function(n){
+
+
+html +=
+
+"<div class='numero'>"+n+"</div>";
+
+
+});
+
+
+
+html += "</div>";
+
+
 
 if(vencedores.length > 0){
 
-    html += "<div class='caixa'>🏆 <b>Ganhador(es)</b><br><br>";
 
-    vencedores.forEach(function(nome){
-        html += "👤 " + nome + "<br>";
-    });
+html +=
 
-    html += "</div>";
+"<div class='caixa'>🏆 Vencedor(es):<br><br>";
+
+
+
+vencedores.forEach(function(v){
+
+
+html += "👤 "+v+"<br>";
+
+
+});
+
+
+
+html += "</div>";
+
+
 
 }else{
 
-    html += "<div class='caixa'>😢 Nenhum ganhador.</div>";
+
+html +=
+
+"<div class='caixa'>🍀 Acumulou!<br><br>Nenhum ganhador desta vez.</div>";
+
 
 }
+
+
 
 document.getElementById("resultado").innerHTML = html;
 
+
+
 localStorage.setItem(
+
 "resultadoSorteio",
+
 JSON.stringify(numeros)
+
 );
+
+
 
 }
 
+
+
 </script>
+
 
 </body>
 </html>
