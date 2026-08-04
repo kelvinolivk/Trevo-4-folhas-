@@ -6,7 +6,6 @@
 <title>Sorteio - Trevo4Folhas 🍀</title>
 
 <style>
-
 body{
     font-family:Arial,sans-serif;
     background:#111;
@@ -25,6 +24,7 @@ button{
     border-radius:10px;
     font-size:18px;
     margin-top:20px;
+    cursor:pointer;
 }
 
 #resultado{
@@ -33,6 +33,12 @@ button{
     font-weight:bold;
 }
 
+.caixa{
+    margin-top:20px;
+    background:#222;
+    padding:15px;
+    border-radius:10px;
+}
 </style>
 
 </head>
@@ -50,101 +56,81 @@ button{
 <div id="resultado"></div>
 
 <script>
+
 function sortear(){
 
 let participantes =
 JSON.parse(localStorage.getItem("participantes")) || [];
 
-if(participantes.length == 0){
+if(participantes.length === 0){
 
-alert("Ainda não existem apostas cadastradas 🍀");
-return;
+    alert("Ainda não existem apostas cadastradas 🍀");
+    return;
 
 }
-
 
 let numeros=[];
 
 while(numeros.length < 4){
 
-let n = Math.floor(Math.random()*15)+1;
+    let n=Math.floor(Math.random()*15)+1;
 
-if(!numeros.includes(n)){
-numeros.push(n);
-}
+    if(!numeros.includes(n)){
+        numeros.push(n);
+    }
 
 }
 
 numeros.sort((a,b)=>a-b);
 
-
-let vencedor = "Nenhum ganhador";
+let vencedores=[];
 
 participantes.forEach(function(p){
 
-let aposta = JSON.parse(p.numero);
+    let aposta = p.numero;
 
-let acertos = aposta.filter(
-numero => numeros.includes(numero)
-);
+    if(typeof aposta === "string"){
+        aposta = JSON.parse(aposta);
+    }
 
+    let ganhou = aposta.every(function(numero){
+        return numeros.includes(numero);
+    });
 
-if(acertos.length == 4){
-
-vencedor = p.nome;
-
-}
+    if(ganhou){
+        vencedores.push(p.nome);
+    }
 
 });
 
-
-document.getElementById("resultado").innerHTML =
+let html =
 "🍀 Números sorteados:<br><br><b>" +
 numeros.join(" - ") +
-"</b><br><br>🏆 Vencedor: " +
-vencedor;
+"</b>";
 
+if(vencedores.length > 0){
+
+    html += "<div class='caixa'>🏆 <b>Ganhador(es)</b><br><br>";
+
+    vencedores.forEach(function(nome){
+        html += "👤 " + nome + "<br>";
+    });
+
+    html += "</div>";
+
+}else{
+
+    html += "<div class='caixa'>😢 Nenhum ganhador.</div>";
+
+}
+
+document.getElementById("resultado").innerHTML = html;
 
 localStorage.setItem(
 "resultadoSorteio",
 JSON.stringify(numeros)
 );
-let participantes =
-JSON.parse(localStorage.getItem("participantes")) || [];
 
-let vencedores = [];
-
-participantes.forEach(function(p){
-
-let aposta = p.numero;
-
-if(typeof aposta == "string"){
-    aposta = aposta.split(",").map(Number);
-}
-
-let acertou = aposta.every(function(n){
-    return numeros.includes(n);
-});
-
-if(acertou){
-    vencedores.push(p.nome);
-}
-
-});
-
-if(vencedores.length > 0){
-
-document.getElementById("resultado").innerHTML +=
-"<br><br>🏆 Ganhador(es):<br><b>" +
-vencedores.join("<br>") +
-"</b>";
-
-}else{
-
-document.getElementById("resultado").innerHTML +=
-"<br><br>😢 Nenhum ganhador.";
-
-}
 }
 
 </script>
