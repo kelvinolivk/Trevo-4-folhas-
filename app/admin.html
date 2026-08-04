@@ -34,10 +34,38 @@ body {
 <p>Números reservados:</p>
 <p id="lista">Carregando reservas...</p>
 </div>
-<script src="reservas.js"></script>
+<script src="participantes.js"></script>
 
 <script>
-mostrarReservas();
+
+let lista = document.getElementById("lista");
+
+let participantes =
+JSON.parse(localStorage.getItem("participantes")) || [];
+
+if(participantes.length == 0){
+
+    lista.innerHTML = "Nenhuma aposta registrada 🍀";
+
+}else{
+
+    lista.innerHTML = "";
+
+    participantes.forEach(function(p){
+
+        lista.innerHTML += `
+        <div class="caixa">
+        👤 ${p.nome}<br>
+        📱 ${p.whatsapp}<br>
+        🍀 Números: ${p.numero}<br>
+        💰 ${p.pagamento}
+        </div>
+        `;
+
+    });
+
+}
+
 </script>
 </body>
 </html>
