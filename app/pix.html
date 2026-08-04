@@ -142,13 +142,16 @@ location.href="index.html";
 
 }
 let nome = localStorage.getItem("nome") || "";
-let numero = localStorage.getItem("numeroEscolhido") || "";
+
+let numero = JSON.parse(
+localStorage.getItem("numeroEscolhido")
+) || [];
 
 document.getElementById("nome").innerHTML =
 "👤 Participante: " + nome;
 
 document.getElementById("numero").innerHTML =
-"🍀 Número escolhido: " + numero;
+"🍀 Números escolhidos: " + numero.join(" - ");
 </script>
 
 </body>
