@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Admin - Trevo4Folhas 🍀</title>
 
 <style>
@@ -43,17 +45,24 @@ button{
 
 </style>
 
+
 <script>
+
 
 let senha = prompt("Digite a senha do administrador:");
 
 if(senha !== "trevo123"){
-    alert("Senha incorreta!");
-    window.location.href="../index.html";
+
+alert("Senha incorreta!");
+
+window.location.href="../index.html";
+
 }
 
 
+
 function salvarConfiguracoes(){
+
 
 let configuracao = {
 
@@ -76,29 +85,89 @@ JSON.stringify(configuracao)
 
 alert("Configurações salvas 🍀");
 
+
+}
+
+
+
+function realizarSorteio(){
+
+
+let numeros=[];
+
+
+while(numeros.length < 4){
+
+
+let n = Math.floor(Math.random()*15)+1;
+
+
+if(!numeros.includes(n)){
+
+numeros.push(n);
+
+}
+
+
+}
+
+
+numeros.sort((a,b)=>a-b);
+
+
+
+localStorage.setItem(
+
+"resultadoSorteio",
+
+JSON.stringify(numeros)
+
+);
+
+
+
+alert(
+
+"🍀 Sorteio realizado!\n\nNúmeros:\n" 
++ numeros.join(" - ")
+
+);
+
+
 }
 
 
 
 function confirmarPagamento(indice){
 
+
 let participantes =
+
 JSON.parse(localStorage.getItem("participantes")) || [];
 
 
+
 participantes[indice].pagamento =
+
 "🟢 Pagamento confirmado";
 
 
+
 localStorage.setItem(
+
 "participantes",
+
 JSON.stringify(participantes)
+
 );
+
 
 
 location.reload();
 
+
 }
+
 
 
 </script>
@@ -112,7 +181,9 @@ location.reload();
 <h1>🔐 Admin Trevo4Folhas 🍀</h1>
 
 
+
 <div class="caixa">
+
 
 <h3>⚙️ Configurações do Sorteio</h3>
 
@@ -130,7 +201,17 @@ location.reload();
 
 
 <button onclick="salvarConfiguracoes()">
+
 💾 Salvar Configurações
+
+</button>
+
+
+
+<button onclick="realizarSorteio()">
+
+🎲 Realizar Sorteio
+
 </button>
 
 
@@ -138,7 +219,9 @@ location.reload();
 
 
 
+
 <div id="lista"></div>
+
 
 
 
@@ -149,6 +232,7 @@ let lista = document.getElementById("lista");
 
 
 let participantes =
+
 JSON.parse(localStorage.getItem("participantes")) || [];
 
 
@@ -157,6 +241,7 @@ if(participantes.length === 0){
 
 
 lista.innerHTML =
+
 "<div class='caixa'>Nenhuma aposta registrada 🍀</div>";
 
 
@@ -164,6 +249,7 @@ lista.innerHTML =
 
 
 participantes.forEach(function(p, indice){
+
 
 
 lista.innerHTML += `
@@ -193,8 +279,8 @@ lista.innerHTML += `
 
 </div>
 
-
 `;
+
 
 
 });
