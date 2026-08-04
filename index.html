@@ -37,6 +37,11 @@ button {
     font-size: 18px;
 }
 
+#contador{
+    font-size:22px;
+    margin-top:15px;
+}
+
 </style>
 
 </head>
@@ -50,12 +55,20 @@ button {
 
 <div class="caixa" id="informacoes">
 
-Carregando informações do sorteio...
+Carregando sorteio...
+
+</div>
+
+
+<div class="caixa" id="contador">
+
+Calculando tempo...
 
 </div>
 
 
 <p>Loteria privada do grupo</p>
+
 
 
 <button onclick="location.href='app/cadastro.html'">
@@ -123,8 +136,98 @@ ${configuracao.hora || "A definir"}
 
 🍀 ${configuracao.mensagem || "Boa sorte!"}
 
-
 `;
+
+
+
+// CONTADOR
+
+function atualizarContador(){
+
+
+if(!configuracao.data || !configuracao.hora){
+
+document.getElementById("contador").innerHTML =
+"⏳ Data do sorteio ainda não definida";
+
+return;
+
+}
+
+
+
+let dataSorteio =
+new Date(
+configuracao.data + " " + configuracao.hora
+);
+
+
+
+let agora = new Date();
+
+
+let diferenca =
+dataSorteio - agora;
+
+
+
+if(diferenca <= 0){
+
+document.getElementById("contador").innerHTML =
+"🎲 Sorteio realizado!";
+
+return;
+
+}
+
+
+
+let dias =
+Math.floor(diferenca / (1000*60*60*24));
+
+
+let horas =
+Math.floor(
+(diferenca % (1000*60*60*24))
+/(1000*60*60)
+);
+
+
+let minutos =
+Math.floor(
+(diferenca % (1000*60*60))
+/(1000*60)
+);
+
+
+let segundos =
+Math.floor(
+(diferenca % (1000*60))
+/1000
+);
+
+
+
+document.getElementById("contador").innerHTML =
+
+"⏳ Faltam:<br>" +
+
+dias+" dias | "+
+
+horas+" horas | "+
+
+minutos+" min | "+
+
+segundos+" seg";
+
+
+}
+
+
+setInterval(atualizarContador,1000);
+
+atualizarContador();
+
 
 </script>
 
