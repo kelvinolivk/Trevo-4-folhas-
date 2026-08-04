@@ -96,9 +96,9 @@ function confirmar(){
  }
 
  let nome = localStorage.getItem("nome");
- let whatsapp = localStorage.getItem("whatsapp");
+let whatsapp = localStorage.getItem("whatsapp");
 
- localStorage.setItem("numeroEscolhido", numero);
+localStorage.setItem("numeroEscolhido", JSON.stringify(escolhidos));
 
 location.href="pix.html";
 
