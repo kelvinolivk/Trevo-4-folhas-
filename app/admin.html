@@ -1,74 +1,78 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin - Trevo4Folhas 🍀</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-
-body {
-    font-family: Arial;
-    background: #111;
-    color: white;
-    text-align: center;
-    padding: 20px;
+body{
+    font-family:Arial,sans-serif;
+    background:#111;
+    color:white;
+    text-align:center;
+    padding:20px;
 }
 
-.caixa {
-    background: #222;
-    padding: 15px;
-    border-radius: 10px;
-    margin: 10px;
+.caixa{
+    background:#222;
+    padding:15px;
+    border-radius:10px;
+    margin:10px auto;
+    max-width:400px;
 }
 
+button{
+    background:#0b8f3a;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:10px 15px;
+    margin-top:10px;
+    cursor:pointer;
+}
 </style>
 
-</head>
 <script>
 
 let senha = prompt("Digite a senha do administrador:");
 
 if(senha !== "trevo123"){
-
     alert("Senha incorreta!");
-
     window.location.href="../index.html";
-
 }
+
 function confirmarPagamento(nome){
 
-let participantes =
-JSON.parse(localStorage.getItem("participantes")) || [];
+    let participantes =
+    JSON.parse(localStorage.getItem("participantes")) || [];
 
-participantes.forEach(function(p){
+    participantes.forEach(function(p){
 
-    if(p.nome == nome){
+        if(p.nome === nome){
+            p.pagamento = "🟢 Pagamento confirmado";
+        }
 
-        p.pagamento = "🟢 Pagamento confirmado";
+    });
 
-    }
+    localStorage.setItem(
+        "participantes",
+        JSON.stringify(participantes)
+    );
 
-});
-
-localStorage.setItem(
-"participantes",
-JSON.stringify(participantes)
-);
-
-location.reload();
+    location.reload();
 
 }
+
 </script>
+
+</head>
+
 <body>
 
-<h1>🔐 Admin Trevo4Folhas</h1>
+<h1>🔐 Admin Trevo4Folhas 🍀</h1>
 
-<div class="caixa">
-<p>Números reservados:</p>
-<p id="lista">Carregando reservas...</p>
-</div>
-
+<div id="lista"></div>
 
 <script>
 
@@ -77,35 +81,37 @@ let lista = document.getElementById("lista");
 let participantes =
 JSON.parse(localStorage.getItem("participantes")) || [];
 
-if(participantes.length == 0){
+if(participantes.length === 0){
 
-    lista.innerHTML = "Nenhuma aposta registrada 🍀";
+    lista.innerHTML = "<div class='caixa'>Nenhuma aposta registrada 🍀</div>";
 
 }else{
 
-    lista.innerHTML = "";
-
     participantes.forEach(function(p){
 
-    lista.innerHTML += `
-<div class="caixa">
+        lista.innerHTML += `
+        <div class="caixa">
 
-👤 ${p.nome}<br>
-📱 ${p.whatsapp}<br>
-🍀 Números: ${p.numero}<br>
-💰 <span id="status${p.nome}">${p.pagamento}</span><br><br>
+        👤 <b>${p.nome}</b><br><br>
 
-<button onclick="confirmarPagamento('${p.nome}')">
-✅ Confirmar Pagamento
-</button>
+        📱 ${p.whatsapp}<br><br>
 
-</div>
-`;
+        🍀 ${p.numero}<br><br>
+
+        💰 ${p.pagamento}<br><br>
+
+        <button onclick="confirmarPagamento('${p.nome}')">
+        ✅ Confirmar Pagamento
+        </button>
+
+        </div>
+        `;
 
     });
 
 }
 
 </script>
+
 </body>
 </html>
