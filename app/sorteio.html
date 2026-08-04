@@ -109,7 +109,42 @@ localStorage.setItem(
 "resultadoSorteio",
 JSON.stringify(numeros)
 );
+let participantes =
+JSON.parse(localStorage.getItem("participantes")) || [];
 
+let vencedores = [];
+
+participantes.forEach(function(p){
+
+let aposta = p.numero;
+
+if(typeof aposta == "string"){
+    aposta = aposta.split(",").map(Number);
+}
+
+let acertou = aposta.every(function(n){
+    return numeros.includes(n);
+});
+
+if(acertou){
+    vencedores.push(p.nome);
+}
+
+});
+
+if(vencedores.length > 0){
+
+document.getElementById("resultado").innerHTML +=
+"<br><br>🏆 Ganhador(es):<br><b>" +
+vencedores.join("<br>") +
+"</b>";
+
+}else{
+
+document.getElementById("resultado").innerHTML +=
+"<br><br>😢 Nenhum ganhador.";
+
+}
 }
 
 </script>
