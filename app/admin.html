@@ -6,6 +6,7 @@
 <title>Admin - Trevo4Folhas 🍀</title>
 
 <style>
+
 body{
     font-family:Arial,sans-serif;
     background:#111;
@@ -22,6 +23,14 @@ body{
     max-width:400px;
 }
 
+input{
+    width:90%;
+    padding:10px;
+    margin:5px;
+    border-radius:8px;
+    border:none;
+}
+
 button{
     background:#0b8f3a;
     color:white;
@@ -31,6 +40,7 @@ button{
     margin-top:10px;
     cursor:pointer;
 }
+
 </style>
 
 <script>
@@ -42,60 +52,159 @@ if(senha !== "trevo123"){
     window.location.href="../index.html";
 }
 
-function confirmarPagamento(indice){
 
-    let participantes =
-    JSON.parse(localStorage.getItem("participantes")) || [];
+function salvarConfiguracoes(){
 
-    participantes[indice].pagamento = "🟢 Pagamento confirmado";
+let configuracao = {
 
-    localStorage.setItem(
-        "participantes",
-        JSON.stringify(participantes)
-    );
+premio: document.getElementById("premio").value,
 
-    location.reload();
+data: document.getElementById("data").value,
+
+hora: document.getElementById("hora").value,
+
+mensagem: document.getElementById("mensagem").value
+
+};
+
+
+localStorage.setItem(
+"configuracao",
+JSON.stringify(configuracao)
+);
+
+
+alert("Configurações salvas 🍀");
 
 }
+
+
+
+function confirmarPagamento(indice){
+
+let participantes =
+JSON.parse(localStorage.getItem("participantes")) || [];
+
+
+participantes[indice].pagamento =
+"🟢 Pagamento confirmado";
+
+
+localStorage.setItem(
+"participantes",
+JSON.stringify(participantes)
+);
+
+
+location.reload();
+
+}
+
 
 </script>
 
 </head>
 
+
 <body>
 
+
 <h1>🔐 Admin Trevo4Folhas 🍀</h1>
+
 
 <div class="caixa">
 
 <h3>⚙️ Configurações do Sorteio</h3>
 
+
 <input id="premio" placeholder="Valor do prêmio">
-<br>
+
 
 <input id="data" placeholder="Data do sorteio">
-<br>
+
 
 <input id="hora" placeholder="Hora do sorteio">
-<br>
 
-<input id="mensagem" placeholder="Mensagem do sorteio">
-<br>
+
+<input id="mensagem" placeholder="Mensagem de acumulado">
+
 
 <button onclick="salvarConfiguracoes()">
 💾 Salvar Configurações
 </button>
 
+
 </div>
 
-<div id="lista"></div>
-        `;
 
-    });
+
+<div id="lista"></div>
+
+
+
+<script>
+
+
+let lista = document.getElementById("lista");
+
+
+let participantes =
+JSON.parse(localStorage.getItem("participantes")) || [];
+
+
+
+if(participantes.length === 0){
+
+
+lista.innerHTML =
+"<div class='caixa'>Nenhuma aposta registrada 🍀</div>";
+
+
+}else{
+
+
+participantes.forEach(function(p, indice){
+
+
+lista.innerHTML += `
+
+<div class="caixa">
+
+
+👤 <b>${p.nome}</b><br><br>
+
+
+📱 ${p.whatsapp}<br><br>
+
+
+🍀 ${p.numero}<br><br>
+
+
+💰 ${p.pagamento}<br><br>
+
+
+
+<button onclick="confirmarPagamento(${indice})">
+
+✅ Confirmar Pagamento
+
+</button>
+
+
+</div>
+
+
+`;
+
+
+});
+
 
 }
 
+
 </script>
+
 
 </body>
 </html>
