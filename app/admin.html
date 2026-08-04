@@ -48,7 +48,6 @@ button{
 
 <script>
 
-
 let senha = prompt("Digite a senha do administrador:");
 
 if(senha !== "trevo123"){
@@ -62,7 +61,6 @@ window.location.href="../index.html";
 
 
 function salvarConfiguracoes(){
-
 
 let configuracao = {
 
@@ -85,8 +83,8 @@ JSON.stringify(configuracao)
 
 alert("Configurações salvas 🍀");
 
-
 }
+
 
 
 
@@ -99,7 +97,7 @@ let numeros=[];
 while(numeros.length < 4){
 
 
-let n = Math.floor(Math.random()*15)+1;
+let n=Math.floor(Math.random()*15)+1;
 
 
 if(!numeros.includes(n)){
@@ -107,7 +105,6 @@ if(!numeros.includes(n)){
 numeros.push(n);
 
 }
-
 
 }
 
@@ -117,10 +114,45 @@ numeros.sort((a,b)=>a-b);
 
 
 localStorage.setItem(
-
 "resultadoSorteio",
-
 JSON.stringify(numeros)
+);
+
+
+
+let historico =
+
+JSON.parse(localStorage.getItem("historicoSorteios")) || [];
+
+
+
+let configuracao =
+
+JSON.parse(localStorage.getItem("configuracao")) || {};
+
+
+
+let novoSorteio = {
+
+numeros:numeros,
+
+data:new Date().toLocaleDateString("pt-BR"),
+
+premio:configuracao.premio || "Não informado"
+
+};
+
+
+
+historico.push(novoSorteio);
+
+
+
+localStorage.setItem(
+
+"historicoSorteios",
+
+JSON.stringify(historico)
 
 );
 
@@ -128,13 +160,15 @@ JSON.stringify(numeros)
 
 alert(
 
-"🍀 Sorteio realizado!\n\nNúmeros:\n" 
-+ numeros.join(" - ")
+"🍀 Sorteio realizado!\n\nNúmeros:\n" +
+
+numeros.join(" - ")
 
 );
 
 
 }
+
 
 
 
@@ -167,7 +201,6 @@ location.reload();
 
 
 }
-
 
 
 </script>
@@ -207,7 +240,6 @@ location.reload();
 </button>
 
 
-
 <button onclick="realizarSorteio()">
 
 🎲 Realizar Sorteio
@@ -219,9 +251,7 @@ location.reload();
 
 
 
-
 <div id="lista"></div>
-
 
 
 
@@ -267,7 +297,6 @@ lista.innerHTML += `
 
 
 💰 ${p.pagamento}<br><br>
-
 
 
 <button onclick="confirmarPagamento(${indice})">
