@@ -190,4 +190,206 @@ numeros.join(" - ")
 );
 
 }
-  
+ function confirmarPagamento(indice){
+
+let participantes =
+JSON.parse(localStorage.getItem("participantes")) || [];
+
+
+participantes[indice].pagamento =
+"🟢 Pagamento confirmado";
+
+
+localStorage.setItem(
+"participantes",
+JSON.stringify(participantes)
+);
+
+
+location.reload();
+
+}
+
+
+</script>
+
+
+</head>
+
+
+<body>
+
+
+<h1>🔐 Admin Trevo4Folhas 🍀</h1>
+
+
+<div class="caixa">
+
+
+<h3>⚙️ Configurações do Sorteio</h3>
+
+
+<input id="premio" placeholder="Valor do prêmio">
+
+
+<input id="valorAposta" placeholder="Valor de cada aposta">
+
+
+<input id="data" placeholder="Data do sorteio">
+
+
+<input id="hora" placeholder="Hora do sorteio">
+
+
+<input id="mensagem" placeholder="Mensagem de acumulado">
+
+
+<button onclick="salvarConfiguracoes()">
+
+💾 Salvar Configurações
+
+</button>
+
+
+<button onclick="realizarSorteio()">
+
+🎲 Realizar Sorteio
+
+</button>
+
+
+</div>
+
+
+<div class="caixa">
+
+<h3>💰 Financeiro</h3>
+
+<div id="financeiro">
+Calculando...
+</div>
+
+</div>
+
+
+<div id="lista"></div>
+
+
+<script>
+
+
+let lista = document.getElementById("lista");
+
+
+let participantes =
+JSON.parse(localStorage.getItem("participantes")) || [];
+
+
+let configuracao =
+JSON.parse(localStorage.getItem("configuracao")) || {};
+
+
+
+let pagos = participantes.filter(function(p){
+
+return p.pagamento === "🟢 Pagamento confirmado";
+
+}).length;
+
+
+
+let valorAposta =
+Number(configuracao.valorAposta) || 0;
+
+
+
+let arrecadado =
+pagos * valorAposta;
+
+
+
+let premio =
+Number(configuracao.premio) || 0;
+
+
+
+let saldo =
+arrecadado - premio;
+
+
+
+document.getElementById("financeiro").innerHTML =
+
+"🎟️ Total de apostas: " + participantes.length +
+
+"<br><br>" +
+
+"🟢 Pagamentos confirmados: " + pagos +
+
+"<br><br>" +
+
+"💰 Arrecadado: R$ " + arrecadado.toFixed(2) +
+
+"<br><br>" +
+
+"🏆 Prêmio: R$ " + premio.toFixed(2) +
+
+"<br><br>" +
+
+"📈 Saldo: R$ " + saldo.toFixed(2);
+
+
+
+if(participantes.length === 0){
+
+
+lista.innerHTML =
+
+"<div class='caixa'>Nenhuma aposta registrada 🍀</div>";
+
+
+}else{
+
+
+participantes.forEach(function(p, indice){
+
+
+
+lista.innerHTML += `
+
+<div class="caixa">
+
+👤 <b>${p.nome}</b><br><br>
+
+📱 ${p.whatsapp}<br><br>
+
+🍀 ${p.numero}<br><br>
+
+💰 ${p.pagamento}<br><br>
+
+
+<button onclick="confirmarPagamento(${indice})">
+
+✅ Confirmar Pagamento
+
+</button>
+
+
+</div>
+
+`;
+
+
+
+});
+
+
+}
+
+
+</script>
+
+
+</body>
+
+</html> 
