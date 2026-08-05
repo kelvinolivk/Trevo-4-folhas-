@@ -1,1 +1,16 @@
-
+{
+  "name": "Trevo4Folhas 🍀",
+  "short_name": "Trevo4Folhas",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#111111",
+  "theme_color": "#0b8f3a",
+  "description": "Loteria privada do grupo Trevo4Folhas",
+  "icons": [
+    {
+      "src": "icone.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
