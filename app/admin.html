@@ -341,7 +341,12 @@ document.getElementById("financeiro").innerHTML =
 
 "<br><br>" +
 
-"📈 Saldo: R$ " + saldo.toFixed(2);
+"📈 Saldo: " + 
+(
+arrecadado > 0 
+? "R$ " + saldo.toFixed(2)
+: "Aguardando arrecadação 🍀"
+);
 
 
 
