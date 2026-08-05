@@ -228,7 +228,21 @@ localStorage.setItem("senhaAdmin", novaSenha);
 
 alert("✅ Senha alterada com sucesso!");
 
+}function apagarHistorico(){
+
+let confirmar = confirm(
+"Deseja realmente apagar todo o histórico de sorteios?"
+);
+
+if(!confirmar){
+return;
 }
+
+localStorage.removeItem("historicoSorteios");
+
+alert("🗑️ Histórico apagado com sucesso!");
+
+ }
 </script>
 
 
