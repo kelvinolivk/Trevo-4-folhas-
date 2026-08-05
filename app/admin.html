@@ -212,7 +212,23 @@ location.reload();
 
 }
 
+function alterarSenha(){
 
+let novaSenha = prompt("Digite a nova senha:");
+
+if(!novaSenha || novaSenha.trim() === ""){
+
+alert("Senha inválida!");
+
+return;
+
+}
+
+localStorage.setItem("senhaAdmin", novaSenha);
+
+alert("✅ Senha alterada com sucesso!");
+
+}
 </script>
 
 
