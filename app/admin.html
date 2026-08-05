@@ -10,43 +10,44 @@
 <style>
 
 body{
-    font-family:Arial,sans-serif;
-    background:#111;
-    color:white;
-    text-align:center;
-    padding:20px;
+font-family:Arial,sans-serif;
+background:#111;
+color:white;
+text-align:center;
+padding:20px;
 }
 
 .caixa{
-    background:#222;
-    padding:15px;
-    border-radius:10px;
-    margin:10px auto;
-    max-width:400px;
+background:#222;
+padding:15px;
+border-radius:10px;
+margin:10px auto;
+max-width:400px;
 }
 
 input{
-    width:90%;
-    padding:10px;
-    margin:5px;
-    border-radius:8px;
-    border:none;
+width:90%;
+padding:10px;
+margin:5px;
+border-radius:8px;
+border:none;
 }
 
 button{
-    background:#0b8f3a;
-    color:white;
-    border:none;
-    border-radius:8px;
-    padding:10px 15px;
-    margin-top:10px;
-    cursor:pointer;
+background:#0b8f3a;
+color:white;
+border:none;
+border-radius:8px;
+padding:10px 15px;
+margin-top:10px;
+cursor:pointer;
 }
 
 </style>
 
 
 <script>
+
 
 let senha = prompt("Digite a senha do administrador:");
 
@@ -62,33 +63,40 @@ window.location.href="../index.html";
 
 function salvarConfiguracoes(){
 
-let configuracao = {
 
-premio: document.getElementById("premio").value,
+let configuracao={
 
-data: document.getElementById("data").value,
+premio:document.getElementById("premio").value,
 
-hora: document.getElementById("hora").value,
+data:document.getElementById("data").value,
 
-mensagem: document.getElementById("mensagem").value
+hora:document.getElementById("hora").value,
+
+mensagem:document.getElementById("mensagem").value
 
 };
 
 
+
 localStorage.setItem(
+
 "configuracao",
+
 JSON.stringify(configuracao)
+
 );
 
 
+
 alert("Configurações salvas 🍀");
+
 
 }
 
 
 
 
-function realizarSorteio(){
+function gerarNumeros(){
 
 
 let numeros=[];
@@ -106,23 +114,79 @@ numeros.push(n);
 
 }
 
+
 }
 
 
-numeros.sort((a,b)=>a-b);
+return numeros.sort((a,b)=>a-b);
+
+
+}
 
 
 
-localStorage.setItem(
-"resultadoSorteio",
-JSON.stringify(numeros)
-);
+
+
+function realizarSorteio(){
 
 
 
-let historico =
+let numeros = gerarNumeros();
 
-JSON.parse(localStorage.getItem("historicoSorteios")) || [];
+
+
+let participantes =
+
+JSON.parse(localStorage.getItem("participantes")) || [];
+
+
+
+let vencedores=[];
+
+
+
+participantes.forEach(function(p){
+
+
+
+if(p.pagamento === "🟢 Pagamento confirmado"){
+
+
+
+let aposta=p.numero;
+
+
+
+if(typeof aposta === "string"){
+
+aposta=JSON.parse(aposta);
+
+}
+
+
+
+let ganhou = aposta.every(function(n){
+
+return numeros.includes(n);
+
+});
+
+
+
+if(ganhou){
+
+vencedores.push(p.nome);
+
+}
+
+
+
+}
+
+
+});
+
+
 
 
 
@@ -132,19 +196,48 @@ JSON.parse(localStorage.getItem("configuracao")) || {};
 
 
 
-let novoSorteio = {
+
+
+let resultado = {
+
 
 numeros:numeros,
 
 data:new Date().toLocaleDateString("pt-BR"),
 
-premio:configuracao.premio || "Não informado"
+premio:configuracao.premio || "Não informado",
+
+vencedores:vencedores.length > 0 ? vencedores : ["🍀 Acumulou"]
 
 };
 
 
 
-historico.push(novoSorteio);
+
+
+localStorage.setItem(
+
+"resultadoSorteio",
+
+JSON.stringify(resultado)
+
+);
+
+
+
+
+
+let historico =
+
+JSON.parse(localStorage.getItem("historicoSorteios")) || [];
+
+
+
+
+
+historico.push(resultado);
+
+
 
 
 
@@ -158,16 +251,20 @@ JSON.stringify(historico)
 
 
 
+
+
 alert(
 
-"🍀 Sorteio realizado!\n\nNúmeros:\n" +
+"🍀 Sorteio realizado!\n\nNúmeros:\n"+
 
 numeros.join(" - ")
 
 );
 
 
+
 }
+
 
 
 
@@ -203,6 +300,7 @@ location.reload();
 }
 
 
+
 </script>
 
 </head>
@@ -212,7 +310,6 @@ location.reload();
 
 
 <h1>🔐 Admin Trevo4Folhas 🍀</h1>
-
 
 
 <div class="caixa">
@@ -258,19 +355,19 @@ location.reload();
 <script>
 
 
-let lista = document.getElementById("lista");
+let lista=document.getElementById("lista");
 
 
-let participantes =
+let participantes=
 
 JSON.parse(localStorage.getItem("participantes")) || [];
 
 
 
-if(participantes.length === 0){
+if(participantes.length===0){
 
 
-lista.innerHTML =
+lista.innerHTML=
 
 "<div class='caixa'>Nenhuma aposta registrada 🍀</div>";
 
@@ -278,7 +375,7 @@ lista.innerHTML =
 }else{
 
 
-participantes.forEach(function(p, indice){
+participantes.forEach(function(p,indice){
 
 
 
@@ -289,12 +386,9 @@ lista.innerHTML += `
 
 👤 <b>${p.nome}</b><br><br>
 
-
 📱 ${p.whatsapp}<br><br>
 
-
 🍀 ${p.numero}<br><br>
-
 
 💰 ${p.pagamento}<br><br>
 
