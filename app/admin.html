@@ -313,8 +313,13 @@ Number(configuracao.premio) || 0;
 
 
 
-let saldo =
-arrecadado - premio;
+let saldo = 0;
+
+if(arrecadado > 0){
+
+saldo = arrecadado - premio;
+
+}
 
 
 
