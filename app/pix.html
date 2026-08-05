@@ -80,8 +80,11 @@ button:hover{
 <div class="valor">
 R$ 5,00
 </div>
+
 <h3 id="nome"></h3>
+
 <h3 id="numero"></h3>
+
 <h3>Chave Pix</h3>
 
 <div class="pix" id="chavePix">
@@ -94,6 +97,10 @@ CPF: 013.050.129-84
 
 <button onclick="confirmarPagamento()">
 ✅ Já realizei o pagamento
+</button>
+
+<button onclick="enviarWhatsApp()">
+📲 Enviar comprovante pelo WhatsApp
 </button>
 
 <p class="aviso">
@@ -123,11 +130,11 @@ let nome = localStorage.getItem("nome");
 
 participantes.forEach(function(p){
 
-    if(p.nome == nome){
+if(p.nome == nome){
 
-        p.pagamento = "🟡 Aguardando confirmação";
+p.pagamento = "🟡 Aguardando confirmação";
 
-    }
+}
 
 });
 
@@ -138,9 +145,29 @@ JSON.stringify(participantes)
 
 alert("Pagamento informado com sucesso! Aguarde a confirmação do administrador.");
 
-location.href="index.html";
+}
+
+function enviarWhatsApp(){
+
+let nome = localStorage.getItem("nome") || "";
+
+let numeros = JSON.parse(
+localStorage.getItem("numeroEscolhido")
+) || [];
+
+let mensagem =
+"🍀 Olá! Acabei de realizar o pagamento da minha aposta no Trevo4Folhas.%0A%0A" +
+"👤 Nome: " + nome +
+"%0A🎟️ Números: " + numeros.join(" - ") +
+"%0A%0AEstou enviando o comprovante para confirmação.";
+
+window.open(
+"https://wa.me/5542999330894?text=" + mensagem,
+"_blank"
+);
 
 }
+
 let nome = localStorage.getItem("nome") || "";
 
 let numero = JSON.parse(
@@ -152,6 +179,7 @@ document.getElementById("nome").innerHTML =
 
 document.getElementById("numero").innerHTML =
 "🍀 Números escolhidos: " + numero.join(" - ");
+
 </script>
 
 </body>
