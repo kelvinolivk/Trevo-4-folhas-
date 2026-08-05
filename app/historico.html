@@ -85,11 +85,9 @@ tela.innerHTML = "";
 historico.forEach(function(sorteio, indice){
 
 
-
 let html = `
 
 <div class="caixa">
-
 
 🏆 <b>Sorteio #${indice + 1}</b>
 
@@ -106,7 +104,7 @@ ${sorteio.data}
 <br><br>
 
 
-🏆 Prêmio:
+💰 Prêmio:
 
 <br>
 
@@ -116,7 +114,7 @@ ${sorteio.premio}
 <br><br>
 
 
-🎲 Números:
+🎲 Números sorteados:
 
 <br><br>
 
@@ -134,6 +132,45 @@ html +=
 
 });
 
+
+
+html += "<br><br>";
+
+
+
+if(sorteio.vencedores && sorteio.vencedores.length > 0){
+
+
+if(sorteio.vencedores[0] === "🍀 Acumulou"){
+
+
+html +=
+
+"🍀 <b>Acumulou!</b><br>Nenhum ganhador.";
+
+
+}else{
+
+
+html +=
+
+"🏆 <b>Vencedor(es):</b><br><br>";
+
+
+
+sorteio.vencedores.forEach(function(v){
+
+
+html += "👤 " + v + "<br>";
+
+
+});
+
+
+}
+
+
+}
 
 
 html += `
