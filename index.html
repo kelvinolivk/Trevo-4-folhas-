@@ -8,38 +8,83 @@
 
 body {
     font-family: Arial;
-    background: #111;
-    color: white;
-    text-align: center;
-    padding: 30px;
+    background:#111;
+    color:white;
+    text-align:center;
+    padding:30px;
+    overflow-x:hidden;
 }
 
-h1 {
-    font-size: 40px;
+
+/* Trevos no fundo */
+
+body::before{
+    content:"🍀  🍀  🍀  🍀  🍀  🍀  🍀  🍀";
+    position:fixed;
+    top:10px;
+    left:0;
+    width:100%;
+    font-size:50px;
+    opacity:0.08;
+    z-index:-1;
+    line-height:100px;
 }
+
+
+h1 {
+    font-size:45px;
+    margin-bottom:5px;
+    color:#0b8f3a;
+    text-shadow:0 0 10px black;
+}
+
+
+.subtitulo{
+    font-size:18px;
+    color:#ddd;
+}
+
 
 .caixa{
     background:#222;
-    padding:15px;
-    border-radius:10px;
+    padding:20px;
+    border-radius:15px;
     margin:20px auto;
     max-width:400px;
+    box-shadow:0 0 15px #000;
+    border:1px solid #333;
 }
 
-button {
-    width: 90%;
-    padding: 15px;
-    margin: 10px;
-    border-radius: 10px;
-    border: none;
-    background: green;
-    color: white;
-    font-size: 18px;
-}
 
 #contador{
     font-size:22px;
+    font-weight:bold;
 }
+
+
+button {
+    width:90%;
+    padding:16px;
+    margin:10px;
+    border-radius:12px;
+    border:none;
+    background:#0b8f3a;
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+    box-shadow:0 5px 10px #000;
+}
+
+
+button:active{
+    transform:scale(0.97);
+}
+
+
+.logo{
+    font-size:70px;
+}
+
 
 </style>
 
@@ -49,7 +94,17 @@ button {
 <body>
 
 
-<h1>🍀 Trevo4Folhas</h1>
+<div class="logo">
+🍀
+</div>
+
+
+<h1>Trevo4Folhas</h1>
+
+<p class="subtitulo">
+Loteria privada do grupo
+</p>
+
 
 
 <div class="caixa" id="informacoes">
@@ -60,9 +115,6 @@ Carregando informações...
 <div class="caixa" id="contador">
 Calculando tempo...
 </div>
-
-
-<p>Loteria privada do grupo</p>
 
 
 
@@ -89,13 +141,17 @@ Calculando tempo...
 <button onclick="location.href='app/sorteio.html'">
 🎲 Sorteio
 </button>
+
+
 <button onclick="location.href='app/historico.html'">
 📚 Histórico de Sorteios
 </button>
 
+
 <button onclick="location.href='app/admin.html'">
 🔐 Área do Administrador
 </button>
+
 
 
 
@@ -150,8 +206,6 @@ return;
 
 }
 
-
-// Converte data brasileira
 
 let partesData = configuracao.data.split("/");
 
