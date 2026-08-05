@@ -47,9 +47,11 @@ cursor:pointer;
 
 <script>
 
+let senhaSalva = localStorage.getItem("senhaAdmin") || "trevo123";
+
 let senha = prompt("Digite a senha do administrador:");
 
-if(senha !== "trevo123"){
+if(senha !== senhaSalva){
 
 alert("Senha incorreta!");
 
