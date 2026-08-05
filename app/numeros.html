@@ -159,3 +159,95 @@ Selecionados: 0/4
 </h2>
 
 <div id="lista">
+<script>
+
+let escolhidos = [];
+
+const lista = document.getElementById("lista");
+
+for(let i = 1; i <= 15; i++){
+
+    let trevo = document.createElement("div");
+
+    trevo.className = "trevo";
+
+    trevo.innerHTML = `
+        <span>🍀</span>
+        <span>${i}</span>
+    `;
+
+    trevo.onclick = function(){
+
+        if(escolhidos.includes(i)){
+
+            escolhidos = escolhidos.filter(n => n != i);
+
+            trevo.classList.remove("selecionado");
+
+        }else{
+
+            if(escolhidos.length >= 4){
+
+                alert("Você pode escolher apenas 4 números 🍀");
+
+                return;
+
+            }
+
+            escolhidos.push(i);
+
+            trevo.classList.add("selecionado");
+
+        }
+
+        document.getElementById("contador").innerHTML =
+        "Selecionados: " + escolhidos.length + "/4";
+
+    };
+
+    lista.appendChild(trevo);
+
+}
+
+function confirmar(){
+
+    if(escolhidos.length != 4){
+
+        alert("Escolha exatamente 4 números 🍀");
+
+        return;
+
+    }
+
+    let nome = localStorage.getItem("nome");
+
+    let whatsapp = localStorage.getItem("whatsapp");
+
+    let participantes =
+    JSON.parse(localStorage.getItem("participantes")) || [];
+
+    participantes.push({
+
+        nome:nome,
+
+        whatsapp:whatsapp,
+
+        numero:JSON.stringify(escolhidos),
+
+        pagamento:"🟡 Aguardando pagamento"
+
+    });
+
+    localStorage.setItem(
+        "participantes",
+        JSON.stringify(participantes)
+    );
+
+    localStorage.setItem(
+        "numeroEscolhido",
+        JSON.stringify(escolhidos)
+    );
+
+    location.href="pix.html";
+
+}
