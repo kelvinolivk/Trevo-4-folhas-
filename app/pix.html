@@ -156,15 +156,16 @@ localStorage.getItem("numeroEscolhido")
 ) || [];
 
 let mensagem =
-"🍀 Olá! Acabei de realizar o pagamento da minha aposta no Trevo4Folhas.%0A%0A" +
+"🍀 Olá! Acabei de realizar o pagamento da minha aposta no Trevo4Folhas.\n\n" +
 "👤 Nome: " + nome +
-"%0A🎟️ Números: " + numeros.join(" - ") +
-"%0A%0AEstou enviando o comprovante para confirmação.";
+"\n🎟️ Números: " + numeros.join(" - ") +
+"\n\nEstou enviando o comprovante para confirmação.";
 
-window.open(
-"https://wa.me/5542999330894?text=" + mensagem,
-"_blank"
-);
+let mensagemCodificada = encodeURIComponent(mensagem);
+
+
+window.location.href =
+"https://wa.me/5542999330894?text=" + mensagemCodificada;
 
 }
 
