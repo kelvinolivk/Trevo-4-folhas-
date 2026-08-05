@@ -45,9 +45,7 @@ cursor:pointer;
 
 </style>
 
-
 <script>
-
 
 let senha = prompt("Digite a senha do administrador:");
 
@@ -60,13 +58,13 @@ window.location.href="../index.html";
 }
 
 
-
 function salvarConfiguracoes(){
-
 
 let configuracao={
 
 premio:document.getElementById("premio").value,
+
+valorAposta:document.getElementById("valorAposta").value,
 
 data:document.getElementById("data").value,
 
@@ -77,36 +75,24 @@ mensagem:document.getElementById("mensagem").value
 };
 
 
-
 localStorage.setItem(
-
 "configuracao",
-
 JSON.stringify(configuracao)
-
 );
-
 
 
 alert("Configurações salvas 🍀");
 
-
 }
-
-
 
 
 function gerarNumeros(){
 
-
 let numeros=[];
-
 
 while(numeros.length < 4){
 
-
 let n=Math.floor(Math.random()*15)+1;
-
 
 if(!numeros.includes(n)){
 
@@ -114,48 +100,28 @@ numeros.push(n);
 
 }
 
-
 }
-
 
 return numeros.sort((a,b)=>a-b);
 
-
 }
-
-
-
 
 
 function realizarSorteio(){
 
+let numeros=gerarNumeros();
 
-
-let numeros = gerarNumeros();
-
-
-
-let participantes =
-
+let participantes=
 JSON.parse(localStorage.getItem("participantes")) || [];
-
-
 
 let vencedores=[];
 
 
-
 participantes.forEach(function(p){
-
-
 
 if(p.pagamento === "🟢 Pagamento confirmado"){
 
-
-
 let aposta=p.numero;
-
-
 
 if(typeof aposta === "string"){
 
@@ -164,13 +130,11 @@ aposta=JSON.parse(aposta);
 }
 
 
-
-let ganhou = aposta.every(function(n){
+let ganhou=aposta.every(function(n){
 
 return numeros.includes(n);
 
 });
-
 
 
 if(ganhou){
@@ -179,27 +143,16 @@ vencedores.push(p.nome);
 
 }
 
-
-
 }
-
 
 });
 
 
-
-
-
-let configuracao =
-
+let configuracao=
 JSON.parse(localStorage.getItem("configuracao")) || {};
 
 
-
-
-
-let resultado = {
-
+let resultado={
 
 numeros:numeros,
 
@@ -207,213 +160,34 @@ data:new Date().toLocaleDateString("pt-BR"),
 
 premio:configuracao.premio || "Não informado",
 
-vencedores:vencedores.length > 0 ? vencedores : ["🍀 Acumulou"]
+vencedores:vencedores.length>0 ? vencedores : ["🍀 Acumulou"]
 
 };
 
 
-
-
-
 localStorage.setItem(
-
 "resultadoSorteio",
-
 JSON.stringify(resultado)
-
 );
 
 
-
-
-
-let historico =
-
+let historico=
 JSON.parse(localStorage.getItem("historicoSorteios")) || [];
-
-
-
 
 
 historico.push(resultado);
 
 
-
-
-
 localStorage.setItem(
-
 "historicoSorteios",
-
 JSON.stringify(historico)
-
 );
-
-
-
 
 
 alert(
-
 "🍀 Sorteio realizado!\n\nNúmeros:\n"+
-
 numeros.join(" - ")
-
 );
 
-
-
 }
-
-
-
-
-
-function confirmarPagamento(indice){
-
-
-let participantes =
-
-JSON.parse(localStorage.getItem("participantes")) || [];
-
-
-
-participantes[indice].pagamento =
-
-"🟢 Pagamento confirmado";
-
-
-
-localStorage.setItem(
-
-"participantes",
-
-JSON.stringify(participantes)
-
-);
-
-
-
-location.reload();
-
-
-}
-
-
-
-</script>
-
-</head>
-
-
-<body>
-
-
-<h1>🔐 Admin Trevo4Folhas 🍀</h1>
-
-
-<div class="caixa">
-
-
-<h3>⚙️ Configurações do Sorteio</h3>
-
-
-<input id="premio" placeholder="Valor do prêmio">
-
-
-<input id="data" placeholder="Data do sorteio">
-
-
-<input id="hora" placeholder="Hora do sorteio">
-
-
-<input id="mensagem" placeholder="Mensagem de acumulado">
-
-
-<button onclick="salvarConfiguracoes()">
-
-💾 Salvar Configurações
-
-</button>
-
-
-<button onclick="realizarSorteio()">
-
-🎲 Realizar Sorteio
-
-</button>
-
-
-</div>
-
-
-
-<div id="lista"></div>
-
-
-
-<script>
-
-
-let lista=document.getElementById("lista");
-
-
-let participantes=
-
-JSON.parse(localStorage.getItem("participantes")) || [];
-
-
-
-if(participantes.length===0){
-
-
-lista.innerHTML=
-
-"<div class='caixa'>Nenhuma aposta registrada 🍀</div>";
-
-
-}else{
-
-
-participantes.forEach(function(p,indice){
-
-
-
-lista.innerHTML += `
-
-<div class="caixa">
-
-
-👤 <b>${p.nome}</b><br><br>
-
-📱 ${p.whatsapp}<br><br>
-
-🍀 ${p.numero}<br><br>
-
-💰 ${p.pagamento}<br><br>
-
-
-<button onclick="confirmarPagamento(${indice})">
-
-✅ Confirmar Pagamento
-
-</button>
-
-
-</div>
-
-`;
-
-
-
-});
-
-
-}
-
-
-</script>
-
-
-</body>
-</html>
+  
