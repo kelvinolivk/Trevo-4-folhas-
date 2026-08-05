@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
 
 <meta charset="UTF-8">
@@ -18,13 +19,11 @@ body{
 }
 
 .caixa{
-    margin-top:20px;
     background:#222;
     padding:20px;
     border-radius:10px;
+    margin:20px auto;
     max-width:400px;
-    margin-left:auto;
-    margin-right:auto;
 }
 
 .numero{
@@ -50,7 +49,7 @@ body{
 
 <div id="resultado" class="caixa">
 
-Carregando resultado...
+Aguardando resultado...
 
 </div>
 
@@ -59,112 +58,75 @@ Carregando resultado...
 <script>
 
 
-let numeros =
+let resultado =
 
 JSON.parse(localStorage.getItem("resultadoSorteio")) || null;
 
 
 
-let participantes =
-
-JSON.parse(localStorage.getItem("participantes")) || [];
+let tela = document.getElementById("resultado");
 
 
 
-let resultado = document.getElementById("resultado");
+if(!resultado){
 
 
+tela.innerHTML =
 
-if(!numeros){
-
-
-resultado.innerHTML =
-
-"🍀 Ainda não existe sorteio realizado.";
+"🍀 Nenhum sorteio realizado ainda.";
 
 
 }else{
 
 
-let vencedores=[];
+let html = "";
 
 
 
-participantes.forEach(function(p){
+html += "📅 Data do sorteio:<br>";
+
+html += resultado.data;
+
+
+html += "<br><br>";
 
 
 
-if(p.pagamento === "🟢 Pagamento confirmado"){
+html += "💰 Prêmio:<br>";
+
+html += resultado.premio;
+
+
+html += "<br><br>";
 
 
 
-let aposta=p.numero;
+html += "🎲 Números sorteados:<br><br>";
 
 
 
-if(typeof aposta === "string"){
-
-aposta=JSON.parse(aposta);
-
-}
-
-
-
-let ganhou = aposta.every(function(n){
-
-return numeros.includes(n);
-
-});
-
-
-
-if(ganhou){
-
-vencedores.push(p.nome);
-
-}
-
-
-}
-
-
-});
-
-
-
-let html =
-
-"🎲 Números sorteados:<br><br>";
-
-
-
-numeros.forEach(function(n){
+resultado.numeros.forEach(function(n){
 
 
 html +=
 
-"<div class='numero'>"+n+"</div>";
+"<span class='numero'>"+n+"</span>";
 
 
 });
 
 
 
-if(vencedores.length > 0){
+html += "<br><br>";
+
+
+
+if(resultado.vencedores[0] === "🍀 Acumulou"){
 
 
 html +=
 
-"<br><br>🏆 <b>Vencedor(es):</b><br><br>";
-
-
-
-vencedores.forEach(function(v){
-
-
-html += "👤 "+v+"<br>";
-
-});
+"🍀 <b>Acumulou!</b><br><br>Nenhum ganhador neste sorteio.";
 
 
 }else{
@@ -172,14 +134,24 @@ html += "👤 "+v+"<br>";
 
 html +=
 
-"<br><br>🍀 <b>Acumulou!</b><br>Nenhum ganhador desta vez.";
+"🏆 <b>Vencedor(es):</b><br><br>";
+
+
+
+resultado.vencedores.forEach(function(v){
+
+
+html += "👤 " + v + "<br>";
+
+
+});
 
 
 }
 
 
 
-resultado.innerHTML = html;
+tela.innerHTML = html;
 
 
 }
@@ -190,4 +162,5 @@ resultado.innerHTML = html;
 
 
 </body>
+
 </html>
