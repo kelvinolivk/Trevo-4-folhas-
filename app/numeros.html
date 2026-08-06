@@ -257,33 +257,46 @@ return;
 }
 
 
-let cadastro = 
-JSON.parse(localStorage.getItem("cadastro")) || {};
+let cadastro = JSON.parse(
+localStorage.getItem("cadastro")
+);
+
+
+if(!cadastro){
+
+alert("Faça seu cadastro primeiro 🍀");
+
+location.href="cadastro.html";
+
+return;
+
+}
+
 
 
 let participantes =
 JSON.parse(localStorage.getItem("participantes")) || [];
 
 
+
 participantes.push({
 
-nome: cadastro.nome || localStorage.getItem("nome"),
+nome: cadastro.nome,
 
-whatsapp: cadastro.whatsapp || localStorage.getItem("whatsapp"),
+whatsapp: cadastro.whatsapp,
 
-pix: cadastro.pix || "",
+pix: cadastro.pix,
 
-cidade: cadastro.cidade || "",
+cidade: cadastro.cidade,
 
 numero: JSON.stringify(escolhidos),
 
-tipo: "Loteria",
+pagamento:"🟡 Aguardando pagamento",
 
-data: new Date().toLocaleString("pt-BR"),
-
-pagamento:"🟡 Aguardando pagamento"
+data:new Date().toLocaleString("pt-BR")
 
 });
+
 
 
 localStorage.setItem(
@@ -293,6 +306,7 @@ localStorage.setItem(
 JSON.stringify(participantes)
 
 );
+
 
 
 localStorage.setItem(
@@ -305,7 +319,7 @@ JSON.stringify(escolhidos)
 
 
 
-alert("🍀 Aposta reservada com sucesso!");
+alert("🍀 Aposta registrada com sucesso!");
 
 
 
