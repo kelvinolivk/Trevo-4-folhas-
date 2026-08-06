@@ -250,3 +250,40 @@ alert("Esse número já foi reservado.");
 return;
 
 }
+participantes.push({
+
+nome:nome,
+
+whatsapp:whatsapp,
+
+numero:numeroEscolhido,
+
+pagamento:"🟡 Aguardando pagamento"
+
+});
+
+localStorage.setItem(
+
+"rifaParticipantes",
+
+JSON.stringify(participantes)
+
+);
+
+alert(
+
+"🍀 Número "+numeroEscolhido+
+
+" reservado com sucesso!\n\nAgora realize o pagamento."
+
+);
+
+location.href="pix.html";
+
+}
+
+</script>
+
+</body>
+
+</html>
