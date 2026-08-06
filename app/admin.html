@@ -250,3 +250,243 @@ alert("Senha alterada com sucesso!");
 
 
 </div>
+
+<div class="caixa">
+
+<h3>💰 Financeiro</h3>
+
+<div id="financeiro">
+
+Calculando...
+
+</div>
+
+</div>
+
+
+
+<div id="lista"></div>
+
+
+
+<script>
+
+
+function confirmarPagamento(indice){
+
+
+let participantes =
+
+JSON.parse(localStorage.getItem("participantes")) || [];
+
+
+
+participantes[indice].pagamento =
+
+"🟢 Pagamento confirmado";
+
+
+
+localStorage.setItem(
+
+"participantes",
+
+JSON.stringify(participantes)
+
+);
+
+
+
+location.reload();
+
+
+}
+
+
+
+
+
+function realizarSorteio(){
+
+
+let numeros=[];
+
+
+
+while(numeros.length < 4){
+
+
+let n = Math.floor(Math.random()*15)+1;
+
+
+
+if(!numeros.includes(n)){
+
+
+numeros.push(n);
+
+
+}
+
+
+}
+
+
+
+numeros.sort((a,b)=>a-b);
+
+
+
+let participantes =
+
+JSON.parse(localStorage.getItem("participantes")) || [];
+
+
+
+let vencedores=[];
+
+
+
+participantes.forEach(function(p){
+
+
+
+if(p.pagamento === "🟢 Pagamento confirmado"){
+
+
+let aposta = JSON.parse(p.numero);
+
+
+
+let ganhou = aposta.every(function(n){
+
+
+return numeros.includes(n);
+
+
+});
+
+
+
+if(ganhou){
+
+
+vencedores.push(p.nome);
+
+
+}
+
+
+}
+
+
+
+});
+
+
+
+let configuracao =
+
+JSON.parse(localStorage.getItem("configuracao")) || {};
+
+
+
+let resultado={
+
+
+numeros:numeros,
+
+
+data:new Date().toLocaleDateString("pt-BR"),
+
+
+premio:
+
+configuracao.premio || "Não informado",
+
+
+vencedores:
+
+vencedores.length > 0 ?
+
+vencedores :
+
+["🍀 Acumulou"]
+
+
+};
+
+
+
+localStorage.setItem(
+
+"resultadoSorteio",
+
+JSON.stringify(resultado)
+
+);
+
+
+
+let historico =
+
+JSON.parse(localStorage.getItem("historicoSorteios")) || [];
+
+
+
+historico.push(resultado);
+
+
+
+localStorage.setItem(
+
+"historicoSorteios",
+
+JSON.stringify(historico)
+
+);
+
+
+
+alert(
+
+"🍀 Sorteio realizado!\n\nNúmeros:\n"+
+
+numeros.join(" - ")
+
+);
+
+
+}
+
+
+
+
+function apagarHistorico(){
+
+
+let confirmar = confirm(
+
+"Apagar todo histórico de sorteios?"
+
+);
+
+
+
+if(confirmar){
+
+
+localStorage.removeItem(
+
+"historicoSorteios"
+
+);
+
+
+alert("Histórico apagado 🍀");
+
+
+}
+
+
+}
