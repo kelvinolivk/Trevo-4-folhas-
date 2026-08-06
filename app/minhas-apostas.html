@@ -138,3 +138,155 @@ placeholder="Seu nome">
 🏠 Voltar ao início
 
 </button>
+
+<script>
+
+
+function buscar(){
+
+
+let nome =
+
+document.getElementById("nome").value.trim();
+
+
+
+let participantes =
+
+JSON.parse(localStorage.getItem("participantes")) || [];
+
+
+
+let html = "";
+
+
+
+participantes.forEach(function(p){
+
+
+
+if(
+
+p.nome.toLowerCase() == nome.toLowerCase()
+
+){
+
+
+
+html += `
+
+
+<div class="caixa">
+
+
+<h2>
+
+👤 ${p.nome}
+
+</h2>
+
+
+
+<p>
+
+<b>📱 WhatsApp:</b><br>
+
+${p.whatsapp || "Não informado"}
+
+</p>
+
+
+
+<p>
+
+<b>💳 Pix:</b><br>
+
+${p.pix || "Não informado"}
+
+</p>
+
+
+
+<p>
+
+<b>📍 Cidade:</b><br>
+
+${p.cidade || "Não informado"}
+
+</p>
+
+
+
+<p>
+
+<b>🍀 Números:</b><br>
+
+${p.numero}
+
+</p>
+
+
+
+<p>
+
+<b>📅 Data da aposta:</b><br>
+
+${p.data || "Não informado"}
+
+</p>
+
+
+
+<p>
+
+<b>💰 Status:</b><br>
+
+${p.pagamento}
+
+</p>
+
+
+
+</div>
+
+
+`;
+
+
+
+}
+
+
+
+});
+
+
+
+if(html==""){
+
+
+
+html = `
+
+
+<div class="caixa">
+
+Nenhuma aposta encontrada para esse nome.
+
+</div>
+
+
+`;
+
+
+
+}
+
+
+
+document.getElementById("resultado").innerHTML = html;
+
+
+
+}
+  
