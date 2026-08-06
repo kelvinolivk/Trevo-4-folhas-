@@ -5,8 +5,7 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Pagamento Pix - Trevo4Folhas 🍀</title>
 
@@ -24,6 +23,7 @@ font-family:Arial,sans-serif;
 
 }
 
+
 .container{
 
 max-width:450px;
@@ -40,11 +40,13 @@ text-align:center;
 
 }
 
+
 h1{
 
 color:#3ddc84;
 
 }
+
 
 .valor{
 
@@ -58,19 +60,21 @@ margin:20px 0;
 
 }
 
+
 .info{
 
 background:#222;
 
-padding:12px;
+padding:15px;
 
 border-radius:10px;
 
-margin:10px 0;
+margin:15px 0;
 
 text-align:left;
 
 }
+
 
 .pix{
 
@@ -85,6 +89,7 @@ word-break:break-all;
 margin:20px 0;
 
 }
+
 
 button{
 
@@ -108,11 +113,13 @@ cursor:pointer;
 
 }
 
+
 button:hover{
 
 background:#14853c;
 
 }
+
 
 .aviso{
 
@@ -124,15 +131,20 @@ font-size:14px;
 
 }
 
+
 </style>
 
 </head>
 
+
 <body>
+
 
 <div class="container">
 
+
 <h1>🍀 Trevo4Folhas</h1>
+
 
 <p>
 
@@ -140,17 +152,20 @@ Finalize sua aposta realizando o pagamento.
 
 </p>
 
+
 <div class="valor" id="valor">
 
 Carregando...
 
 </div>
 
+
 <div class="info" id="dados">
 
-Carregando participante...
+Carregando dados...
 
 </div>
+
 
 <h3>
 
@@ -158,11 +173,13 @@ Chave Pix
 
 </h3>
 
+
 <div class="pix" id="chavePix">
 
 CPF: 013.050.129-84
 
 </div>
+
 
 <button onclick="copiarPix()">
 
@@ -170,11 +187,13 @@ CPF: 013.050.129-84
 
 </button>
 
+
 <button onclick="confirmarPagamento()">
 
 ✅ Já realizei o pagamento
 
 </button>
+
 
 <button onclick="enviarWhatsApp()">
 
@@ -182,160 +201,55 @@ CPF: 013.050.129-84
 
 </button>
 
+
 <p class="aviso">
 
 Após a confirmação do administrador sua aposta estará válida.
 
 </p>
 
+
 </div>
 
+
 <script>
+
 
 let cadastro =
 
 JSON.parse(localStorage.getItem("cadastro")) || {};
 
+
+let numeroEscolhido =
+
+JSON.parse(localStorage.getItem("numeroEscolhido")) || [];
+
+
 let configuracao =
 
 JSON.parse(localStorage.getItem("configuracao")) || {};
 
-let numeros =
 
-JSON.parse(localStorage.getItem("numeroEscolhido")) || [];
+let valorAposta =
+
+configuracao.valorAposta || "5,00";
+
 
 document.getElementById("valor").innerHTML =
 
-"R$ " +
+"R$ " + valorAposta;
 
-(configuracao.valorAposta || "0,00");
 
 document.getElementById("dados").innerHTML =
 
-"👤 <b>"+cadastro.nome+"</b><br><br>"+
 
-"📱 "+cadastro.whatsapp+"<br><br>"+
+"👤 <b>"+(cadastro.nome || "Não informado")+"</b><br><br>"+
 
-"💳 Pix: "+cadastro.pix+"<br><br>"+
+"📱 "+(cadastro.whatsapp || "")+"<br><br>"+
 
-"📍 "+(cadastro.cidade || "-")+"<br><br>"+
+"💳 Pix: "+(cadastro.pix || "")+"<br><br>"+
 
-"🍀 Números: "+numeros.join(" - ");
-function copiarPix(){
+"📍 "+(cadastro.cidade || "")+"<br><br>"+
 
-navigator.clipboard.writeText(
-
-document.getElementById("chavePix").innerText
-
-);
-
-alert("✅ Chave Pix copiada!");
-
-}
-
-
-
-function confirmarPagamento(){
-
-let participantes =
-
-JSON.parse(localStorage.getItem("participantes")) || [];
-
-
-
-for(let i=participantes.length-1;i>=0;i--){
-
-if(
-
-participantes[i].id===cadastro.id &&
-
-participantes[i].pagamento==="🟡 Aguardando pagamento"
-
-){
-
-participantes[i].pagamento=
-
-"🟡 Aguardando confirmação";
-
-break;
-
-}
-
-}
-
-
-
-localStorage.setItem(
-
-"participantes",
-
-JSON.stringify(participantes)
-
-);
-
-
-
-alert(
-
-"🍀 Pagamento informado com sucesso!\n\nAgora aguarde a confirmação do administrador."
-
-);
-
-}
-
-
-
-
-
-function enviarWhatsApp(){
-
-let mensagem=
-
-"🍀 Olá!\n\n"+
-
-"Acabei de realizar o pagamento da minha aposta no Trevo4Folhas.\n\n"+
-
-"👤 Nome: "+cadastro.nome+
-
-"\n📱 WhatsApp: "+cadastro.whatsapp+
-
-"\n🍀 Números: "+numeros.join(" - ")+
-
-"\n\nEstou enviando o comprovante para confirmação.";
-
-
-
-let mensagemCodificada=
-
-encodeURIComponent(mensagem);
-
-
-
-window.location.href=
-
-"https://wa.me/5542999330894?text="+
-
-mensagemCodificada;
-
-}
-if(!cadastro.nome){
-
-alert("Faça seu cadastro primeiro.");
-
-window.location.href="cadastro.html";
-
-}
-
-if(numeros.length===0){
-
-alert("Escolha seus números primeiro.");
-
-window.location.href="numeros.html";
-
-}
-
-</script>
-
-</body>
-
-</html>
+"🍀 Números: "+numeroEscolhido.join(" - ");
+  
