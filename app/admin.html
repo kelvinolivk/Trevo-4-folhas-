@@ -654,3 +654,372 @@ vencedor.numero
 
 
 }
+function confirmarPagamento(indice){
+
+let participantes =
+JSON.parse(localStorage.getItem("participantes")) || [];
+
+
+participantes[indice].pagamento =
+"🟢 Pagamento confirmado";
+
+
+localStorage.setItem(
+"participantes",
+JSON.stringify(participantes)
+);
+
+
+location.reload();
+
+}
+
+
+
+
+
+function confirmarPagamentoRifa(indice){
+
+
+let participantes =
+
+JSON.parse(localStorage.getItem("rifaParticipantes")) || [];
+
+
+
+participantes[indice].pagamento =
+
+"🟢 Pagamento confirmado";
+
+
+
+localStorage.setItem(
+
+"rifaParticipantes",
+
+JSON.stringify(participantes)
+
+);
+
+
+
+location.reload();
+
+
+}
+
+
+
+
+
+function alterarSenha(){
+
+
+let novaSenha=prompt(
+"Digite a nova senha:"
+);
+
+
+
+if(!novaSenha || novaSenha.trim()===""){
+
+
+alert("Senha inválida");
+
+return;
+
+
+}
+
+
+
+localStorage.setItem(
+
+"senhaAdmin",
+
+novaSenha
+
+);
+
+
+
+alert("Senha alterada com sucesso");
+
+
+}
+
+
+
+
+
+function carregarDados(){
+
+
+let participantes =
+
+JSON.parse(localStorage.getItem("participantes")) || [];
+
+
+
+let rifa =
+
+JSON.parse(localStorage.getItem("rifaParticipantes")) || [];
+
+
+
+let configuracao =
+
+JSON.parse(localStorage.getItem("configuracao")) || {};
+
+
+
+let configuracaoRifa =
+
+JSON.parse(localStorage.getItem("configuracaoRifa")) || {};
+
+
+
+
+
+let pagos = participantes.filter(function(p){
+
+
+return p.pagamento==="🟢 Pagamento confirmado";
+
+
+}).length;
+
+
+
+
+
+let valorAposta =
+
+Number(configuracao.valorAposta)||0;
+
+
+
+let arrecadado =
+
+pagos * valorAposta;
+
+
+
+
+
+let pagosRifa = rifa.filter(function(p){
+
+
+return p.pagamento==="🟢 Pagamento confirmado";
+
+
+}).length;
+
+
+
+
+
+let valorRifa =
+
+Number(configuracaoRifa.valorRifa)||0;
+
+
+
+
+
+let arrecadadoRifa =
+
+pagosRifa * valorRifa;
+
+
+
+
+
+document.getElementById("financeiro").innerHTML=
+
+
+"🍀 Jogo principal<br><br>"+
+
+"🎟️ Apostas: "+participantes.length+
+
+"<br>🟢 Pagas: "+pagos+
+
+"<br>💰 R$ "+arrecadado.toFixed(2)+
+
+
+"<br><br>🎟️ Rifa<br><br>"+
+
+"🔢 Números vendidos: "+rifa.length+
+
+"<br>🟢 Pagas: "+pagosRifa+
+
+"<br>💰 R$ "+arrecadadoRifa.toFixed(2);
+
+
+
+
+
+let area=document.getElementById("listas");
+
+
+
+area.innerHTML="";
+
+
+
+
+
+area.innerHTML += `
+
+<div class="caixa">
+
+<h3>🍀 Participantes do jogo</h3>
+
+`;
+
+
+
+
+
+if(participantes.length===0){
+
+
+area.innerHTML+="Nenhuma aposta";
+
+
+}else{
+
+
+
+participantes.forEach(function(p,i){
+
+
+
+area.innerHTML+=`
+
+<p>
+
+👤 ${p.nome}<br>
+
+📱 ${p.whatsapp}<br>
+
+🍀 ${p.numero}<br>
+
+${p.pagamento}<br>
+
+<button onclick="confirmarPagamento(${i})">
+
+✅ Confirmar
+
+</button>
+
+</p>
+
+<hr>
+
+`;
+
+
+
+});
+
+
+}
+
+
+
+area.innerHTML+=`
+
+</div>
+
+
+<div class="caixa">
+
+<h3>🎟️ Participantes da Rifa</h3>
+
+`;
+
+
+
+
+
+if(rifa.length===0){
+
+
+area.innerHTML+="Nenhuma rifa";
+
+
+}else{
+
+
+
+rifa.forEach(function(p,i){
+
+
+
+area.innerHTML+=`
+
+<p>
+
+👤 ${p.nome}<br>
+
+📱 ${p.whatsapp}<br>
+
+🎟️ Número: ${p.numero}<br>
+
+${p.pagamento}<br>
+
+
+<button onclick="confirmarPagamentoRifa(${i})">
+
+✅ Confirmar
+
+</button>
+
+</p>
+
+<hr>
+
+`;
+
+
+
+});
+
+
+}
+
+
+
+area.innerHTML+=`
+
+</div>
+
+`;
+
+
+
+}
+
+
+
+
+
+window.onload=function(){
+
+
+carregarDados();
+
+
+};
+
+
+
+
+
+</script>
+
+
+</body>
+
+</html>
