@@ -490,3 +490,221 @@ alert("Histórico apagado 🍀");
 
 
 }
+
+let participantes =
+
+JSON.parse(localStorage.getItem("participantes")) || [];
+
+
+
+let configuracao =
+
+JSON.parse(localStorage.getItem("configuracao")) || {};
+
+
+
+let pagos = participantes.filter(function(p){
+
+
+return p.pagamento === "🟢 Pagamento confirmado";
+
+
+}).length;
+
+
+
+let valorAposta =
+
+Number(configuracao.valorAposta) || 0;
+
+
+
+let arrecadado =
+
+pagos * valorAposta;
+
+
+
+let premio =
+
+Number(configuracao.premio) || 0;
+
+
+
+let saldo =
+
+arrecadado - premio;
+
+
+
+document.getElementById("financeiro").innerHTML =
+
+
+"🎟️ Total de apostas: " + participantes.length +
+
+"<br><br>" +
+
+"🟢 Pagamentos confirmados: " + pagos +
+
+"<br><br>" +
+
+"💰 Arrecadado: R$ " + arrecadado.toFixed(2) +
+
+"<br><br>" +
+
+"🏆 Prêmio: R$ " + premio.toFixed(2) +
+
+"<br><br>" +
+
+"📈 Saldo: R$ " + saldo.toFixed(2);
+
+
+
+
+
+let lista = document.getElementById("lista");
+
+
+
+if(participantes.length === 0){
+
+
+lista.innerHTML =
+
+"<div class='caixa'>Nenhuma aposta registrada 🍀</div>";
+
+
+}else{
+
+
+participantes.forEach(function(p, indice){
+
+
+
+lista.innerHTML += `
+
+
+<div class="caixa">
+
+
+👤 <b>${p.nome}</b>
+
+<br><br>
+
+
+📱 WhatsApp:
+
+<br>
+
+${p.whatsapp || "Não informado"}
+
+
+<br><br>
+
+
+💳 Pix:
+
+<br>
+
+${p.pix || "Não informado"}
+
+
+<br><br>
+
+
+📍 Cidade:
+
+<br>
+
+${p.cidade || "Não informado"}
+
+
+<br><br>
+
+
+🍀 Números:
+
+<br>
+
+${p.numero}
+
+
+<br><br>
+
+
+📅 Data:
+
+<br>
+
+${p.data || "Não informado"}
+
+
+<br><br>
+
+
+💰 Status:
+
+<br>
+
+${p.pagamento}
+
+
+
+<br><br>
+
+
+<button onclick="confirmarPagamento(${indice})">
+
+✅ Confirmar Pagamento
+
+</button>
+
+
+
+</div>
+
+
+`;
+
+
+
+});
+
+
+}
+
+
+</script>
+
+
+
+<button onclick="realizarSorteio()">
+
+🎲 Realizar Sorteio
+
+</button>
+
+
+
+<button onclick="apagarHistorico()">
+
+🗑️ Apagar Histórico
+
+</button>
+
+
+
+<br><br>
+
+
+<button onclick="location.href='../index.html'">
+
+🏠 Voltar ao início
+
+</button>
+
+
+
+</body>
+
+</html>
