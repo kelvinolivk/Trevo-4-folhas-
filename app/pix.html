@@ -221,3 +221,100 @@ document.getElementById("dados").innerHTML =
 "📍 "+(cadastro.cidade || "-")+"<br><br>"+
 
 "🍀 Números: "+numeros.join(" - ");
+function copiarPix(){
+
+navigator.clipboard.writeText(
+
+document.getElementById("chavePix").innerText
+
+);
+
+alert("✅ Chave Pix copiada!");
+
+}
+
+
+
+function confirmarPagamento(){
+
+let participantes =
+
+JSON.parse(localStorage.getItem("participantes")) || [];
+
+
+
+for(let i=participantes.length-1;i>=0;i--){
+
+if(
+
+participantes[i].id===cadastro.id &&
+
+participantes[i].pagamento==="🟡 Aguardando pagamento"
+
+){
+
+participantes[i].pagamento=
+
+"🟡 Aguardando confirmação";
+
+break;
+
+}
+
+}
+
+
+
+localStorage.setItem(
+
+"participantes",
+
+JSON.stringify(participantes)
+
+);
+
+
+
+alert(
+
+"🍀 Pagamento informado com sucesso!\n\nAgora aguarde a confirmação do administrador."
+
+);
+
+}
+
+
+
+
+
+function enviarWhatsApp(){
+
+let mensagem=
+
+"🍀 Olá!\n\n"+
+
+"Acabei de realizar o pagamento da minha aposta no Trevo4Folhas.\n\n"+
+
+"👤 Nome: "+cadastro.nome+
+
+"\n📱 WhatsApp: "+cadastro.whatsapp+
+
+"\n🍀 Números: "+numeros.join(" - ")+
+
+"\n\nEstou enviando o comprovante para confirmação.";
+
+
+
+let mensagemCodificada=
+
+encodeURIComponent(mensagem);
+
+
+
+window.location.href=
+
+"https://wa.me/5542999330894?text="+
+
+mensagemCodificada;
+
+}
