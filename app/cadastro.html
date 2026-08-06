@@ -4,125 +4,52 @@
 <head>
 
 <meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Cadastro - Trevo4Folhas 🍀</title>
 
 <style>
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
-
 body{
-
-background:#071307;
-
 font-family:Arial;
-
+background:#111;
 color:white;
-
 text-align:center;
-
 padding:20px;
-
-}
-
-body::before{
-
-content:"🍀 🍀 🍀 🍀 🍀 🍀 🍀";
-
-position:fixed;
-
-top:0;
-
-left:0;
-
-width:100%;
-
-font-size:55px;
-
-opacity:.05;
-
-z-index:-1;
-
-}
-
-h1{
-
-color:#6dff7d;
-
-font-size:35px;
-
-margin-top:20px;
-
-text-shadow:0 0 15px #00ff55;
-
 }
 
 .caixa{
 
 background:#222;
-
-max-width:430px;
-
-margin:25px auto;
-
 padding:20px;
-
 border-radius:15px;
-
-box-shadow:0 0 15px #000;
+max-width:400px;
+margin:auto;
 
 }
 
 input{
 
-width:100%;
-
-padding:14px;
-
-margin:8px 0;
-
-border:none;
-
+width:90%;
+padding:12px;
+margin:8px;
 border-radius:10px;
-
+border:none;
 font-size:16px;
 
 }
 
 button{
 
-width:100%;
-
+width:90%;
 padding:15px;
-
-margin-top:12px;
-
-border:none;
-
-border-radius:12px;
-
+margin-top:15px;
 background:#0b8f3a;
-
 color:white;
-
+border:none;
+border-radius:10px;
 font-size:18px;
-
 font-weight:bold;
-
-cursor:pointer;
-
-}
-
-button:active{
-
-transform:scale(.97);
 
 }
 
@@ -132,108 +59,110 @@ transform:scale(.97);
 
 <body>
 
+
 <h1>🍀 Trevo4Folhas</h1>
+
 
 <div class="caixa">
 
-<h2>Cadastro</h2>
+<h2>Cadastro do participante</h2>
 
-<input
-id="nome"
-type="text"
-placeholder="Nome completo">
 
-<input
-id="whatsapp"
-type="tel"
-placeholder="WhatsApp">
+<input id="nome" placeholder="Nome completo">
 
-<input
-id="pix"
-type="text"
-placeholder="Chave Pix">
 
-<input
-id="cidade"
-type="text"
-placeholder="Cidade (opcional)">
+<input id="whatsapp" placeholder="WhatsApp">
+
+
+<input id="pix" placeholder="Sua chave Pix">
+
+
+<input id="cidade" placeholder="Cidade">
+
 
 <button onclick="salvarCadastro()">
 
-💾 Salvar Cadastro
+✅ Continuar
 
 </button>
 
+
 </div>
+
+
 
 <script>
 
-let cadastro = JSON.parse(localStorage.getItem("cadastro"));
-
-if(cadastro){
-
-document.getElementById("nome").value =
-cadastro.nome || "";
-
-document.getElementById("whatsapp").value =
-cadastro.whatsapp || "";
-
-document.getElementById("pix").value =
-cadastro.pix || "";
-
-document.getElementById("cidade").value =
-cadastro.cidade || "";
-
-}
 
 function salvarCadastro(){
 
-let nome =
-document.getElementById("nome").value.trim();
 
-let whatsapp =
-document.getElementById("whatsapp").value.trim();
+let cadastro = {
 
-let pix =
-document.getElementById("pix").value.trim();
+nome:
+document.getElementById("nome").value,
 
-let cidade =
-document.getElementById("cidade").value.trim();
+whatsapp:
+document.getElementById("whatsapp").value,
 
-if(nome=="" || whatsapp=="" || pix==""){
+pix:
+document.getElementById("pix").value,
 
-alert("Preencha Nome, WhatsApp e Pix.");
+cidade:
+document.getElementById("cidade").value
+
+};
+
+
+
+if(
+cadastro.nome=="" ||
+cadastro.whatsapp==""
+){
+
+alert("Preencha nome e WhatsApp");
 
 return;
 
 }
 
-let cadastro={
 
-id:Date.now(),
-
-nome:nome,
-
-whatsapp:whatsapp,
-
-pix:pix,
-
-cidade:cidade
-
-};
 
 localStorage.setItem(
+
 "cadastro",
+
 JSON.stringify(cadastro)
+
 );
 
-alert("🍀 Cadastro salvo com sucesso!");
+
+
+localStorage.setItem(
+"nome",
+cadastro.nome
+);
+
+
+localStorage.setItem(
+"whatsapp",
+cadastro.whatsapp
+);
+
+
+
+alert("Cadastro salvo 🍀");
+
+
 
 window.location.href="numeros.html";
 
+
 }
 
+
 </script>
+
 
 </body>
 
