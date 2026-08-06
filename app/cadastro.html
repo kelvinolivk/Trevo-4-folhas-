@@ -11,45 +11,46 @@
 <style>
 
 body{
-font-family:Arial;
-background:#111;
-color:white;
-text-align:center;
-padding:20px;
+    font-family:Arial;
+    background:#111;
+    color:white;
+    text-align:center;
+    padding:20px;
 }
 
 .caixa{
 
-background:#222;
-padding:20px;
-border-radius:15px;
-max-width:400px;
-margin:auto;
+    background:#222;
+    padding:20px;
+    border-radius:15px;
+    max-width:400px;
+    margin:auto;
 
 }
 
 input{
 
-width:90%;
-padding:12px;
-margin:8px;
-border-radius:10px;
-border:none;
-font-size:16px;
+    width:90%;
+    padding:12px;
+    margin:8px;
+    border-radius:10px;
+    border:none;
+    font-size:16px;
 
 }
 
+
 button{
 
-width:90%;
-padding:15px;
-margin-top:15px;
-background:#0b8f3a;
-color:white;
-border:none;
-border-radius:10px;
-font-size:18px;
-font-weight:bold;
+    width:90%;
+    padding:15px;
+    margin:10px;
+    border:none;
+    border-radius:10px;
+    background:#0b8f3a;
+    color:white;
+    font-size:18px;
+    font-weight:bold;
 
 }
 
@@ -65,27 +66,48 @@ font-weight:bold;
 
 <div class="caixa">
 
+
 <h2>Cadastro do participante</h2>
 
 
-<input id="nome" placeholder="Nome completo">
+<input id="nome" type="text" placeholder="Nome completo">
 
 
-<input id="whatsapp" placeholder="WhatsApp">
+<input id="whatsapp" type="tel" placeholder="WhatsApp">
 
 
-<input id="pix" placeholder="Sua chave Pix">
+<input id="pix" type="text" placeholder="Sua chave Pix">
 
 
-<input id="cidade" placeholder="Cidade">
+<input id="cidade" type="text" placeholder="Cidade">
 
 
 <button onclick="salvarCadastro()">
 
-✅ Continuar
+✅ Salvar cadastro
 
 </button>
 
+
+<button onclick="verCadastro()">
+
+📋 Ver cadastro salvo
+
+</button>
+
+
+<button onclick="location.href='../index.html'">
+
+🏠 Voltar ao início
+
+</button>
+
+
+</div>
+
+
+
+<div class="caixa" id="resultado">
 
 </div>
 
@@ -97,30 +119,32 @@ font-weight:bold;
 function salvarCadastro(){
 
 
-let cadastro = {
+let cadastro={
+
 
 nome:
 document.getElementById("nome").value,
 
+
 whatsapp:
 document.getElementById("whatsapp").value,
+
 
 pix:
 document.getElementById("pix").value,
 
+
 cidade:
 document.getElementById("cidade").value
+
 
 };
 
 
 
-if(
-cadastro.nome=="" ||
-cadastro.whatsapp==""
-){
+if(cadastro.nome=="" || cadastro.whatsapp==""){
 
-alert("Preencha nome e WhatsApp");
+alert("Preencha nome e WhatsApp 🍀");
 
 return;
 
@@ -138,25 +162,69 @@ JSON.stringify(cadastro)
 
 
 
-localStorage.setItem(
-"nome",
-cadastro.nome
-);
+alert("Cadastro salvo com sucesso 🍀");
 
 
-localStorage.setItem(
-"whatsapp",
-cadastro.whatsapp
-);
+}
 
 
 
-alert("Cadastro salvo 🍀");
+function verCadastro(){
+
+
+let cadastro =
+
+JSON.parse(localStorage.getItem("cadastro")) || null;
 
 
 
-window.location.href="numeros.html";
+if(!cadastro){
 
+document.getElementById("resultado").innerHTML=
+
+"Nenhum cadastro encontrado.";
+
+return;
+
+}
+
+
+
+document.getElementById("resultado").innerHTML=
+
+`
+<h3>Cadastro salvo</h3>
+
+👤 ${cadastro.nome}<br><br>
+
+📱 ${cadastro.whatsapp}<br><br>
+
+💳 ${cadastro.pix}<br><br>
+
+📍 ${cadastro.cidade}
+
+`;
+
+
+
+}
+
+
+// Preenche os campos se já existir cadastro
+
+let salvo =
+
+JSON.parse(localStorage.getItem("cadastro"));
+
+if(salvo){
+
+document.getElementById("nome").value = salvo.nome || "";
+
+document.getElementById("whatsapp").value = salvo.whatsapp || "";
+
+document.getElementById("pix").value = salvo.pix || "";
+
+document.getElementById("cidade").value = salvo.cidade || "";
 
 }
 
