@@ -4,63 +4,25 @@
 <head>
 
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Admin 2.0 - Trevo4Folhas 🍀</title>
+<title>Admin - Trevo4Folhas 🍀</title>
+
 
 <style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
 
 body{
 
 font-family:Arial,sans-serif;
 
-background:#071307;
+background:#111;
 
 color:white;
 
 text-align:center;
 
-padding:15px;
-
-}
-
-
-body::before{
-
-content:"🍀 🍀 🍀 🍀 🍀 🍀 🍀";
-
-position:fixed;
-
-top:20px;
-
-left:0;
-
-width:100%;
-
-font-size:50px;
-
-opacity:0.05;
-
-z-index:-1;
-
-}
-
-
-h1{
-
-color:#6dff7d;
-
-font-size:32px;
-
-text-shadow:0 0 15px #00ff55;
-
-margin:20px;
+padding:20px;
 
 }
 
@@ -69,26 +31,13 @@ margin:20px;
 
 background:#222;
 
-border:1px solid #333;
+padding:15px;
 
-padding:18px;
+border-radius:10px;
 
-border-radius:15px;
+margin:10px auto;
 
-margin:15px auto;
-
-max-width:450px;
-
-box-shadow:0 0 15px #000;
-
-}
-
-
-h3{
-
-color:#6dff7d;
-
-margin-bottom:15px;
+max-width:400px;
 
 }
 
@@ -97,68 +46,34 @@ input{
 
 width:90%;
 
-padding:12px;
+padding:10px;
 
 margin:5px;
 
+border-radius:8px;
+
 border:none;
-
-border-radius:10px;
-
-font-size:16px;
 
 }
 
 
 button{
 
-width:90%;
-
-max-width:350px;
-
-padding:14px;
-
-margin:8px;
-
-border:none;
-
-border-radius:12px;
-
 background:#0b8f3a;
 
 color:white;
 
-font-size:17px;
+border:none;
+
+border-radius:8px;
+
+padding:10px 15px;
+
+margin-top:10px;
+
+cursor:pointer;
 
 font-weight:bold;
-
-}
-
-
-button:active{
-
-transform:scale(0.97);
-
-}
-
-
-.verde{
-
-color:#6dff7d;
-
-}
-
-
-.amarelo{
-
-color:#ffd700;
-
-}
-
-
-.vermelho{
-
-color:#ff5555;
 
 }
 
@@ -169,24 +84,118 @@ color:#ff5555;
 <script>
 
 
-let senhaSalva = localStorage.getItem("senhaAdmin") || "trevo123";
+let senhaSalva =
+
+localStorage.getItem("senhaAdmin") || "trevo123";
 
 
-let senha = prompt("Digite a senha do administrador:");
+let senha = prompt(
+
+"Digite a senha do administrador:"
+
+);
 
 
 
 if(senha !== senhaSalva){
 
+
 alert("Senha incorreta!");
 
-location.href="../index.html";
+
+window.location.href="../index.html";
+
 
 }
 
 
 
+function salvarConfiguracoes(){
+
+
+let configuracao = {
+
+
+premio:
+
+document.getElementById("premio").value,
+
+
+valorAposta:
+
+document.getElementById("valorAposta").value,
+
+
+data:
+
+document.getElementById("data").value,
+
+
+hora:
+
+document.getElementById("hora").value,
+
+
+mensagem:
+
+document.getElementById("mensagem").value
+
+
+};
+
+
+
+localStorage.setItem(
+
+"configuracao",
+
+JSON.stringify(configuracao)
+
+);
+
+
+
+alert("Configurações salvas 🍀");
+
+
+}
+
+
+function alterarSenha(){
+
+
+let novaSenha = prompt(
+
+"Digite a nova senha:"
+
+);
+
+
+
+if(!novaSenha){
+
+return;
+
+}
+
+
+localStorage.setItem(
+
+"senhaAdmin",
+
+novaSenha
+
+);
+
+
+
+alert("Senha alterada com sucesso!");
+
+}
+
+
 </script>
+
 
 </head>
 
@@ -195,15 +204,19 @@ location.href="../index.html";
 
 
 <h1>
-🔐 Admin Trevo4Folhas 2.0 🍀
-</h1>
 
+🔐 Admin Trevo4Folhas 🍀
+
+</h1>
 
 
 <div class="caixa">
 
+
 <h3>
-🍀 Jogo dos 4 números
+
+⚙️ Configurações do Sorteio
+
 </h3>
 
 
@@ -229,797 +242,11 @@ location.href="../index.html";
 </button>
 
 
-<button onclick="realizarSorteio()">
+<button onclick="alterarSenha()">
 
-🎲 Realizar Sorteio
-
-</button>
-
-
-</div>
-
-
-
-<div class="caixa">
-
-<h3>
-🎟️ Rifa 1 a 100
-</h3>
-
-
-<input id="premioRifa" placeholder="Prêmio da rifa">
-
-
-<input id="valorRifa" placeholder="Valor do número">
-
-
-<button onclick="salvarRifa()">
-
-💾 Salvar Rifa
-
-</button>
-
-
-<button onclick="sortearRifa()">
-
-🎯 Sortear Rifa
+🔐 Alterar Senha
 
 </button>
 
 
 </div>
-<div class="caixa">
-
-<h3>
-💰 Financeiro Geral
-</h3>
-
-
-<div id="financeiro">
-
-Calculando...
-
-</div>
-
-
-</div>
-
-
-
-<div id="listas"></div>
-
-
-
-<script>
-
-
-function salvarConfiguracoes(){
-
-
-let configuracao={
-
-
-premio:document.getElementById("premio").value,
-
-
-valorAposta:document.getElementById("valorAposta").value,
-
-
-data:document.getElementById("data").value,
-
-
-hora:document.getElementById("hora").value,
-
-
-mensagem:document.getElementById("mensagem").value
-
-
-};
-
-
-
-localStorage.setItem(
-
-"configuracao",
-
-JSON.stringify(configuracao)
-
-);
-
-
-
-alert("Configurações salvas 🍀");
-
-
-}
-
-
-
-
-
-function salvarRifa(){
-
-
-let rifa={
-
-
-premioRifa:
-document.getElementById("premioRifa").value,
-
-
-valorRifa:
-document.getElementById("valorRifa").value
-
-
-};
-
-
-
-localStorage.setItem(
-
-"configuracaoRifa",
-
-JSON.stringify(rifa)
-
-);
-
-
-
-alert("Configuração da rifa salva 🎟️");
-
-
-}
-
-
-
-
-
-function gerarNumeros(){
-
-
-let numeros=[];
-
-
-
-while(numeros.length < 4){
-
-
-let n=Math.floor(Math.random()*15)+1;
-
-
-
-if(!numeros.includes(n)){
-
-
-numeros.push(n);
-
-
-}
-
-
-}
-
-
-
-return numeros.sort((a,b)=>a-b);
-
-
-}
-
-
-
-
-
-function realizarSorteio(){
-
-
-let numeros=gerarNumeros();
-
-
-
-let participantes=
-
-JSON.parse(localStorage.getItem("participantes")) || [];
-
-
-
-let vencedores=[];
-
-
-
-participantes.forEach(function(p){
-
-
-
-let aposta=p.numero;
-
-
-
-if(typeof aposta==="string"){
-
-
-aposta=JSON.parse(aposta);
-
-
-}
-
-
-
-if(p.pagamento==="🟢 Pagamento confirmado"){
-
-
-
-let ganhou=aposta.every(function(n){
-
-
-return numeros.includes(n);
-
-
-});
-
-
-
-if(ganhou){
-
-
-vencedores.push(p.nome);
-
-
-}
-
-
-
-}
-
-
-
-});
-
-
-
-
-
-let configuracao=
-
-JSON.parse(localStorage.getItem("configuracao")) || {};
-
-
-
-
-
-let resultado={
-
-
-numeros:numeros,
-
-
-data:new Date().toLocaleDateString("pt-BR"),
-
-
-premio:configuracao.premio || "Não informado",
-
-
-vencedores:
-
-vencedores.length>0
-
-?
-
-vencedores
-
-:
-
-["🍀 Acumulou"]
-
-
-};
-
-
-
-
-
-localStorage.setItem(
-
-"resultadoSorteio",
-
-JSON.stringify(resultado)
-
-);
-
-
-
-
-
-let historico=
-
-JSON.parse(localStorage.getItem("historicoSorteios")) || [];
-
-
-
-historico.push(resultado);
-
-
-
-localStorage.setItem(
-
-"historicoSorteios",
-
-JSON.stringify(historico)
-
-);
-
-
-
-alert(
-
-"🎲 Sorteio realizado!\n\n"+
-
-numeros.join(" - ")
-
-);
-
-
-}
-
-
-
-
-
-function sortearRifa(){
-
-
-let participantes=
-
-JSON.parse(localStorage.getItem("rifaParticipantes")) || [];
-
-
-
-if(participantes.length===0){
-
-
-alert("Nenhuma rifa registrada.");
-
-return;
-
-
-}
-
-
-
-let pagos=participantes.filter(function(p){
-
-
-return p.pagamento==="🟢 Pagamento confirmado";
-
-
-});
-
-
-
-if(pagos.length===0){
-
-
-alert("Nenhum pagamento confirmado.");
-
-return;
-
-
-}
-
-
-
-let vencedor=
-
-pagos[Math.floor(Math.random()*pagos.length)];
-
-
-
-let resultadoRifa={
-
-
-numero:vencedor.numero,
-
-
-nome:vencedor.nome,
-
-
-data:new Date().toLocaleDateString("pt-BR")
-
-
-};
-
-
-
-localStorage.setItem(
-
-"resultadoRifa",
-
-JSON.stringify(resultadoRifa)
-
-);
-
-
-
-alert(
-
-"🎉 Vencedor da rifa:\n\n"+
-
-vencedor.nome+
-
-"\nNúmero: "+
-
-vencedor.numero
-
-);
-
-
-}
-function confirmarPagamento(indice){
-
-let participantes =
-JSON.parse(localStorage.getItem("participantes")) || [];
-
-
-participantes[indice].pagamento =
-"🟢 Pagamento confirmado";
-
-
-localStorage.setItem(
-"participantes",
-JSON.stringify(participantes)
-);
-
-
-location.reload();
-
-}
-
-
-
-
-
-function confirmarPagamentoRifa(indice){
-
-
-let participantes =
-
-JSON.parse(localStorage.getItem("rifaParticipantes")) || [];
-
-
-
-participantes[indice].pagamento =
-
-"🟢 Pagamento confirmado";
-
-
-
-localStorage.setItem(
-
-"rifaParticipantes",
-
-JSON.stringify(participantes)
-
-);
-
-
-
-location.reload();
-
-
-}
-
-
-
-
-
-function alterarSenha(){
-
-
-let novaSenha=prompt(
-"Digite a nova senha:"
-);
-
-
-
-if(!novaSenha || novaSenha.trim()===""){
-
-
-alert("Senha inválida");
-
-return;
-
-
-}
-
-
-
-localStorage.setItem(
-
-"senhaAdmin",
-
-novaSenha
-
-);
-
-
-
-alert("Senha alterada com sucesso");
-
-
-}
-
-
-
-
-
-function carregarDados(){
-
-
-let participantes =
-
-JSON.parse(localStorage.getItem("participantes")) || [];
-
-
-
-let rifa =
-
-JSON.parse(localStorage.getItem("rifaParticipantes")) || [];
-
-
-
-let configuracao =
-
-JSON.parse(localStorage.getItem("configuracao")) || {};
-
-
-
-let configuracaoRifa =
-
-JSON.parse(localStorage.getItem("configuracaoRifa")) || {};
-
-
-
-
-
-let pagos = participantes.filter(function(p){
-
-
-return p.pagamento==="🟢 Pagamento confirmado";
-
-
-}).length;
-
-
-
-
-
-let valorAposta =
-
-Number(configuracao.valorAposta)||0;
-
-
-
-let arrecadado =
-
-pagos * valorAposta;
-
-
-
-
-
-let pagosRifa = rifa.filter(function(p){
-
-
-return p.pagamento==="🟢 Pagamento confirmado";
-
-
-}).length;
-
-
-
-
-
-let valorRifa =
-
-Number(configuracaoRifa.valorRifa)||0;
-
-
-
-
-
-let arrecadadoRifa =
-
-pagosRifa * valorRifa;
-
-
-
-
-
-document.getElementById("financeiro").innerHTML=
-
-
-"🍀 Jogo principal<br><br>"+
-
-"🎟️ Apostas: "+participantes.length+
-
-"<br>🟢 Pagas: "+pagos+
-
-"<br>💰 R$ "+arrecadado.toFixed(2)+
-
-
-"<br><br>🎟️ Rifa<br><br>"+
-
-"🔢 Números vendidos: "+rifa.length+
-
-"<br>🟢 Pagas: "+pagosRifa+
-
-"<br>💰 R$ "+arrecadadoRifa.toFixed(2);
-
-
-
-
-
-let area=document.getElementById("listas");
-
-
-
-area.innerHTML="";
-
-
-
-
-
-area.innerHTML += `
-
-<div class="caixa">
-
-<h3>🍀 Participantes do jogo</h3>
-
-`;
-
-
-
-
-
-if(participantes.length===0){
-
-
-area.innerHTML+="Nenhuma aposta";
-
-
-}else{
-
-
-
-participantes.forEach(function(p,i){
-
-
-
-area.innerHTML+=`
-
-<p>
-
-👤 ${p.nome}<br>
-
-📱 ${p.whatsapp}<br>
-
-🍀 ${p.numero}<br>
-
-${p.pagamento}<br>
-
-<button onclick="confirmarPagamento(${i})">
-
-✅ Confirmar
-
-</button>
-
-</p>
-
-<hr>
-
-`;
-
-
-
-});
-
-
-}
-
-
-
-area.innerHTML+=`
-
-</div>
-
-
-<div class="caixa">
-
-<h3>🎟️ Participantes da Rifa</h3>
-
-`;
-
-
-
-
-
-if(rifa.length===0){
-
-
-area.innerHTML+="Nenhuma rifa";
-
-
-}else{
-
-
-
-rifa.forEach(function(p,i){
-
-
-
-area.innerHTML+=`
-
-<p>
-
-👤 ${p.nome}<br>
-
-📱 ${p.whatsapp}<br>
-
-🎟️ Número: ${p.numero}<br>
-
-${p.pagamento}<br>
-
-
-<button onclick="confirmarPagamentoRifa(${i})">
-
-✅ Confirmar
-
-</button>
-
-</p>
-
-<hr>
-
-`;
-
-
-
-});
-
-
-}
-
-
-
-area.innerHTML+=`
-
-</div>
-
-`;
-
-
-
-}
-
-
-
-
-
-window.onload=function(){
-
-
-carregarDados();
-
-
-};
-
-
-
-
-
-</script>
-
-
-</body>
-
-</html>
