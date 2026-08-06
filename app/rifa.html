@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
 
 <meta charset="UTF-8">
@@ -17,48 +16,43 @@ box-sizing:border-box;
 }
 
 body{
-
 background:#071307;
-font-family:Arial;
+font-family:Arial,sans-serif;
 color:white;
 text-align:center;
 padding:15px;
-
 }
 
 h1{
-
 margin-top:20px;
+font-size:34px;
 color:#6dff7d;
-font-size:32px;
 text-shadow:0 0 15px #00ff55;
-
 }
 
 p{
-
 margin:15px;
-
+font-size:18px;
 }
 
+#contador{
+margin:15px;
+font-size:22px;
+font-weight:bold;
+}
 
 #numeros{
-
 max-width:430px;
-margin:20px auto;
-
+margin:auto;
 display:grid;
-
 grid-template-columns:repeat(5,1fr);
-
 gap:10px;
-
+padding:10px;
 }
-
 
 .numero{
 
-height:55px;
+height:60px;
 
 background:#114d20;
 
@@ -68,9 +62,9 @@ border-radius:12px;
 
 display:flex;
 
-align-items:center;
-
 justify-content:center;
+
+align-items:center;
 
 font-size:20px;
 
@@ -78,17 +72,15 @@ font-weight:bold;
 
 cursor:pointer;
 
+transition:.25s;
+
 box-shadow:0 0 10px #0f0;
 
 }
 
-
 .numero:hover{
-
-transform:scale(1.05);
-
+transform:scale(1.06);
 }
-
 
 .escolhido{
 
@@ -100,6 +92,19 @@ box-shadow:0 0 20px gold;
 
 }
 
+.vendido{
+
+background:#c40000;
+
+border:2px solid #ff5555;
+
+color:white;
+
+cursor:not-allowed;
+
+box-shadow:0 0 15px red;
+
+}
 
 button{
 
@@ -123,100 +128,89 @@ font-size:18px;
 
 font-weight:bold;
 
+cursor:pointer;
+
 }
 
 </style>
 
 </head>
 
-
 <body>
 
-
-<h1>🔥 TESTE RIFA APARECEU 🍀</h1>
+<h1>🎟️ Rifa Trevo4Folhas 🍀</h1>
 
 <p>
-Escolha seu número de 1 a 100
+Escolha um número de 1 a 100
 </p>
-
 
 <h2 id="contador">
 Número escolhido: Nenhum
 </h2>
 
-
 <div id="numeros"></div>
 
-
 <button onclick="confirmarRifa()">
-
 ✅ Confirmar número
-
 </button>
-
 
 <script>
 
+let numeroEscolhido=null;
 
-let numeroEscolhido = null;
+let area=document.getElementById("numeros");
 
-
-let area = document.getElementById("numeros");
-
-
+let participantes=
+JSON.parse(localStorage.getItem("rifaParticipantes"))||[];
 
 for(let i=1;i<=100;i++){
 
-
 let botao=document.createElement("div");
-
 
 botao.className="numero";
 
-
 botao.innerHTML=i.toString().padStart(2,"0");
 
+let reservado=participantes.find(function(p){
 
-
-botao.onclick=function(){
-
-
-if(numeroEscolhido){
-
-document.querySelectorAll(".numero")
-.forEach(function(n){
-
-n.classList.remove("escolhido");
+return Number(p.numero)===i;
 
 });
 
+if(reservado){
+
+botao.classList.add("vendido");
+
+}else{
+
+botao.onclick=function(){
+
+document.querySelectorAll(".numero").forEach(function(n){
+
+if(!n.classList.contains("vendido")){
+
+n.classList.remove("escolhido");
+
 }
 
-
+});
 
 numeroEscolhido=i;
 
-
 botao.classList.add("escolhido");
 
-
-document.getElementById("contador").innerHTML =
-" Número escolhido: "+i.toString().padStart(2,"0");
-
+document.getElementById("contador").innerHTML=
+"Número escolhido: "+i.toString().padStart(2,"0");
 
 };
 
-
+}
 
 area.appendChild(botao);
 
-
 }
 
-
-
 function confirmarRifa(){
-
 
 if(numeroEscolhido==null){
 
@@ -226,28 +220,33 @@ return;
 
 }
 
+let nome=localStorage.getItem("nome");
 
-localStorage.setItem(
-"numeroRifa",
-numeroEscolhido
-);
+let whatsapp=localStorage.getItem("whatsapp");
 
+if(!nome || !whatsapp){
 
-alert(
-"Número "+numeroEscolhido+
-" reservado! 🍀"
-);
+alert("Faça o cadastro antes de participar.");
 
+location.href="cadastro.html";
 
-// futuramente vai para cadastro/pagamento
+return;
 
 }
 
+let participantes=
+JSON.parse(localStorage.getItem("rifaParticipantes"))||[];
 
+let existe=participantes.find(function(p){
 
-</script>
+return Number(p.numero)===Number(numeroEscolhido);
 
+});
 
-</body>
+if(existe){
 
-</html>
+alert("Esse número já foi reservado.");
+
+return;
+
+}
