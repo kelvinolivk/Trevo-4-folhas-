@@ -1,68 +1,127 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
 <title>Pagamento Pix - Trevo4Folhas 🍀</title>
 
 <style>
 
 body{
-    margin:0;
-    background:#111;
-    color:white;
-    font-family:Arial,sans-serif;
+
+margin:0;
+
+background:#111;
+
+color:white;
+
+font-family:Arial,sans-serif;
+
 }
 
 .container{
-    max-width:450px;
-    margin:30px auto;
-    background:#1d1d1d;
-    border-radius:20px;
-    padding:25px;
-    text-align:center;
+
+max-width:450px;
+
+margin:30px auto;
+
+background:#1d1d1d;
+
+border-radius:20px;
+
+padding:25px;
+
+text-align:center;
+
 }
 
 h1{
-    color:#3ddc84;
+
+color:#3ddc84;
+
 }
 
 .valor{
-    font-size:30px;
-    font-weight:bold;
-    color:#3ddc84;
-    margin:20px 0;
+
+font-size:30px;
+
+font-weight:bold;
+
+color:#3ddc84;
+
+margin:20px 0;
+
+}
+
+.info{
+
+background:#222;
+
+padding:12px;
+
+border-radius:10px;
+
+margin:10px 0;
+
+text-align:left;
+
 }
 
 .pix{
-    background:#2b2b2b;
-    padding:15px;
-    border-radius:10px;
-    word-break:break-all;
-    margin:20px 0;
+
+background:#2b2b2b;
+
+padding:15px;
+
+border-radius:10px;
+
+word-break:break-all;
+
+margin:20px 0;
+
 }
 
 button{
-    width:100%;
-    padding:15px;
-    margin-top:12px;
-    border:none;
-    border-radius:10px;
-    background:#19a34a;
-    color:white;
-    font-size:16px;
-    cursor:pointer;
+
+width:100%;
+
+padding:15px;
+
+margin-top:12px;
+
+border:none;
+
+border-radius:10px;
+
+background:#19a34a;
+
+color:white;
+
+font-size:16px;
+
+cursor:pointer;
+
 }
 
 button:hover{
-    background:#14853c;
+
+background:#14853c;
+
 }
 
 .aviso{
-    margin-top:20px;
-    color:#ccc;
-    font-size:14px;
+
+margin-top:20px;
+
+color:#ccc;
+
+font-size:14px;
+
 }
 
 </style>
@@ -75,113 +134,90 @@ button:hover{
 
 <h1>🍀 Trevo4Folhas</h1>
 
-<p>Finalize sua aposta realizando o pagamento.</p>
+<p>
 
-<div class="valor">
-R$ 5,00
+Finalize sua aposta realizando o pagamento.
+
+</p>
+
+<div class="valor" id="valor">
+
+Carregando...
+
 </div>
 
-<h3 id="nome"></h3>
+<div class="info" id="dados">
 
-<h3 id="numero"></h3>
+Carregando participante...
 
-<h3>Chave Pix</h3>
+</div>
+
+<h3>
+
+Chave Pix
+
+</h3>
 
 <div class="pix" id="chavePix">
+
 CPF: 013.050.129-84
+
 </div>
 
 <button onclick="copiarPix()">
+
 📋 Copiar chave Pix
+
 </button>
 
 <button onclick="confirmarPagamento()">
+
 ✅ Já realizei o pagamento
+
 </button>
 
 <button onclick="enviarWhatsApp()">
+
 📲 Enviar comprovante pelo WhatsApp
+
 </button>
 
 <p class="aviso">
+
 Após a confirmação do administrador sua aposta estará válida.
+
 </p>
 
 </div>
 
 <script>
 
-function copiarPix(){
+let cadastro =
 
-navigator.clipboard.writeText(
-document.getElementById("chavePix").innerText
-);
+JSON.parse(localStorage.getItem("cadastro")) || {};
 
-alert("Chave Pix copiada!");
+let configuracao =
 
-}
+JSON.parse(localStorage.getItem("configuracao")) || {};
 
-function confirmarPagamento(){
+let numeros =
 
-let participantes =
-JSON.parse(localStorage.getItem("participantes")) || [];
+JSON.parse(localStorage.getItem("numeroEscolhido")) || [];
 
-let nome = localStorage.getItem("nome");
+document.getElementById("valor").innerHTML =
 
-participantes.forEach(function(p){
+"R$ " +
 
-if(p.nome == nome){
+(configuracao.valorAposta || "0,00");
 
-p.pagamento = "🟡 Aguardando confirmação";
+document.getElementById("dados").innerHTML =
 
-}
+"👤 <b>"+cadastro.nome+"</b><br><br>"+
 
-});
+"📱 "+cadastro.whatsapp+"<br><br>"+
 
-localStorage.setItem(
-"participantes",
-JSON.stringify(participantes)
-);
+"💳 Pix: "+cadastro.pix+"<br><br>"+
 
-alert("Pagamento informado com sucesso! Aguarde a confirmação do administrador.");
+"📍 "+(cadastro.cidade || "-")+"<br><br>"+
 
-}
-
-function enviarWhatsApp(){
-
-let nome = localStorage.getItem("nome") || "";
-
-let numeros = JSON.parse(
-localStorage.getItem("numeroEscolhido")
-) || [];
-
-let mensagem =
-"🍀 Olá! Acabei de realizar o pagamento da minha aposta no Trevo4Folhas.\n\n" +
-"👤 Nome: " + nome +
-"\n🎟️ Números: " + numeros.join(" - ") +
-"\n\nEstou enviando o comprovante para confirmação.";
-
-let mensagemCodificada = encodeURIComponent(mensagem);
-
-
-window.location.href =
-"https://wa.me/5542999330894?text=" + mensagemCodificada;
-
-}
-
-let nome = localStorage.getItem("nome") || "";
-
-let numero = JSON.parse(
-localStorage.getItem("numeroEscolhido")
-) || [];
-
-document.getElementById("nome").innerHTML =
-"👤 Participante: " + nome;
-
-document.getElementById("numero").innerHTML =
-"🍀 Números escolhidos: " + numero.join(" - ");
-
-</script>
-
-</body>
-</html>
+"🍀 Números: "+numeros.join(" - ");
