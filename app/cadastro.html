@@ -1,31 +1,131 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
+
 <head>
-<title>Trevo4Folhas 🍀</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
+
+<title>Cadastro - Trevo4Folhas 🍀</title>
 
 <style>
-body {
-    font-family: Arial;
-    background: #111;
-    color: white;
-    text-align: center;
-    padding: 20px;
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
 }
 
-input, button {
-    width: 90%;
-    padding: 12px;
-    margin: 8px;
-    border-radius: 8px;
+body{
+
+background:#071307;
+
+font-family:Arial;
+
+color:white;
+
+text-align:center;
+
+padding:20px;
+
 }
 
-button {
-    background: green;
-    color: white;
-    border: none;
-    font-size: 18px;
+body::before{
+
+content:"🍀 🍀 🍀 🍀 🍀 🍀 🍀";
+
+position:fixed;
+
+top:0;
+
+left:0;
+
+width:100%;
+
+font-size:55px;
+
+opacity:.05;
+
+z-index:-1;
+
 }
+
+h1{
+
+color:#6dff7d;
+
+font-size:35px;
+
+margin-top:20px;
+
+text-shadow:0 0 15px #00ff55;
+
+}
+
+.caixa{
+
+background:#222;
+
+max-width:430px;
+
+margin:25px auto;
+
+padding:20px;
+
+border-radius:15px;
+
+box-shadow:0 0 15px #000;
+
+}
+
+input{
+
+width:100%;
+
+padding:14px;
+
+margin:8px 0;
+
+border:none;
+
+border-radius:10px;
+
+font-size:16px;
+
+}
+
+button{
+
+width:100%;
+
+padding:15px;
+
+margin-top:12px;
+
+border:none;
+
+border-radius:12px;
+
+background:#0b8f3a;
+
+color:white;
+
+font-size:18px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+}
+
+button:active{
+
+transform:scale(.97);
+
+}
+
 </style>
 
 </head>
@@ -34,28 +134,107 @@ button {
 
 <h1>🍀 Trevo4Folhas</h1>
 
-<h2>Cadastro do participante</h2>
+<div class="caixa">
 
-<input type="text" placeholder="Nome">
+<h2>Cadastro</h2>
 
-<input type="tel" placeholder="WhatsApp">
+<input
+id="nome"
+type="text"
+placeholder="Nome completo">
 
-<button onclick="irParaNumeros()">Escolher número</button>
-<script src="participantes.js"></script>
+<input
+id="whatsapp"
+type="tel"
+placeholder="WhatsApp">
+
+<input
+id="pix"
+type="text"
+placeholder="Chave Pix">
+
+<input
+id="cidade"
+type="text"
+placeholder="Cidade (opcional)">
+
+<button onclick="salvarCadastro()">
+
+💾 Salvar Cadastro
+
+</button>
+
+</div>
 
 <script>
-function irParaNumeros(){
-    let nome = document.querySelector("input[type=text]").value;
-    let whatsapp = document.querySelector("input[type=tel]").value;
 
-    if(nome == "" || whatsapp == ""){
-        alert("Preencha seus dados");
-    } else {
-        localStorage.setItem("nome", nome);
-        localStorage.setItem("whatsapp", whatsapp);
-        window.location.href="numeros.html";
-    }
+let cadastro = JSON.parse(localStorage.getItem("cadastro"));
+
+if(cadastro){
+
+document.getElementById("nome").value =
+cadastro.nome || "";
+
+document.getElementById("whatsapp").value =
+cadastro.whatsapp || "";
+
+document.getElementById("pix").value =
+cadastro.pix || "";
+
+document.getElementById("cidade").value =
+cadastro.cidade || "";
+
 }
+
+function salvarCadastro(){
+
+let nome =
+document.getElementById("nome").value.trim();
+
+let whatsapp =
+document.getElementById("whatsapp").value.trim();
+
+let pix =
+document.getElementById("pix").value.trim();
+
+let cidade =
+document.getElementById("cidade").value.trim();
+
+if(nome=="" || whatsapp=="" || pix==""){
+
+alert("Preencha Nome, WhatsApp e Pix.");
+
+return;
+
+}
+
+let cadastro={
+
+id:Date.now(),
+
+nome:nome,
+
+whatsapp:whatsapp,
+
+pix:pix,
+
+cidade:cidade
+
+};
+
+localStorage.setItem(
+"cadastro",
+JSON.stringify(cadastro)
+);
+
+alert("🍀 Cadastro salvo com sucesso!");
+
+window.location.href="numeros.html";
+
+}
+
 </script>
+
 </body>
+
 </html>
