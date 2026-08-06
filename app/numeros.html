@@ -248,7 +248,7 @@ lista.appendChild(trevo);
 }
 function confirmar(){
 
-if(escolhidos.length!=4){
+if(escolhidos.length != 4){
 
 alert("Escolha exatamente 4 números 🍀");
 
@@ -256,31 +256,35 @@ return;
 
 }
 
-let participantes=
 
+let cadastro = 
+JSON.parse(localStorage.getItem("cadastro")) || {};
+
+
+let participantes =
 JSON.parse(localStorage.getItem("participantes")) || [];
+
 
 participantes.push({
 
-id:cadastro.id,
+nome: cadastro.nome || localStorage.getItem("nome"),
 
-nome:cadastro.nome,
+whatsapp: cadastro.whatsapp || localStorage.getItem("whatsapp"),
 
-whatsapp:cadastro.whatsapp,
+pix: cadastro.pix || "",
 
-pix:cadastro.pix,
+cidade: cadastro.cidade || "",
 
-cidade:cadastro.cidade,
+numero: JSON.stringify(escolhidos),
 
-tipo:"Loteria",
+tipo: "Loteria",
 
-numero:JSON.stringify(escolhidos),
-
-data:new Date().toLocaleString("pt-BR"),
+data: new Date().toLocaleString("pt-BR"),
 
 pagamento:"🟡 Aguardando pagamento"
 
 });
+
 
 localStorage.setItem(
 
@@ -290,6 +294,7 @@ JSON.stringify(participantes)
 
 );
 
+
 localStorage.setItem(
 
 "numeroEscolhido",
@@ -298,7 +303,14 @@ JSON.stringify(escolhidos)
 
 );
 
+
+
+alert("🍀 Aposta reservada com sucesso!");
+
+
+
 location.href="pix.html";
+
 
 }
 
