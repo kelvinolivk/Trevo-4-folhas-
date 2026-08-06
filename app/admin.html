@@ -268,3 +268,389 @@ location.href="../index.html";
 
 
 </div>
+<div class="caixa">
+
+<h3>
+💰 Financeiro Geral
+</h3>
+
+
+<div id="financeiro">
+
+Calculando...
+
+</div>
+
+
+</div>
+
+
+
+<div id="listas"></div>
+
+
+
+<script>
+
+
+function salvarConfiguracoes(){
+
+
+let configuracao={
+
+
+premio:document.getElementById("premio").value,
+
+
+valorAposta:document.getElementById("valorAposta").value,
+
+
+data:document.getElementById("data").value,
+
+
+hora:document.getElementById("hora").value,
+
+
+mensagem:document.getElementById("mensagem").value
+
+
+};
+
+
+
+localStorage.setItem(
+
+"configuracao",
+
+JSON.stringify(configuracao)
+
+);
+
+
+
+alert("Configurações salvas 🍀");
+
+
+}
+
+
+
+
+
+function salvarRifa(){
+
+
+let rifa={
+
+
+premioRifa:
+document.getElementById("premioRifa").value,
+
+
+valorRifa:
+document.getElementById("valorRifa").value
+
+
+};
+
+
+
+localStorage.setItem(
+
+"configuracaoRifa",
+
+JSON.stringify(rifa)
+
+);
+
+
+
+alert("Configuração da rifa salva 🎟️");
+
+
+}
+
+
+
+
+
+function gerarNumeros(){
+
+
+let numeros=[];
+
+
+
+while(numeros.length < 4){
+
+
+let n=Math.floor(Math.random()*15)+1;
+
+
+
+if(!numeros.includes(n)){
+
+
+numeros.push(n);
+
+
+}
+
+
+}
+
+
+
+return numeros.sort((a,b)=>a-b);
+
+
+}
+
+
+
+
+
+function realizarSorteio(){
+
+
+let numeros=gerarNumeros();
+
+
+
+let participantes=
+
+JSON.parse(localStorage.getItem("participantes")) || [];
+
+
+
+let vencedores=[];
+
+
+
+participantes.forEach(function(p){
+
+
+
+let aposta=p.numero;
+
+
+
+if(typeof aposta==="string"){
+
+
+aposta=JSON.parse(aposta);
+
+
+}
+
+
+
+if(p.pagamento==="🟢 Pagamento confirmado"){
+
+
+
+let ganhou=aposta.every(function(n){
+
+
+return numeros.includes(n);
+
+
+});
+
+
+
+if(ganhou){
+
+
+vencedores.push(p.nome);
+
+
+}
+
+
+
+}
+
+
+
+});
+
+
+
+
+
+let configuracao=
+
+JSON.parse(localStorage.getItem("configuracao")) || {};
+
+
+
+
+
+let resultado={
+
+
+numeros:numeros,
+
+
+data:new Date().toLocaleDateString("pt-BR"),
+
+
+premio:configuracao.premio || "Não informado",
+
+
+vencedores:
+
+vencedores.length>0
+
+?
+
+vencedores
+
+:
+
+["🍀 Acumulou"]
+
+
+};
+
+
+
+
+
+localStorage.setItem(
+
+"resultadoSorteio",
+
+JSON.stringify(resultado)
+
+);
+
+
+
+
+
+let historico=
+
+JSON.parse(localStorage.getItem("historicoSorteios")) || [];
+
+
+
+historico.push(resultado);
+
+
+
+localStorage.setItem(
+
+"historicoSorteios",
+
+JSON.stringify(historico)
+
+);
+
+
+
+alert(
+
+"🎲 Sorteio realizado!\n\n"+
+
+numeros.join(" - ")
+
+);
+
+
+}
+
+
+
+
+
+function sortearRifa(){
+
+
+let participantes=
+
+JSON.parse(localStorage.getItem("rifaParticipantes")) || [];
+
+
+
+if(participantes.length===0){
+
+
+alert("Nenhuma rifa registrada.");
+
+return;
+
+
+}
+
+
+
+let pagos=participantes.filter(function(p){
+
+
+return p.pagamento==="🟢 Pagamento confirmado";
+
+
+});
+
+
+
+if(pagos.length===0){
+
+
+alert("Nenhum pagamento confirmado.");
+
+return;
+
+
+}
+
+
+
+let vencedor=
+
+pagos[Math.floor(Math.random()*pagos.length)];
+
+
+
+let resultadoRifa={
+
+
+numero:vencedor.numero,
+
+
+nome:vencedor.nome,
+
+
+data:new Date().toLocaleDateString("pt-BR")
+
+
+};
+
+
+
+localStorage.setItem(
+
+"resultadoRifa",
+
+JSON.stringify(resultadoRifa)
+
+);
+
+
+
+alert(
+
+"🎉 Vencedor da rifa:\n\n"+
+
+vencedor.nome+
+
+"\nNúmero: "+
+
+vencedor.numero
+
+);
+
+
+}
