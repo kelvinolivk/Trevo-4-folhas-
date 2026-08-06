@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
+
 <title>Trevo4Folhas 🍀</title>
 
 <style>
@@ -16,22 +21,29 @@ box-sizing:border-box;
 body{
 
 background:#071307;
+
 font-family:Arial;
+
 color:white;
+
 text-align:center;
+
 overflow:hidden;
 
 }
 
-/* Fundo */
-
 #fundo{
 
 position:fixed;
+
 top:0;
+
 left:0;
+
 width:100%;
+
 height:100%;
+
 z-index:-1;
 
 }
@@ -39,8 +51,11 @@ z-index:-1;
 h1{
 
 margin-top:20px;
+
 font-size:34px;
+
 color:#6dff7d;
+
 text-shadow:0 0 15px #00ff55;
 
 }
@@ -48,6 +63,7 @@ text-shadow:0 0 15px #00ff55;
 #contador{
 
 margin-top:10px;
+
 font-size:20px;
 
 }
@@ -55,10 +71,13 @@ font-size:20px;
 #lista{
 
 max-width:430px;
+
 margin:auto;
+
 margin-top:25px;
 
 display:grid;
+
 grid-template-columns:repeat(5,1fr);
 
 gap:14px;
@@ -98,6 +117,7 @@ box-shadow:0 0 10px #0f0;
 .trevo span:last-child{
 
 font-size:20px;
+
 font-weight:bold;
 
 }
@@ -155,201 +175,74 @@ font-weight:bold;
 <h1>🍀 Escolha 4 números</h1>
 
 <h2 id="contador">
+
 Selecionados: 0/4
+
 </h2>
 
 <div id="lista"></div>
 
 <script>
 
-let escolhidos = [];
+let cadastro =
+JSON.parse(localStorage.getItem("cadastro"));
 
-const lista = document.getElementById("lista");
+if(!cadastro){
 
-for(let i = 1; i <= 15; i++){
+alert("Faça seu cadastro primeiro.");
 
-    let trevo = document.createElement("div");
-
-    trevo.className = "trevo";
-
-    trevo.innerHTML = `
-        <span>🍀</span>
-        <span>${i}</span>
-    `;
-
-    trevo.onclick = function(){
-
-        if(escolhidos.includes(i)){
-
-            escolhidos = escolhidos.filter(n => n != i);
-
-            trevo.classList.remove("selecionado");
-
-        }else{
-
-            if(escolhidos.length >= 4){
-
-                alert("Você pode escolher apenas 4 números 🍀");
-
-                return;
-
-            }
-
-            escolhidos.push(i);
-
-            trevo.classList.add("selecionado");
-
-        }
-
-        document.getElementById("contador").innerHTML =
-        "Selecionados: " + escolhidos.length + "/4";
-
-    };
-
-    lista.appendChild(trevo);
+location.href="cadastro.html";
 
 }
 
-function confirmar(){
+let escolhidos=[];
 
-    if(escolhidos.length != 4){
+const lista=document.getElementById("lista");
 
-        alert("Escolha exatamente 4 números 🍀");
+for(let i=1;i<=15;i++){
 
-        return;
+let trevo=document.createElement("div");
 
-    }
+trevo.className="trevo";
 
-    let nome = localStorage.getItem("nome");
+trevo.innerHTML=`
 
-    let whatsapp = localStorage.getItem("whatsapp");
+<span>🍀</span>
 
-    let participantes =
-    JSON.parse(localStorage.getItem("participantes")) || [];
+<span>${i}</span>
 
-    participantes.push({
+`;
 
-        nome:nome,
+trevo.onclick=function(){
 
-        whatsapp:whatsapp,
+if(escolhidos.includes(i)){
 
-        numero:JSON.stringify(escolhidos),
+escolhidos=escolhidos.filter(n=>n!=i);
 
-        pagamento:"🟡 Aguardando pagamento"
+trevo.classList.remove("selecionado");
 
-    });
+}else{
 
-    localStorage.setItem(
-        "participantes",
-        JSON.stringify(participantes)
-    );
+if(escolhidos.length>=4){
 
-    localStorage.setItem(
-        "numeroEscolhido",
-        JSON.stringify(escolhidos)
-    );
+alert("Você pode escolher apenas 4 números 🍀");
 
-    location.href="pix.html";
-
-}
-function limpar(){
-
-    escolhidos = [];
-
-    document.querySelectorAll(".trevo").forEach(function(t){
-
-        t.classList.remove("selecionado");
-
-    });
-
-    document.getElementById("contador").innerHTML =
-    "Selecionados: 0/4";
+return;
 
 }
 
+escolhidos.push(i);
 
-
-/* ---------- Fundo animado ---------- */
-
-const canvas = document.getElementById("fundo");
-
-const ctx = canvas.getContext("2d");
-
-function redimensionar(){
-
-    canvas.width = window.innerWidth;
-
-    canvas.height = window.innerHeight;
+trevo.classList.add("selecionado");
 
 }
 
-redimensionar();
+document.getElementById("contador").innerHTML=
 
-window.onresize = redimensionar;
+"Selecionados: "+escolhidos.length+"/4";
 
+};
 
-
-let trevos = [];
-
-for(let i=0;i<90;i++){
-
-    trevos.push({
-
-        x:Math.random()*canvas.width,
-
-        y:Math.random()*canvas.height,
-
-        tamanho:10+Math.random()*18,
-
-        alpha:Math.random(),
-
-        velocidade:0.01+Math.random()*0.03
-
-    });
+lista.appendChild(trevo);
 
 }
-
-
-
-function animar(){
-
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    trevos.forEach(function(t){
-
-        t.alpha += t.velocidade;
-
-        ctx.globalAlpha = 0.20 + 0.30 * Math.sin(t.alpha);
-
-        ctx.font = t.tamanho + "px Arial";
-
-        ctx.fillText("🍀",t.x,t.y);
-
-    });
-
-    requestAnimationFrame(animar);
-
-}
-
-animar();
-
-</script>
-
-<br>
-
-
-
-<br>
-
-<button onclick="confirmar()">
-✅ Confirmar aposta
-</button>
-
-<br>
-
-<button onclick="limpar()">
-🧹 Limpar seleção
-</button>
-
-</body>
-</html>
