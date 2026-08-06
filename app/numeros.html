@@ -246,3 +246,116 @@ document.getElementById("contador").innerHTML=
 lista.appendChild(trevo);
 
 }
+function confirmar(){
+
+if(escolhidos.length!=4){
+
+alert("Escolha exatamente 4 números 🍀");
+
+return;
+
+}
+
+let participantes=
+
+JSON.parse(localStorage.getItem("participantes")) || [];
+
+participantes.push({
+
+id:cadastro.id,
+
+nome:cadastro.nome,
+
+whatsapp:cadastro.whatsapp,
+
+pix:cadastro.pix,
+
+cidade:cadastro.cidade,
+
+tipo:"Loteria",
+
+numero:JSON.stringify(escolhidos),
+
+data:new Date().toLocaleString("pt-BR"),
+
+pagamento:"🟡 Aguardando pagamento"
+
+});
+
+localStorage.setItem(
+
+"participantes",
+
+JSON.stringify(participantes)
+
+);
+
+localStorage.setItem(
+
+"numeroEscolhido",
+
+JSON.stringify(escolhidos)
+
+);
+
+location.href="pix.html";
+
+}
+
+
+
+function limpar(){
+
+escolhidos=[];
+
+document.querySelectorAll(".trevo").forEach(function(t){
+
+t.classList.remove("selecionado");
+
+});
+
+document.getElementById("contador").innerHTML=
+
+"Selecionados: 0/4";
+
+}
+
+
+
+/* ---------- Fundo animado ---------- */
+
+const canvas=document.getElementById("fundo");
+
+const ctx=canvas.getContext("2d");
+
+function redimensionar(){
+
+canvas.width=window.innerWidth;
+
+canvas.height=window.innerHeight;
+
+}
+
+redimensionar();
+
+window.onresize=redimensionar;
+
+let trevos=[];
+
+for(let i=0;i<90;i++){
+
+trevos.push({
+
+x:Math.random()*canvas.width,
+
+y:Math.random()*canvas.height,
+
+tamanho:10+Math.random()*18,
+
+alpha:Math.random(),
+
+velocidade:0.01+Math.random()*0.03
+
+});
+
+}
