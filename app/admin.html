@@ -683,7 +683,134 @@ ${p.pagamento}
 
 }
 
+// ===== RIFA =====
 
+let rifa =
+JSON.parse(localStorage.getItem("rifaParticipantes")) || [];
+
+
+let vendasRifa =
+document.getElementById("vendasRifa");
+
+
+if(rifa.length === 0){
+
+vendasRifa.innerHTML =
+"🎟️ Nenhuma venda de rifa realizada.";
+
+}else{
+
+
+let html = "";
+
+let pagosRifa = 0;
+
+
+rifa.forEach(function(r, indice){
+
+
+if(r.pagamento === "🟢 Pagamento confirmado" || r.pagamento === "✅ Pago"){
+
+pagosRifa++;
+
+}
+
+
+html += `
+
+<div style="
+background:#333;
+padding:15px;
+border-radius:10px;
+margin-bottom:15px;
+">
+
+
+👤 <b>${r.nome}</b>
+
+<br><br>
+
+📱 ${r.whatsapp || "Não informado"}
+
+<br><br>
+
+🎟️ Número da rifa:
+
+<br>
+
+<b>${String(r.numero).padStart(2,"0")}</b>
+
+<br><br>
+
+💳 Status:
+
+<br>
+
+${r.pagamento || "🟡 Aguardando pagamento"}
+
+<br><br>
+
+
+<button onclick="confirmarPagamentoRifa(${indice})">
+
+✅ Confirmar pagamento
+
+</button>
+
+
+</div>
+
+
+`;
+
+});
+
+
+html += "<hr>";
+
+html += "🎟️ Total vendido: " + rifa.length;
+
+
+html += "<br><br>";
+
+
+html += "🟢 Pagos: " + pagosRifa;
+
+
+
+vendasRifa.innerHTML = html;
+
+
+}
+
+
+
+// confirmar pagamento da rifa
+
+function confirmarPagamentoRifa(indice){
+
+
+let rifa =
+JSON.parse(localStorage.getItem("rifaParticipantes")) || [];
+
+
+rifa[indice].pagamento =
+"🟢 Pagamento confirmado";
+
+
+localStorage.setItem(
+
+"rifaParticipantes",
+
+JSON.stringify(rifa)
+
+);
+
+
+location.reload();
+
+
+}
 </script>
 
 
