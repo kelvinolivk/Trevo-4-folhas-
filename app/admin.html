@@ -831,6 +831,28 @@ JSON.stringify(rifa)
 location.reload();
 
 
+}function salvarRifa(){
+
+let configuracaoRifa = {
+
+valor:
+document.getElementById("valorRifa").value,
+
+premio:
+document.getElementById("premioRifa").value,
+
+pix:
+document.getElementById("pixRifa").value
+
+};
+
+localStorage.setItem(
+"configuracaoRifa",
+JSON.stringify(configuracaoRifa)
+);
+
+alert("Configuração da rifa salva 🍀");
+
 }
 </script>
 
