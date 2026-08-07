@@ -853,6 +853,58 @@ JSON.stringify(configuracaoRifa)
 
 alert("Configuração da rifa salva 🍀");
 
+}function sortearRifa(){
+
+let participantes = JSON.parse(
+localStorage.getItem("rifaParticipantes")
+) || [];
+
+if(participantes.length === 0){
+
+alert("Nenhuma rifa foi vendida ainda.");
+
+return;
+
+}
+
+// Sorteia apenas entre os números vendidos
+
+let vencedor = participantes[
+Math.floor(Math.random() * participantes.length)
+];
+
+// Salva o resultado
+
+localStorage.setItem(
+
+"resultadoRifa",
+
+JSON.stringify({
+
+numero: vencedor.numero,
+
+nome: vencedor.nome,
+
+whatsapp: vencedor.whatsapp,
+
+data: new Date().toLocaleString("pt-BR")
+
+})
+
+);
+
+alert(
+
+"🎉 RIFA SORTEADA!\n\n" +
+
+"🎟️ Número: " + vencedor.numero +
+
+"\n👤 Ganhador: " + vencedor.nome +
+
+"\n📱 " + vencedor.whatsapp
+
+);
+
 }
 </script>
 
