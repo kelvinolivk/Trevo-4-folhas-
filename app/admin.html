@@ -900,7 +900,19 @@ alert("Configuração da rifa salva 🍀");
 }
 
 function sortearRifa(){
+if(participantes.length < 100){
 
+let faltam = 100 - participantes.length;
+
+alert(
+"🍀 Ainda não é possível realizar o sorteio.\n\n" +
+"Foram vendidos apenas " + participantes.length + " números.\n" +
+"Faltam " + faltam + " números para completar a rifa."
+);
+
+return;
+
+}
 let participantes = JSON.parse(
 localStorage.getItem("rifaParticipantes")
 ) || [];
