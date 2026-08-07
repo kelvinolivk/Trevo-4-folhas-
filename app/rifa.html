@@ -264,21 +264,31 @@ pagamento:"🟡 Aguardando pagamento"
 
 localStorage.setItem(
 
-"rifaParticipantes",
+"rifaAtual",
 
-JSON.stringify(participantes)
+JSON.stringify({
+
+nome:nome,
+
+whatsapp:whatsapp,
+
+numero:numeroEscolhido
+
+})
 
 );
+
 
 alert(
 
 "🍀 Número "+numeroEscolhido+
 
-" reservado com sucesso!\n\nAgora realize o pagamento."
+" reservado com sucesso!"
 
 );
 
-location.href="pix.html";
+
+location.href="pix-rifa.html";
 
 }
 
