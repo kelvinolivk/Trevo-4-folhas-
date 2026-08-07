@@ -167,24 +167,48 @@ alert("Cadastro salvo com sucesso 🍀");
 
 }
 
+async function salvarCadastro(){
 
+    let cadastro = {
 
-function verCadastro(){
+        nome: document.getElementById("nome").value,
+        whatsapp: document.getElementById("whatsapp").value,
+        pix: document.getElementById("pix").value,
+        cidade: document.getElementById("cidade").value
 
+    };
 
-let cadastro =
+    if(cadastro.nome == "" || cadastro.whatsapp == ""){
 
-JSON.parse(localStorage.getItem("cadastro")) || null;
+        alert("Preencha nome e WhatsApp 🍀");
+        return;
 
+    }
 
+    localStorage.setItem(
+        "cadastro",
+        JSON.stringify(cadastro)
+    );
 
-if(!cadastro){
+    const { data, error } = await supabase
+        .from("participantes")
+        .insert([cadastro])
+        .select();
 
-document.getElementById("resultado").innerHTML=
+    if(error){
 
-"Nenhum cadastro encontrado.";
+        console.error(error);
 
-return;
+        alert("❌ Erro ao salvar no Supabase:\n" + error.message);
+
+        return;
+
+    }
+
+    alert("🍀 Cadastro salvo com sucesso!");
+
+}
+
 
 }
 
