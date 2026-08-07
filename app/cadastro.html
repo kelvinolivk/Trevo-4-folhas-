@@ -233,6 +233,13 @@ document.getElementById("cidade").value = salvo.cidade || "";
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
+<script>
+if (window.supabase && typeof supabase !== "undefined") {
+    console.log("🍀 Supabase conectado!");
+} else {
+    console.log("❌ Supabase não carregou.");
+}
+</script>
 </body>
 
 </html>
