@@ -721,7 +721,40 @@ JSON.parse(localStorage.getItem("rifaParticipantes")) || [];
 
 let vendasRifa =
 document.getElementById("vendasRifa");
+let configRifa =
+JSON.parse(localStorage.getItem("configuracaoRifa")) || {};
 
+let valorNumero =
+Number(configRifa.valor) || 0;
+
+let premioRifa =
+Number(configRifa.premio) || 0;
+
+let arrecadadoRifa =
+rifa.length * valorNumero;
+
+let lucroRifa =
+arrecadadoRifa - premioRifa;
+
+document.getElementById("financeiroRifa").innerHTML =
+
+"💰 Valor por número: R$ " + valorNumero.toFixed(2) +
+
+"<br><br>" +
+
+"🎟️ Vendidos: " + rifa.length + " / 100" +
+
+"<br><br>" +
+
+"💵 Arrecadado: R$ " + arrecadadoRifa.toFixed(2) +
+
+"<br><br>" +
+
+"🏆 Prêmio: R$ " + premioRifa.toFixed(2) +
+
+"<br><br>" +
+
+"📈 Lucro: R$ " + lucroRifa.toFixed(2);
 
 if(rifa.length === 0){
 
