@@ -831,7 +831,9 @@ JSON.stringify(rifa)
 location.reload();
 
 
-}function salvarRifa(){
+}
+
+function salvarRifa(){
 
 let configuracaoRifa = {
 
@@ -853,7 +855,9 @@ JSON.stringify(configuracaoRifa)
 
 alert("Configuração da rifa salva 🍀");
 
-}function sortearRifa(){
+}
+
+function sortearRifa(){
 
 let participantes = JSON.parse(
 localStorage.getItem("rifaParticipantes")
@@ -930,7 +934,9 @@ alert(
 
 <br><br>
 
-
+<button style="background:red;color:white;">
+🧪 TESTE BOTÃO
+</button>
 <button onclick="location.href='../index.html'">
 
 🏠 Voltar ao início
