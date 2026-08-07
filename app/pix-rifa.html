@@ -1,1 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
 
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Pagamento Rifa Trevo4Folhas 🍀</title>
+
+<style>
+
+body{
+background:#111;
+color:white;
+font-family:Arial;
+text-align:center;
+padding:20px;
+}
+
+.caixa{
+background:#222;
+padding:20px;
+border-radius:15px;
+max-width:400px;
+margin:auto;
+}
+
+h1{
+color:#3ddc84;
+}
+
+.numero{
+
+font-size:45px;
+color:#ffd700;
+font-weight:bold;
+margin:20px;
+
+}
+
+button{
+
+width:90%;
+padding:15px;
+margin:10px;
+border:none;
+border-radius:10px;
+background:#0b8f3a;
+color:white;
+font-size:18px;
+font-weight:bold;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="caixa">
+
+
+<h1>🎟️ Rifa Trevo4Folhas 🍀</h1>
+
+
+<div id="dados">
+
+Carregando...
+
+</div>
+
+
+<button onclick="copiarPix()">
+
+📋 Copiar Pix
+
+</button>
+
+
+<button onclick="confirmarPagamento()">
+
+✅ Já realizei o pagamento
+
+</button>
+
+
+</div>
+
+
+
+<script>
+
+
+let rifa =
+
+JSON.parse(localStorage.getItem("rifaAtual")) || null;
+
+
+
+let configuracao =
+
+JSON.parse(localStorage.getItem("configuracaoRifa")) || {};
+
+
+
+if(!rifa){
+
+alert("Nenhuma rifa encontrada.");
+
+location.href="rifa.html";
+
+}
+
+
+
+document.getElementById("dados").innerHTML = `
+
+
+<p>
+
+👤 Participante:
+
+<br>
+
+<b>${rifa.nome}</b>
+
+</p>
+
+
+<p>
+
+🎟️ Número escolhido:
+
+</p>
+
+
+<div class="numero">
+
+${String(rifa.numero).padStart(2,"0")}
+
+</div>
+
+
+<p>
+
+💰 Valor:
+
+<br>
+
+<b>R$ ${configuracao.valor || "10,00"}</b>
+
+</p>
+
+
+<p>
+
+🏆 Prêmio:
+
+<br>
+
+<b>${configuracao.premio || "A definir"}</b>
+
+</p>
+
+
+<p>
+
+💳 Chave Pix:
+
+<br>
+
+<b id="pix">
+
+${configuracao.pix || "Configure no administrador"}
+
+</b>
+
+</p>
+
+
+`;
+
+
+
+
+function copiarPix(){
+
+navigator.clipboard.writeText(
+
+document.getElementById("pix").innerText
+
+);
+
+alert("Pix copiado 🍀");
+
+}
+
+
+
+
+function confirmarPagamento(){
+
+
+let lista =
+
+JSON.parse(localStorage.getItem("rifaParticipantes")) || [];
+
+
+
+lista.push({
+
+nome:rifa.nome,
+
+whatsapp:rifa.whatsapp,
+
+numero:rifa.numero,
+
+pagamento:"🟡 Aguardando confirmação",
+
+data:new Date().toLocaleString("pt-BR")
+
+});
+
+
+
+localStorage.setItem(
+
+"rifaParticipantes",
+
+JSON.stringify(lista)
+
+);
+
+
+
+alert(
+
+"Pagamento informado! Aguarde confirmação 🍀"
+
+);
+
+
+location.href="rifa.html";
+
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
