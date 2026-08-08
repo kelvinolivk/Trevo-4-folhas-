@@ -169,23 +169,60 @@ async function verCadastro(){
         "⏳ Buscando cadastro...";
 
 
-    const { data, error } = await supabase
-        .from("participantes")
-        .select("*")
-        .order("id", { ascending:false })
-        .limit(1);
+    try {
+
+    const resultado = await Promise.race([
+
+        supabase
+            .from("participantes")
+            .insert([cadastro])
+            .select(),
+
+        new Promise((_, reject) =>
+            setTimeout(
+                () => reject(new Error("Tempo limite excedido ao conectar com o Supabase.")),
+                10000
+            )
+        )
+
+    ]);
+
+    const { data, error } = resultado;
 
 
     if(error){
 
-        console.error(error);
+        console.error("Erro Supabase:", error);
 
         document.getElementById("resultado").innerHTML =
-            "❌ Erro ao consultar: " + error.message;
+            "❌ Erro ao salvar: " + error.message;
 
         return;
 
     }
+
+
+    localStorage.setItem(
+        "cadastro",
+        JSON.stringify(cadastro)
+    );
+
+
+    document.getElementById("resultado").innerHTML =
+        "🍀 Cadastro salvo com sucesso!";
+
+
+    alert("🍀 Cadastro salvo com sucesso!");
+
+
+} catch(error){
+
+    console.error("Erro:", error);
+
+    document.getElementById("resultado").innerHTML =
+        "❌ " + error.message;
+
+}
 
 
     if(!data || data.length === 0){
