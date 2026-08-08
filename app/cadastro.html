@@ -11,7 +11,7 @@
 <style>
 
 body{
-    font-family: Arial;
+    font-family:Arial;
     background:#111;
     color:white;
     text-align:center;
@@ -46,6 +46,10 @@ button{
     color:white;
     font-size:18px;
     font-weight:bold;
+}
+
+#resultado{
+    margin-top:20px;
 }
 
 </style>
@@ -85,8 +89,6 @@ button{
 <div class="caixa" id="resultado"></div>
 
 
-<!-- SUPABASE -->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="supabase.js"></script>
@@ -96,17 +98,10 @@ button{
 
 async function salvarCadastro(){
 
-    const nome =
-        document.getElementById("nome").value.trim();
-
-    const whatsapp =
-        document.getElementById("whatsapp").value.trim();
-
-    const pix =
-        document.getElementById("pix").value.trim();
-
-    const cidade =
-        document.getElementById("cidade").value.trim();
+    const nome = document.getElementById("nome").value.trim();
+    const whatsapp = document.getElementById("whatsapp").value.trim();
+    const pix = document.getElementById("pix").value.trim();
+    const cidade = document.getElementById("cidade").value.trim();
 
 
     if(nome === "" || whatsapp === ""){
@@ -131,6 +126,10 @@ async function salvarCadastro(){
     };
 
 
+    document.getElementById("resultado").innerHTML =
+        "⏳ Salvando cadastro...";
+
+
     const { data, error } = await supabase
         .from("participantes")
         .insert([cadastro])
@@ -141,10 +140,8 @@ async function salvarCadastro(){
 
         console.error(error);
 
-        alert(
-            "❌ Erro ao salvar no Supabase:\n" +
-            error.message
-        );
+        document.getElementById("resultado").innerHTML =
+            "❌ Erro ao salvar: " + error.message;
 
         return;
 
@@ -157,20 +154,41 @@ async function salvarCadastro(){
     );
 
 
+    document.getElementById("resultado").innerHTML =
+        "🍀 Cadastro salvo com sucesso!";
+
+
     alert("🍀 Cadastro salvo com sucesso!");
 
 }
 
 
-function verCadastro(){
+async function verCadastro(){
 
-    const cadastro =
-        JSON.parse(
-            localStorage.getItem("cadastro")
-        );
+    document.getElementById("resultado").innerHTML =
+        "⏳ Buscando cadastro...";
 
 
-    if(!cadastro){
+    const { data, error } = await supabase
+        .from("participantes")
+        .select("*")
+        .order("id", { ascending:false })
+        .limit(1);
+
+
+    if(error){
+
+        console.error(error);
+
+        document.getElementById("resultado").innerHTML =
+            "❌ Erro ao consultar: " + error.message;
+
+        return;
+
+    }
+
+
+    if(!data || data.length === 0){
 
         document.getElementById("resultado").innerHTML =
             "Nenhum cadastro encontrado.";
@@ -180,42 +198,35 @@ function verCadastro(){
     }
 
 
+    const cadastro = data[0];
+
+
+    document.getElementById("nome").value =
+        cadastro.nome || "";
+
+    document.getElementById("whatsapp").value =
+        cadastro.whatsapp || "";
+
+    document.getElementById("pix").value =
+        cadastro.pix || "";
+
+    document.getElementById("cidade").value =
+        cadastro.cidade || "";
+
+
     document.getElementById("resultado").innerHTML = `
 
-        <h3>Cadastro salvo</h3>
+        <h3>🍀 Cadastro encontrado</h3>
 
-        👤 ${cadastro.nome}<br><br>
+        👤 ${cadastro.nome || ""}<br><br>
 
-        📱 ${cadastro.whatsapp}<br><br>
+        📱 ${cadastro.whatsapp || ""}<br><br>
 
         💳 ${cadastro.pix || "Não informado"}<br><br>
 
         📍 ${cadastro.cidade || "Não informado"}
 
     `;
-
-}
-
-
-const salvo =
-    JSON.parse(
-        localStorage.getItem("cadastro")
-    );
-
-
-if(salvo){
-
-    document.getElementById("nome").value =
-        salvo.nome || "";
-
-    document.getElementById("whatsapp").value =
-        salvo.whatsapp || "";
-
-    document.getElementById("pix").value =
-        salvo.pix || "";
-
-    document.getElementById("cidade").value =
-        salvo.cidade || "";
 
 }
 
