@@ -7,12 +7,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>CADASTRO NOVO TESTE 🍀</title>
+<title>Cadastro Trevo4Folhas 🍀</title>
 
 <style>
 
 body{
-    font-family: Arial;
+    font-family:Arial;
     background:#111;
     color:white;
     text-align:center;
@@ -34,6 +34,7 @@ input{
     border-radius:10px;
     border:none;
     font-size:16px;
+    box-sizing:border-box;
 }
 
 button{
@@ -54,7 +55,7 @@ button{
 
 <body>
 
-<h1>🍀 TESTE NOVO TREVO</h1>
+<h1>🍀 Trevo4Folhas</h1>
 
 <div class="caixa">
 
@@ -82,30 +83,34 @@ button{
 
 </div>
 
-<div class="caixa" id="resultado">
-</div>
+<div class="caixa" id="resultado"></div>
 
 
-<!-- Supabase -->
+<!-- SUPABASE -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="supabase.js"></script>
 
 
 <script>
 
 async function salvarCadastro(){
-alert("🍀 O botão está funcionando!");
-    let cadastro = {
 
-        nome: document.getElementById("nome").value,
-        whatsapp: document.getElementById("whatsapp").value,
-        pix: document.getElementById("pix").value,
-        cidade: document.getElementById("cidade").value
+    const nome =
+        document.getElementById("nome").value.trim();
 
-    };
+    const whatsapp =
+        document.getElementById("whatsapp").value.trim();
 
-    if(cadastro.nome == "" || cadastro.whatsapp == ""){
+    const pix =
+        document.getElementById("pix").value.trim();
+
+    const cidade =
+        document.getElementById("cidade").value.trim();
+
+
+    if(nome === "" || whatsapp === ""){
 
         alert("Preencha nome e WhatsApp 🍀");
 
@@ -114,32 +119,46 @@ alert("🍀 O botão está funcionando!");
     }
 
 
-    // Salva no celular
-    localStorage.setItem(
-        "cadastro",
-        JSON.stringify(cadastro)
-    );
+    const cadastro = {
+
+        nome: nome,
+        whatsapp: whatsapp,
+        pix: pix,
+        cidade: cidade,
+        numeros: "",
+        pagamento: "Pendente",
+        data: ""
+
+    };
 
 
-    // Salva no Supabase
     const { data, error } = await supabase
+
         .from("participantes")
+
         .insert([cadastro])
+
         .select();
 
 
     if(error){
 
-        console.error(error);
+        console.error("Erro Supabase:", error);
 
         alert(
-            "❌ Erro ao salvar no Supabase:\n" +
+            "❌ Erro ao salvar:\n" +
             error.message
         );
 
         return;
 
     }
+
+
+    localStorage.setItem(
+        "cadastro",
+        JSON.stringify(cadastro)
+    );
 
 
     alert("🍀 Cadastro salvo com sucesso!");
@@ -149,8 +168,10 @@ alert("🍀 O botão está funcionando!");
 
 function verCadastro(){
 
-    let cadastro =
-        JSON.parse(localStorage.getItem("cadastro")) || null;
+    const cadastro =
+        JSON.parse(
+            localStorage.getItem("cadastro")
+        );
 
 
     if(!cadastro){
@@ -171,19 +192,20 @@ function verCadastro(){
 
         📱 ${cadastro.whatsapp}<br><br>
 
-        💳 ${cadastro.pix}<br><br>
+        💳 ${cadastro.pix || "Não informado"}<br><br>
 
-        📍 ${cadastro.cidade}
+        📍 ${cadastro.cidade || "Não informado"}
 
     `;
 
 }
 
 
-// Preenche os campos se já existir cadastro
+const salvo =
+    JSON.parse(
+        localStorage.getItem("cadastro")
+    );
 
-let salvo =
-    JSON.parse(localStorage.getItem("cadastro"));
 
 if(salvo){
 
@@ -202,24 +224,6 @@ if(salvo){
 }
 
 </script>
-
-
-<!-- Teste de conexão -->
-
-<script>
-
-if (window.supabase && typeof supabase !== "undefined") {
-
-    alert("🍀 Supabase conectado!");
-
-} else {
-
-    alert("❌ Supabase não carregou.");
-
-}
-
-</script>
-
 
 </body>
 
