@@ -11,7 +11,7 @@
 <style>
 
 body{
-    font-family:Arial;
+    font-family: Arial;
     background:#111;
     color:white;
     text-align:center;
@@ -88,11 +88,9 @@ button{
 
 <div class="caixa" id="resultado"></div>
 
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="supabase.js"></script>
-
 
 <script>
 
@@ -103,15 +101,12 @@ async function salvarCadastro(){
     const pix = document.getElementById("pix").value.trim();
     const cidade = document.getElementById("cidade").value.trim();
 
-
     if(nome === "" || whatsapp === ""){
 
         alert("⚠️ Preencha nome e WhatsApp 🍀");
 
         return;
-
     }
-
 
     const cadastro = {
 
@@ -125,40 +120,44 @@ async function salvarCadastro(){
 
     };
 
-
     document.getElementById("resultado").innerHTML =
         "⏳ Salvando cadastro...";
 
+    try {
 
-    const { data, error } = await supabaseClient
-    .from("participantes")
-    .insert([cadastro])
-    .select();
+        const { data, error } = await supabaseClient
+            .from("participantes")
+            .insert([cadastro])
+            .select();
 
+        if(error){
 
-    if(error){
+            console.error("Erro Supabase:", error);
 
-        console.error(error);
+            document.getElementById("resultado").innerHTML =
+                "❌ Erro ao salvar: " + error.message;
+
+            return;
+        }
+
+        localStorage.setItem(
+            "cadastro",
+            JSON.stringify(cadastro)
+        );
 
         document.getElementById("resultado").innerHTML =
-            "❌ Erro ao salvar: " + error.message;
+            "🍀 Cadastro salvo com sucesso!";
 
-        return;
+        alert("🍀 Cadastro salvo com sucesso!");
+
+    } catch(error){
+
+        console.error("Erro:", error);
+
+        document.getElementById("resultado").innerHTML =
+            "❌ Erro de conexão: " + error.message;
 
     }
-
-
-    localStorage.setItem(
-        "cadastro",
-        JSON.stringify(cadastro)
-    );
-
-
-    document.getElementById("resultado").innerHTML =
-        "🍀 Cadastro salvo com sucesso!";
-
-
-    alert("🍀 Cadastro salvo com sucesso!");
 
 }
 
@@ -168,102 +167,73 @@ async function verCadastro(){
     document.getElementById("resultado").innerHTML =
         "⏳ Buscando cadastro...";
 
-
     try {
 
-    const resultado = await Promise.race([
+        const { data, error } = await supabaseClient
+            .from("participantes")
+            .select("*")
+            .order("id", { ascending:false })
+            .limit(1);
 
-        supabaseClient
-    .from("participantes")
-    .insert([cadastro])
-    .select(),
+        if(error){
 
-        new Promise((_, reject) =>
-            setTimeout(
-                () => reject(new Error("Tempo limite excedido ao conectar com o Supabase.")),
-                10000
-            )
-        )
+            console.error("Erro Supabase:", error);
 
-    ]);
+            document.getElementById("resultado").innerHTML =
+                "❌ Erro ao consultar: " + error.message;
 
-    const { data, error } = resultado;
+            return;
+        }
 
+        if(!data || data.length === 0){
 
-    if(error){
+            document.getElementById("resultado").innerHTML =
+                "Nenhum cadastro encontrado.";
 
-        console.error("Erro Supabase:", error);
+            return;
+        }
+
+        const cadastro = data[0];
+
+        document.getElementById("nome").value =
+            cadastro.nome || "";
+
+        document.getElementById("whatsapp").value =
+            cadastro.whatsapp || "";
+
+        document.getElementById("pix").value =
+            cadastro.pix || "";
+
+        document.getElementById("cidade").value =
+            cadastro.cidade || "";
+
+        localStorage.setItem(
+            "cadastro",
+            JSON.stringify(cadastro)
+        );
+
+        document.getElementById("resultado").innerHTML = `
+
+            <h3>🍀 Cadastro encontrado</h3>
+
+            👤 ${cadastro.nome || ""}<br><br>
+
+            📱 ${cadastro.whatsapp || ""}<br><br>
+
+            💳 ${cadastro.pix || "Não informado"}<br><br>
+
+            📍 ${cadastro.cidade || "Não informado"}
+
+        `;
+
+    } catch(error){
+
+        console.error("Erro:", error);
 
         document.getElementById("resultado").innerHTML =
-            "❌ Erro ao salvar: " + error.message;
-
-        return;
+            "❌ Erro de conexão: " + error.message;
 
     }
-
-
-    localStorage.setItem(
-        "cadastro",
-        JSON.stringify(cadastro)
-    );
-
-
-    document.getElementById("resultado").innerHTML =
-        "🍀 Cadastro salvo com sucesso!";
-
-
-    alert("🍀 Cadastro salvo com sucesso!");
-
-
-} catch(error){
-
-    console.error("Erro:", error);
-
-    document.getElementById("resultado").innerHTML =
-        "❌ " + error.message;
-
-}
-
-
-    if(!data || data.length === 0){
-
-        document.getElementById("resultado").innerHTML =
-            "Nenhum cadastro encontrado.";
-
-        return;
-
-    }
-
-
-    const cadastro = data[0];
-
-
-    document.getElementById("nome").value =
-        cadastro.nome || "";
-
-    document.getElementById("whatsapp").value =
-        cadastro.whatsapp || "";
-
-    document.getElementById("pix").value =
-        cadastro.pix || "";
-
-    document.getElementById("cidade").value =
-        cadastro.cidade || "";
-
-
-    document.getElementById("resultado").innerHTML = `
-
-        <h3>🍀 Cadastro encontrado</h3>
-
-        👤 ${cadastro.nome || ""}<br><br>
-
-        📱 ${cadastro.whatsapp || ""}<br><br>
-
-        💳 ${cadastro.pix || "Não informado"}<br><br>
-
-        📍 ${cadastro.cidade || "Não informado"}
-
-    `;
 
 }
 
