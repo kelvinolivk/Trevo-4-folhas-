@@ -130,10 +130,10 @@ async function salvarCadastro(){
         "⏳ Salvando cadastro...";
 
 
-    const { data, error } = await supabase
-        .from("participantes")
-        .insert([cadastro])
-        .select();
+    const { data, error } = await supabaseClient
+    .from("participantes")
+    .insert([cadastro])
+    .select();
 
 
     if(error){
