@@ -173,10 +173,10 @@ async function verCadastro(){
 
     const resultado = await Promise.race([
 
-        supabase
-            .from("participantes")
-            .insert([cadastro])
-            .select(),
+        supabaseClient
+    .from("participantes")
+    .insert([cadastro])
+    .select(),
 
         new Promise((_, reject) =>
             setTimeout(
