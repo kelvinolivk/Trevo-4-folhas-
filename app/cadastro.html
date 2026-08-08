@@ -96,18 +96,26 @@ button{
 <script>
 
 async function salvarCadastro(){
-alert("🍀 TESTE DO BOTÃO");
+
+    alert("🍀 TESTE DO BOTÃO");
+
     const nome =
         document.getElementById("nome").value.trim();
 
+    alert("🍀 PEGOU O NOME: " + nome);
+
     const whatsapp =
         document.getElementById("whatsapp").value.trim();
+
+    alert("🍀 PEGOU O WHATSAPP: " + whatsapp);
 
     const pix =
         document.getElementById("pix").value.trim();
 
     const cidade =
         document.getElementById("cidade").value.trim();
+
+    alert("🍀 PEGOU TODOS OS CAMPOS");
 
 
     if(nome === "" || whatsapp === ""){
@@ -117,6 +125,8 @@ alert("🍀 TESTE DO BOTÃO");
         return;
 
     }
+
+}
 
 
     const cadastro = {
