@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -12,7 +11,7 @@
 <style>
 
 body{
-    font-family:Arial;
+    font-family: Arial;
     background:#111;
     color:white;
     text-align:center;
@@ -95,7 +94,7 @@ button{
 
 <script>
 
-function salvarCadastro(){
+async function salvarCadastro(){
 
     const nome =
         document.getElementById("nome").value.trim();
@@ -112,33 +111,11 @@ function salvarCadastro(){
 
     if(nome === "" || whatsapp === ""){
 
-        alert("⚠️ Preencha nome e WhatsApp");
+        alert("⚠️ Preencha nome e WhatsApp 🍀");
 
         return;
 
     }
-
-
-    const cadastro = {
-
-        nome: nome,
-        whatsapp: whatsapp,
-        pix: pix,
-        cidade: cidade
-
-    };
-
-
-    localStorage.setItem(
-        "cadastro",
-        JSON.stringify(cadastro)
-    );
-
-
-    alert("🍀 CADASTRO SALVO NO CELULAR!");
-
-        
-}
 
 
     const cadastro = {
@@ -155,20 +132,17 @@ function salvarCadastro(){
 
 
     const { data, error } = await supabase
-
         .from("participantes")
-
         .insert([cadastro])
-
         .select();
 
 
     if(error){
 
-        console.error("Erro Supabase:", error);
+        console.error(error);
 
         alert(
-            "❌ Erro ao salvar:\n" +
+            "❌ Erro ao salvar no Supabase:\n" +
             error.message
         );
 
@@ -250,4 +224,3 @@ if(salvo){
 </body>
 
 </html>
-```
