@@ -95,19 +95,13 @@ button{
 
 <script>
 
-async function salvarCadastro(){
-
-    alert("🍀 TESTE DO BOTÃO");
+function salvarCadastro(){
 
     const nome =
         document.getElementById("nome").value.trim();
 
-    alert("🍀 PEGOU O NOME: " + nome);
-
     const whatsapp =
         document.getElementById("whatsapp").value.trim();
-
-    alert("🍀 PEGOU O WHATSAPP: " + whatsapp);
 
     const pix =
         document.getElementById("pix").value.trim();
@@ -115,17 +109,35 @@ async function salvarCadastro(){
     const cidade =
         document.getElementById("cidade").value.trim();
 
-    alert("🍀 PEGOU TODOS OS CAMPOS");
-
 
     if(nome === "" || whatsapp === ""){
 
-        alert("Preencha nome e WhatsApp 🍀");
+        alert("⚠️ Preencha nome e WhatsApp");
 
         return;
 
     }
 
+
+    const cadastro = {
+
+        nome: nome,
+        whatsapp: whatsapp,
+        pix: pix,
+        cidade: cidade
+
+    };
+
+
+    localStorage.setItem(
+        "cadastro",
+        JSON.stringify(cadastro)
+    );
+
+
+    alert("🍀 CADASTRO SALVO NO CELULAR!");
+
+        
 }
 
 
