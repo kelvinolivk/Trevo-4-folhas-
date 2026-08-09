@@ -31,16 +31,13 @@ color:#3ddc84;
 }
 
 .numero{
-
 font-size:45px;
 color:#ffd700;
 font-weight:bold;
 margin:20px;
-
 }
 
 button{
-
 width:90%;
 padding:15px;
 margin:10px;
@@ -50,62 +47,69 @@ background:#0b8f3a;
 color:white;
 font-size:18px;
 font-weight:bold;
-
 }
 
 </style>
 
 </head>
 
-
 <body>
-
 
 <div class="caixa">
 
-
 <h1>🎟️ Rifa Trevo4Folhas 🍀</h1>
 
-
 <div id="dados">
-
 Carregando...
-
 </div>
-
 
 <button onclick="copiarPix()">
-
 📋 Copiar Pix
-
 </button>
-
 
 <button onclick="confirmarPagamento()">
-
 ✅ Já realizei o pagamento
-
 </button>
 
-
 </div>
-
 
 
 <script>
 
 
+// =====================================
+// RIFA ATUAL
+// =====================================
+
 let rifa =
+JSON.parse(
+localStorage.getItem("rifaAtual")
+) || null;
 
-JSON.parse(localStorage.getItem("rifaAtual")) || null;
+
+// =====================================
+// CADASTRO ATUAL
+// =====================================
+
+let cadastro =
+JSON.parse(
+localStorage.getItem("cadastro")
+) || null;
 
 
+// =====================================
+// CONFIGURAÇÃO DA RIFA
+// =====================================
 
 let configuracao =
+JSON.parse(
+localStorage.getItem("configuracaoRifa")
+) || {};
 
-JSON.parse(localStorage.getItem("configuracaoRifa")) || {};
 
-
+// =====================================
+// VERIFICAR RIFA
+// =====================================
 
 if(!rifa){
 
@@ -116,9 +120,21 @@ location.href="rifa.html";
 }
 
 
+// =====================================
+// PIX ATUAL DO CADASTRO
+// =====================================
+
+let pixAtual =
+cadastro && cadastro.pix
+? cadastro.pix
+: "Pix não informado";
+
+
+// =====================================
+// MOSTRAR DADOS
+// =====================================
 
 document.getElementById("dados").innerHTML = `
-
 
 <p>
 
@@ -175,47 +191,111 @@ ${String(rifa.numero).padStart(2,"0")}
 
 <b id="pix">
 
-${configuracao.pix || "Configure no administrador"}
+${pixAtual}
 
 </b>
 
 </p>
 
-
 `;
 
 
-
+// =====================================
+// COPIAR PIX
+// =====================================
 
 function copiarPix(){
 
-navigator.clipboard.writeText(
+let pix =
+document.getElementById("pix").innerText;
 
-document.getElementById("pix").innerText
+if(
+!pix ||
+pix === "Pix não informado"
+){
 
-);
+alert("⚠️ O cadastro não possui uma chave Pix.");
 
-alert("Pix copiado 🍀");
+return;
 
 }
 
 
+navigator.clipboard.writeText(pix)
 
+.then(function(){
+
+alert("🍀 Pix copiado!");
+
+})
+
+.catch(function(){
+
+alert("Não foi possível copiar o Pix.");
+
+});
+
+}
+
+
+// =====================================
+// CONFIRMAR PAGAMENTO
+// =====================================
 
 function confirmarPagamento(){
 
-
 let lista =
+JSON.parse(
+localStorage.getItem("rifaParticipantes")
+) || [];
 
-JSON.parse(localStorage.getItem("rifaParticipantes")) || [];
+
+// Procurar a reserva já existente
+
+let indice =
+lista.findIndex(function(p){
+
+return Number(p.numero) ===
+Number(rifa.numero) &&
+
+p.nome === rifa.nome;
+
+});
 
 
+// Se encontrou a reserva,
+// apenas atualiza o pagamento
+
+if(indice !== -1){
+
+lista[indice].pagamento =
+"🟡 Aguardando confirmação";
+
+lista[indice].data =
+new Date().toLocaleString("pt-BR");
+
+
+// Atualiza também o Pix atual
+
+lista[indice].pix =
+pixAtual;
+
+}
+
+
+// Segurança:
+// se por algum motivo a reserva ainda não existir,
+// cria somente uma vez.
+
+else{
 
 lista.push({
 
 nome:rifa.nome,
 
 whatsapp:rifa.whatsapp,
+
+pix:pixAtual,
 
 numero:rifa.numero,
 
@@ -225,6 +305,7 @@ data:new Date().toLocaleString("pt-BR")
 
 });
 
+}
 
 
 localStorage.setItem(
@@ -236,22 +317,19 @@ JSON.stringify(lista)
 );
 
 
-
 alert(
 
-"Pagamento informado! Aguarde confirmação 🍀"
+"🍀 Pagamento informado!\n\n" +
+"Aguarde a confirmação do administrador."
 
 );
 
 
 location.href="rifa.html";
 
-
 }
 
-
 </script>
-
 
 </body>
 
