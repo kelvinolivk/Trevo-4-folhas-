@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Resultado - Trevo4Folhas 🍀</title>
+<title>Resultados - Trevo4Folhas 🍀</title>
 
 <style>
 
@@ -21,9 +21,18 @@ body{
 .caixa{
     background:#222;
     padding:20px;
-    border-radius:10px;
+    border-radius:15px;
     margin:20px auto;
     max-width:400px;
+    box-shadow:0 0 15px #000;
+}
+
+h1{
+    color:#0b8f3a;
+}
+
+h2{
+    color:#6dff7d;
 }
 
 .numero{
@@ -36,127 +45,209 @@ body{
     font-weight:bold;
 }
 
+.numero-rifa{
+    display:inline-block;
+    background:#ffd700;
+    color:#111;
+    padding:18px;
+    margin:5px;
+    border-radius:12px;
+    font-size:28px;
+    font-weight:bold;
+}
+
+.linha{
+    margin:10px 0;
+}
+
 </style>
 
 </head>
 
-
 <body>
 
+<h1>🍀 Resultados dos Sorteios</h1>
 
-<h1>🍀 Resultado Trevo4Folhas</h1>
 
+<!-- LOTERIA -->
 
-<div id="resultado" class="caixa">
+<div class="caixa">
+
+<h2>🍀 Loteria Trevo4Folhas</h2>
+
+<div id="resultadoLoteria">
 
 Aguardando resultado...
 
 </div>
 
+</div>
+
+
+<!-- RIFA -->
+
+<div class="caixa">
+
+<h2>🎟️ Rifa Trevo4Folhas</h2>
+
+<div id="resultadoRifa">
+
+Aguardando resultado da Rifa...
+
+</div>
+
+</div>
 
 
 <script>
 
 
-let resultado =
+/* =========================
+   RESULTADO DA LOTERIA
+========================= */
 
-JSON.parse(localStorage.getItem("resultadoSorteio")) || null;
+let resultadoLoteria =
 
-
-
-let tela = document.getElementById("resultado");
-
-
-
-if(!resultado){
+JSON.parse(
+    localStorage.getItem("resultadoSorteio")
+) || null;
 
 
-tela.innerHTML =
-
-"🍀 Nenhum sorteio realizado ainda.";
-
-
-}else{
+let telaLoteria =
+document.getElementById("resultadoLoteria");
 
 
-let html = "";
+if(!resultadoLoteria){
 
-
-
-html += "📅 Data do sorteio:<br>";
-
-html += resultado.data;
-
-
-html += "<br><br>";
-
-
-
-html += "💰 Prêmio:<br>";
-
-html += resultado.premio;
-
-
-html += "<br><br>";
-
-
-
-html += "🎲 Números sorteados:<br><br>";
-
-
-
-resultado.numeros.forEach(function(n){
-
-
-html +=
-
-"<span class='numero'>"+n+"</span>";
-
-
-});
-
-
-
-html += "<br><br>";
-
-
-
-if(resultado.vencedores[0] === "🍀 Acumulou"){
-
-
-html +=
-
-"🍀 <b>Acumulou!</b><br><br>Nenhum ganhador neste sorteio.";
-
+    telaLoteria.innerHTML =
+        "🍀 Nenhum sorteio da loteria realizado ainda.";
 
 }else{
 
+    let html = "";
 
-html +=
+    html +=
+        "📅 <b>Data do sorteio:</b><br>" +
+        resultadoLoteria.data;
 
-"🏆 <b>Vencedor(es):</b><br><br>";
+    html += "<br><br>";
+
+    html +=
+        "💰 <b>Prêmio:</b><br>" +
+        resultadoLoteria.premio;
+
+    html += "<br><br>";
+
+    html +=
+        "🎲 <b>Números sorteados:</b><br><br>";
 
 
+    resultadoLoteria.numeros.forEach(function(n){
 
-resultado.vencedores.forEach(function(v){
+        html +=
+            "<span class='numero'>" +
+            n +
+            "</span>";
+
+    });
 
 
-html += "👤 " + v + "<br>";
+    html += "<br><br>";
 
 
-});
+    if(
+        resultadoLoteria.vencedores &&
+        resultadoLoteria.vencedores[0] === "🍀 Acumulou"
+    ){
 
+        html +=
+            "🍀 <b>Acumulou!</b><br><br>" +
+            "Nenhum ganhador neste sorteio.";
+
+    }else{
+
+        html +=
+            "🏆 <b>Vencedor(es):</b><br><br>";
+
+
+        resultadoLoteria.vencedores.forEach(function(v){
+
+            html +=
+                "👤 " + v + "<br>";
+
+        });
+
+    }
+
+
+    telaLoteria.innerHTML = html;
 
 }
 
 
 
-tela.innerHTML = html;
+/* =========================
+   RESULTADO DA RIFA
+========================= */
 
+let resultadoRifa =
+
+JSON.parse(
+    localStorage.getItem("resultadoRifa")
+) || null;
+
+
+let telaRifa =
+document.getElementById("resultadoRifa");
+
+
+if(!resultadoRifa){
+
+    telaRifa.innerHTML =
+        "🎟️ Nenhum sorteio da Rifa realizado ainda.";
+
+}else{
+
+    let html = "";
+
+    html +=
+        "📅 <b>Data do sorteio:</b><br>" +
+        resultadoRifa.data;
+
+    html += "<br><br>";
+
+
+    html +=
+        "🎟️ <b>Número sorteado:</b><br><br>";
+
+
+    html +=
+        "<span class='numero-rifa'>" +
+        String(resultadoRifa.numero).padStart(2,"0") +
+        "</span>";
+
+
+    html += "<br><br>";
+
+
+    html +=
+        "🏆 <b>Ganhador:</b><br><br>" +
+        "👤 " +
+        (resultadoRifa.nome || "Não informado");
+
+
+    if(resultadoRifa.whatsapp){
+
+        html +=
+            "<br><br>📱 " +
+            resultadoRifa.whatsapp;
+
+    }
+
+
+    telaRifa.innerHTML = html;
 
 }
-
-
 
 </script>
 
