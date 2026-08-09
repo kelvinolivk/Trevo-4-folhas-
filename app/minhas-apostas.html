@@ -9,7 +9,6 @@
 
 <title>Minhas Apostas 🍀</title>
 
-
 <style>
 
 body{
@@ -28,13 +27,17 @@ text-align:center;
 
 }
 
-
 h1{
 
 color:#3ddc84;
 
 }
 
+h2{
+
+color:#6dff7d;
+
+}
 
 input{
 
@@ -53,7 +56,6 @@ border:none;
 font-size:16px;
 
 }
-
 
 button{
 
@@ -79,7 +81,6 @@ cursor:pointer;
 
 }
 
-
 .caixa{
 
 max-width:400px;
@@ -94,9 +95,33 @@ border-radius:15px;
 
 }
 
+.rifa{
+
+border:2px solid #00ff66;
+
+}
+
+.numero-rifa{
+
+display:inline-block;
+
+background:#ffd700;
+
+color:#111;
+
+font-size:32px;
+
+font-weight:bold;
+
+padding:15px 25px;
+
+border-radius:15px;
+
+margin:10px;
+
+}
 
 </style>
-
 
 </head>
 
@@ -108,18 +133,13 @@ border-radius:15px;
 
 
 <p>
-
 Digite o nome usado no cadastro.
-
 </p>
 
 
 <input
-
 type="text"
-
 id="nome"
-
 placeholder="Seu nome">
 
 
@@ -139,6 +159,7 @@ placeholder="Seu nome">
 
 </button>
 
+
 <script>
 
 
@@ -150,41 +171,64 @@ let nome =
 document.getElementById("nome").value.trim();
 
 
+if(nome === ""){
 
-let participantes =
+alert("Digite seu nome 🍀");
 
-JSON.parse(localStorage.getItem("participantes")) || [];
+return;
 
+}
 
 
 let html = "";
 
 
+// =====================================
+// LOTERIA
+// =====================================
+
+let participantes =
+
+JSON.parse(
+
+localStorage.getItem("participantes")
+
+) || [];
+
+
+let encontrouLoteria = false;
+
 
 participantes.forEach(function(p){
 
 
-
 if(
 
-p.nome.toLowerCase() == nome.toLowerCase()
+p.nome &&
+
+p.nome.toLowerCase() === nome.toLowerCase()
 
 ){
 
 
+encontrouLoteria = true;
+
 
 html += `
-
 
 <div class="caixa">
 
 
 <h2>
-
-👤 ${p.nome}
-
+🎟️ Loteria
 </h2>
 
+
+<p>
+
+👤 <b>${p.nome}</b>
+
+</p>
 
 
 <p>
@@ -196,7 +240,6 @@ ${p.whatsapp || "Não informado"}
 </p>
 
 
-
 <p>
 
 <b>💳 Pix:</b><br>
@@ -204,7 +247,6 @@ ${p.whatsapp || "Não informado"}
 ${p.pix || "Não informado"}
 
 </p>
-
 
 
 <p>
@@ -216,15 +258,13 @@ ${p.cidade || "Não informado"}
 </p>
 
 
-
 <p>
 
 <b>🍀 Números:</b><br>
 
-${p.numero}
+${p.numero || "Nenhum número"}
 
 </p>
-
 
 
 <p>
@@ -236,57 +276,137 @@ ${p.data || "Não informado"}
 </p>
 
 
+<p>
+
+<b>💰 Status:</b><br>
+
+${p.pagamento || "Pendente"}
+
+</p>
+
+
+</div>
+
+`;
+
+}
+
+});
+
+
+// =====================================
+// RIFA
+// =====================================
+
+let rifaParticipantes =
+
+JSON.parse(
+
+localStorage.getItem("rifaParticipantes")
+
+) || [];
+
+
+let encontrouRifa = false;
+
+
+rifaParticipantes.forEach(function(r){
+
+
+if(
+
+r.nome &&
+
+r.nome.toLowerCase() === nome.toLowerCase()
+
+){
+
+
+encontrouRifa = true;
+
+
+html += `
+
+<div class="caixa rifa">
+
+
+<h2>
+🎟️ Rifa Trevo4Folhas
+</h2>
+
+
+<p>
+
+👤 <b>${r.nome}</b>
+
+</p>
+
+
+<p>
+
+<b>📱 WhatsApp:</b><br>
+
+${r.whatsapp || "Não informado"}
+
+</p>
+
+
+<p>
+
+<b>🎟️ Número da Rifa:</b>
+
+</p>
+
+
+<div class="numero-rifa">
+
+${String(r.numero).padStart(2,"0")}
+
+</div>
+
 
 <p>
 
 <b>💰 Status:</b><br>
 
-${p.pagamento}
+${r.pagamento || "🟡 Aguardando pagamento"}
 
 </p>
 
 
-
 </div>
-
 
 `;
 
-
-
 }
-
-
 
 });
 
 
+// =====================================
+// NENHUM RESULTADO
+// =====================================
 
-if(html==""){
-
-
+if(!encontrouLoteria && !encontrouRifa){
 
 html = `
 
-
 <div class="caixa">
 
-Nenhuma aposta encontrada para esse nome.
+Nenhuma aposta ou rifa encontrada para esse nome.
 
 </div>
 
-
 `;
-
-
 
 }
 
 
+// =====================================
+// MOSTRAR RESULTADO
+// =====================================
 
 document.getElementById("resultado").innerHTML = html;
-
-
 
 }
 
@@ -295,4 +415,4 @@ document.getElementById("resultado").innerHTML = html;
 
 </body>
 
-</html>  
+</html>
