@@ -12,164 +12,101 @@
 <style>
 
 body{
-
 margin:0;
-
 padding:20px;
-
 background:#111;
-
 color:white;
-
 font-family:Arial,sans-serif;
-
 text-align:center;
-
 }
 
 h1{
-
 color:#3ddc84;
-
 }
 
 h2{
-
 color:#6dff7d;
-
 }
 
 input{
-
 width:90%;
-
 max-width:350px;
-
 padding:12px;
-
 margin:10px 0;
-
 border-radius:10px;
-
 border:none;
-
 font-size:16px;
-
 }
 
 button{
-
 width:90%;
-
 max-width:350px;
-
 padding:15px;
-
 margin:10px 0;
-
 border:none;
-
 border-radius:10px;
-
 background:#19a34a;
-
 color:white;
-
 font-size:17px;
-
 cursor:pointer;
-
 }
 
 .caixa{
-
 max-width:400px;
-
 margin:20px auto;
-
 background:#222;
-
 padding:20px;
-
 border-radius:15px;
-
 }
 
 .rifa{
-
 border:2px solid #00ff66;
-
 }
 
 .numero-rifa{
-
 display:inline-block;
-
 background:#ffd700;
-
 color:#111;
-
 font-size:32px;
-
 font-weight:bold;
-
 padding:15px 25px;
-
 border-radius:15px;
-
 margin:10px;
-
 }
 
 </style>
 
 </head>
 
-
 <body>
 
-
 <h1>🍀 Minhas Apostas</h1>
-
 
 <p>
 Digite o nome usado no cadastro.
 </p>
-
 
 <input
 type="text"
 id="nome"
 placeholder="Seu nome">
 
-
 <button onclick="buscar()">
-
 🔍 Buscar minhas apostas
-
 </button>
-
 
 <div id="resultado"></div>
 
-
 <button onclick="location.href='../index.html'">
-
 🏠 Voltar ao início
-
 </button>
-
 
 <script>
 
-
-function buscar(){
-
+async function buscar(){
 
 let nome =
-
 document.getElementById("nome").value.trim();
-
 
 if(nome === ""){
 
@@ -179,8 +116,17 @@ return;
 
 }
 
-
 let html = "";
+
+
+// =====================================
+// PEGAR CADASTRO ATUAL
+// =====================================
+
+let cadastro =
+JSON.parse(
+localStorage.getItem("cadastro")
+) || {};
 
 
 // =====================================
@@ -188,102 +134,63 @@ let html = "";
 // =====================================
 
 let participantes =
-
 JSON.parse(
-
 localStorage.getItem("participantes")
-
 ) || [];
-
 
 let encontrouLoteria = false;
 
 
 participantes.forEach(function(p){
 
-
 if(
-
 p.nome &&
-
 p.nome.toLowerCase() === nome.toLowerCase()
-
 ){
 
-
 encontrouLoteria = true;
-
 
 html += `
 
 <div class="caixa">
 
-
 <h2>
 🎟️ Loteria
 </h2>
 
-
 <p>
-
 👤 <b>${p.nome}</b>
-
 </p>
 
-
 <p>
-
 <b>📱 WhatsApp:</b><br>
-
 ${p.whatsapp || "Não informado"}
-
 </p>
 
-
 <p>
-
 <b>💳 Pix:</b><br>
-
-${p.pix || "Não informado"}
-
+${cadastro.pix || p.pix || "Não informado"}
 </p>
 
-
 <p>
-
 <b>📍 Cidade:</b><br>
-
-${p.cidade || "Não informado"}
-
+${cadastro.cidade || p.cidade || "Não informado"}
 </p>
 
-
 <p>
-
 <b>🍀 Números:</b><br>
-
 ${p.numero || "Nenhum número"}
-
 </p>
 
-
 <p>
-
 <b>📅 Data da aposta:</b><br>
-
 ${p.data || "Não informado"}
-
 </p>
-
 
 <p>
-
 <b>💰 Status:</b><br>
-
 ${p.pagamento || "Pendente"}
-
 </p>
-
 
 </div>
 
@@ -299,80 +206,61 @@ ${p.pagamento || "Pendente"}
 // =====================================
 
 let rifaParticipantes =
-
 JSON.parse(
-
 localStorage.getItem("rifaParticipantes")
-
 ) || [];
-
 
 let encontrouRifa = false;
 
 
 rifaParticipantes.forEach(function(r){
 
-
 if(
-
 r.nome &&
-
 r.nome.toLowerCase() === nome.toLowerCase()
-
 ){
 
-
 encontrouRifa = true;
-
 
 html += `
 
 <div class="caixa rifa">
 
-
 <h2>
 🎟️ Rifa Trevo4Folhas
 </h2>
 
-
 <p>
-
 👤 <b>${r.nome}</b>
-
 </p>
 
-
 <p>
-
 <b>📱 WhatsApp:</b><br>
-
 ${r.whatsapp || "Não informado"}
-
 </p>
-
 
 <p>
-
-<b>🎟️ Número da Rifa:</b>
-
+<b>💳 Pix:</b><br>
+${cadastro.pix || r.pix || "Não informado"}
 </p>
 
+<p>
+<b>📍 Cidade:</b><br>
+${cadastro.cidade || r.cidade || "Não informado"}
+</p>
+
+<p>
+<b>🎟️ Número da Rifa:</b>
+</p>
 
 <div class="numero-rifa">
-
 ${String(r.numero).padStart(2,"0")}
-
 </div>
 
-
 <p>
-
 <b>💰 Status:</b><br>
-
 ${r.pagamento || "🟡 Aguardando pagamento"}
-
 </p>
-
 
 </div>
 
@@ -403,7 +291,7 @@ Nenhuma aposta ou rifa encontrada para esse nome.
 
 
 // =====================================
-// MOSTRAR RESULTADO
+// MOSTRAR
 // =====================================
 
 document.getElementById("resultado").innerHTML = html;
@@ -411,7 +299,6 @@ document.getElementById("resultado").innerHTML = html;
 }
 
 </script>
-
 
 </body>
 
