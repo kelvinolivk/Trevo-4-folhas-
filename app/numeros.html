@@ -4,9 +4,7 @@
 <head>
 
 <meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>Trevo4Folhas 🍀</title>
 
@@ -19,149 +17,90 @@ box-sizing:border-box;
 }
 
 body{
-
 background:#071307;
-
 font-family:Arial;
-
 color:white;
-
 text-align:center;
-
 overflow:hidden;
-
 }
 
 #fundo{
-
 position:fixed;
-
 top:0;
-
 left:0;
-
 width:100%;
-
 height:100%;
-
 z-index:-1;
-
 }
 
 h1{
-
 margin-top:20px;
-
 font-size:34px;
-
 color:#6dff7d;
-
 text-shadow:0 0 15px #00ff55;
-
 }
 
 #contador{
-
 margin-top:10px;
-
 font-size:20px;
-
 }
 
 #lista{
-
 max-width:430px;
-
 margin:auto;
-
 margin-top:25px;
-
 display:grid;
-
 grid-template-columns:repeat(5,1fr);
-
 gap:14px;
-
 padding:10px;
-
 }
 
 .trevo{
-
 height:72px;
-
 background:#114d20;
-
 border:2px solid #00ff66;
-
 border-radius:18px;
-
 display:flex;
-
 flex-direction:column;
-
 justify-content:center;
-
 align-items:center;
-
 font-size:22px;
-
 cursor:pointer;
-
 transition:.25s;
-
 box-shadow:0 0 10px #0f0;
-
 }
 
 .trevo span:last-child{
-
 font-size:20px;
-
 font-weight:bold;
-
 }
 
 .trevo:hover{
-
 transform:scale(1.08);
-
 }
 
 .selecionado{
-
 background:#ffd700;
-
 color:black;
-
 box-shadow:0 0 20px gold;
-
 transform:scale(1.08);
-
 }
 
 button{
-
 margin-top:20px;
-
 padding:15px;
-
 width:90%;
-
 max-width:400px;
-
 border:none;
-
 border-radius:12px;
-
 background:#0b8f3a;
-
 color:white;
-
 font-size:18px;
-
 font-weight:bold;
+}
 
+button:disabled{
+opacity:0.6;
 }
 
 </style>
@@ -175,12 +114,14 @@ font-weight:bold;
 <h1>🍀 Escolha 4 números</h1>
 
 <h2 id="contador">
-
 Selecionados: 0/4
-
 </h2>
 
 <div id="lista"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase.js"></script>
 
 <script>
 
@@ -198,6 +139,11 @@ location.href="cadastro.html";
 let escolhidos=[];
 
 const lista=document.getElementById("lista");
+
+
+// =====================================
+// CRIAR NÚMEROS
+// =====================================
 
 for(let i=1;i<=15;i++){
 
@@ -217,7 +163,7 @@ trevo.onclick=function(){
 
 if(escolhidos.includes(i)){
 
-escolhidos=escolhidos.filter(n=>n!=i);
+escolhidos=escolhidos.filter(n=>n!==i);
 
 trevo.classList.remove("selecionado");
 
@@ -238,7 +184,6 @@ trevo.classList.add("selecionado");
 }
 
 document.getElementById("contador").innerHTML=
-
 "Selecionados: "+escolhidos.length+"/4";
 
 };
@@ -246,9 +191,15 @@ document.getElementById("contador").innerHTML=
 lista.appendChild(trevo);
 
 }
-function confirmar(){
 
-if(escolhidos.length != 4){
+
+// =====================================
+// CONFIRMAR APOSTA
+// =====================================
+
+async function confirmar(){
+
+if(escolhidos.length !== 4){
 
 alert("Escolha exatamente 4 números 🍀");
 
@@ -256,11 +207,8 @@ return;
 
 }
 
-
-let cadastro = JSON.parse(
-localStorage.getItem("cadastro")
-);
-
+let cadastro =
+JSON.parse(localStorage.getItem("cadastro"));
 
 if(!cadastro){
 
@@ -272,63 +220,104 @@ return;
 
 }
 
+let botao =
+document.querySelector("#botaoConfirmar");
+
+botao.disabled=true;
+
+botao.innerText="⏳ Salvando...";
 
 
-let participantes =
-JSON.parse(localStorage.getItem("participantes")) || [];
+try{
 
-
-
-participantes.push({
+const aposta = {
 
 nome: cadastro.nome,
 
 whatsapp: cadastro.whatsapp,
 
-pix: cadastro.pix,
+pix: cadastro.pix || "",
 
-cidade: cadastro.cidade,
+cidade: cadastro.cidade || "",
 
 numero: JSON.stringify(escolhidos),
 
-pagamento:"🟡 Aguardando pagamento",
+pagamento: "🟡 Aguardando pagamento",
 
-data:new Date().toLocaleString("pt-BR")
+data: new Date().toLocaleString("pt-BR")
 
-});
+};
 
 
+const { data, error } =
 
-localStorage.setItem(
+await supabaseClient
+.from("participantes")
+.insert([aposta])
+.select();
 
-"participantes",
 
-JSON.stringify(participantes)
+if(error){
 
+console.error("Erro Supabase:",error);
+
+alert(
+"❌ Erro ao salvar sua aposta:\n\n"+
+error.message
 );
 
+botao.disabled=false;
+
+botao.innerText="✅ Confirmar aposta";
+
+return;
+
+}
 
 
 localStorage.setItem(
-
 "numeroEscolhido",
-
 JSON.stringify(escolhidos)
-
 );
 
 
+localStorage.setItem(
+"apostaAtual",
+JSON.stringify(aposta)
+);
 
-alert("🍀 Aposta registrada com sucesso!");
 
+alert(
+"🍀 Aposta registrada com sucesso!\n\n"+
+"Números: "+
+escolhidos.join(" - ")
+);
 
 
 location.href="pix.html";
 
 
+}catch(error){
+
+console.error(error);
+
+alert(
+"❌ Erro de conexão com o Supabase:\n\n"+
+error.message
+);
+
+botao.disabled=false;
+
+botao.innerText="✅ Confirmar aposta";
+
+}
+
 }
 
 
+// =====================================
+// LIMPAR
+// =====================================
 
 function limpar(){
 
@@ -341,14 +330,14 @@ t.classList.remove("selecionado");
 });
 
 document.getElementById("contador").innerHTML=
-
 "Selecionados: 0/4";
 
 }
 
 
-
-/* ---------- Fundo animado ---------- */
+// =====================================
+// FUNDO ANIMADO
+// =====================================
 
 const canvas=document.getElementById("fundo");
 
@@ -385,15 +374,22 @@ velocidade:0.01+Math.random()*0.03
 });
 
 }
+
 function animar(){
 
-ctx.clearRect(0,0,canvas.width,canvas.height);
+ctx.clearRect(
+0,
+0,
+canvas.width,
+canvas.height
+);
 
 trevos.forEach(function(t){
 
 t.alpha+=t.velocidade;
 
-ctx.globalAlpha=0.20+0.30*Math.sin(t.alpha);
+ctx.globalAlpha=
+0.20+0.30*Math.sin(t.alpha);
 
 ctx.font=t.tamanho+"px Arial";
 
@@ -411,7 +407,7 @@ animar();
 
 <br><br>
 
-<button onclick="confirmar()">
+<button id="botaoConfirmar" onclick="confirmar()">
 ✅ Confirmar aposta
 </button>
 
