@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -119,9 +120,25 @@ Selecionados: 0/4
 
 <div id="lista"></div>
 
+<br><br>
+
+<button id="botaoConfirmar" onclick="confirmar()">
+✅ Confirmar aposta
+</button>
+
+<br>
+
+<button onclick="limpar()">
+🧹 Limpar seleção
+</button>
+
+
+<!-- SUPABASE -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="supabase.js"></script>
+
 
 <script>
 
@@ -136,22 +153,24 @@ location.href="cadastro.html";
 
 }
 
-let escolhidos=[];
+let escolhidos = [];
 
-const lista=document.getElementById("lista");
+const lista =
+document.getElementById("lista");
 
 
 // =====================================
 // CRIAR NÚMEROS
 // =====================================
 
-for(let i=1;i<=15;i++){
+for(let i = 1; i <= 15; i++){
 
-let trevo=document.createElement("div");
+let trevo =
+document.createElement("div");
 
-trevo.className="trevo";
+trevo.className = "trevo";
 
-trevo.innerHTML=`
+trevo.innerHTML = `
 
 <span>🍀</span>
 
@@ -159,19 +178,26 @@ trevo.innerHTML=`
 
 `;
 
-trevo.onclick=function(){
+trevo.onclick = function(){
 
 if(escolhidos.includes(i)){
 
-escolhidos=escolhidos.filter(n=>n!==i);
+escolhidos =
+escolhidos.filter(
+n => n !== i
+);
 
-trevo.classList.remove("selecionado");
+trevo.classList.remove(
+"selecionado"
+);
 
 }else{
 
-if(escolhidos.length>=4){
+if(escolhidos.length >= 4){
 
-alert("Você pode escolher apenas 4 números 🍀");
+alert(
+"Você pode escolher apenas 4 números 🍀"
+);
 
 return;
 
@@ -179,12 +205,18 @@ return;
 
 escolhidos.push(i);
 
-trevo.classList.add("selecionado");
+trevo.classList.add(
+"selecionado"
+);
 
 }
 
-document.getElementById("contador").innerHTML=
-"Selecionados: "+escolhidos.length+"/4";
+document.getElementById(
+"contador"
+).innerHTML =
+"Selecionados: " +
+escolhidos.length +
+"/4";
 
 };
 
@@ -201,50 +233,84 @@ async function confirmar(){
 
 if(escolhidos.length !== 4){
 
-alert("Escolha exatamente 4 números 🍀");
+alert(
+"Escolha exatamente 4 números 🍀"
+);
 
 return;
 
 }
 
+
 let cadastro =
-JSON.parse(localStorage.getItem("cadastro"));
+JSON.parse(
+localStorage.getItem("cadastro")
+);
+
 
 if(!cadastro){
 
-alert("Faça seu cadastro primeiro 🍀");
+alert(
+"Faça seu cadastro primeiro 🍀"
+);
 
-location.href="cadastro.html";
+location.href =
+"cadastro.html";
 
 return;
 
 }
 
+
 let botao =
-document.querySelector("#botaoConfirmar");
+document.getElementById(
+"botaoConfirmar"
+);
 
-botao.disabled=true;
+botao.disabled = true;
 
-botao.innerText="⏳ Salvando...";
+botao.innerText =
+"⏳ Salvando...";
 
 
 try{
 
+if(
+typeof supabaseClient ===
+"undefined"
+){
+
+throw new Error(
+"Conexão com o Supabase não foi carregada."
+);
+
+}
+
+
 const aposta = {
 
-nome: cadastro.nome,
+nome:
+cadastro.nome,
 
-whatsapp: cadastro.whatsapp,
+whatsapp:
+cadastro.whatsapp,
 
-pix: cadastro.pix || "",
+pix:
+cadastro.pix || "",
 
-cidade: cadastro.cidade || "",
+cidade:
+cadastro.cidade || "",
 
-numero: JSON.stringify(escolhidos),
+numero:
+JSON.stringify(escolhidos),
 
-pagamento: "🟡 Aguardando pagamento",
+pagamento:
+"🟡 Aguardando pagamento",
 
-data: new Date().toLocaleString("pt-BR")
+data:
+new Date().toLocaleString(
+"pt-BR"
+)
 
 };
 
@@ -252,63 +318,97 @@ data: new Date().toLocaleString("pt-BR")
 const { data, error } =
 
 await supabaseClient
+
 .from("participantes")
+
 .insert([aposta])
+
 .select();
 
 
 if(error){
 
-console.error("Erro Supabase:",error);
+console.error(
+"Erro Supabase:",
+error
+);
 
 alert(
-"❌ Erro ao salvar sua aposta:\n\n"+
+"❌ Erro ao salvar sua aposta:\n\n" +
 error.message
 );
 
-botao.disabled=false;
+botao.disabled = false;
 
-botao.innerText="✅ Confirmar aposta";
+botao.innerText =
+"✅ Confirmar aposta";
 
 return;
 
 }
 
 
+// Guarda os números escolhidos
+// para a tela de pagamento
+
 localStorage.setItem(
+
 "numeroEscolhido",
-JSON.stringify(escolhidos)
+
+JSON.stringify(
+escolhidos
+)
+
 );
 
 
+// Guarda a aposta atual
+
 localStorage.setItem(
+
 "apostaAtual",
-JSON.stringify(aposta)
+
+JSON.stringify(
+aposta
+)
+
 );
 
 
 alert(
-"🍀 Aposta registrada com sucesso!\n\n"+
-"Números: "+
+
+"🍀 Aposta registrada com sucesso!\n\n" +
+
+"Números: " +
+
 escolhidos.join(" - ")
+
 );
 
 
-location.href="pix.html";
+location.href =
+"pix.html";
 
 
 }catch(error){
 
-console.error(error);
-
-alert(
-"❌ Erro de conexão com o Supabase:\n\n"+
-error.message
+console.error(
+"Erro:",
+error
 );
 
-botao.disabled=false;
+alert(
 
-botao.innerText="✅ Confirmar aposta";
+"❌ Erro de conexão com o Supabase:\n\n" +
+
+error.message
+
+);
+
+botao.disabled = false;
+
+botao.innerText =
+"✅ Confirmar aposta";
 
 }
 
@@ -321,15 +421,21 @@ botao.innerText="✅ Confirmar aposta";
 
 function limpar(){
 
-escolhidos=[];
+escolhidos = [];
 
-document.querySelectorAll(".trevo").forEach(function(t){
+document
+.querySelectorAll(".trevo")
+.forEach(function(t){
 
-t.classList.remove("selecionado");
+t.classList.remove(
+"selecionado"
+);
 
 });
 
-document.getElementById("contador").innerHTML=
+document.getElementById(
+"contador"
+).innerHTML =
 "Selecionados: 0/4";
 
 }
@@ -339,41 +445,61 @@ document.getElementById("contador").innerHTML=
 // FUNDO ANIMADO
 // =====================================
 
-const canvas=document.getElementById("fundo");
+const canvas =
+document.getElementById("fundo");
 
-const ctx=canvas.getContext("2d");
+const ctx =
+canvas.getContext("2d");
+
 
 function redimensionar(){
 
-canvas.width=window.innerWidth;
+canvas.width =
+window.innerWidth;
 
-canvas.height=window.innerHeight;
+canvas.height =
+window.innerHeight;
 
 }
 
 redimensionar();
 
-window.onresize=redimensionar;
+window.onresize =
+redimensionar;
 
-let trevos=[];
 
-for(let i=0;i<90;i++){
+let trevos = [];
+
+
+for(let i = 0; i < 90; i++){
 
 trevos.push({
 
-x:Math.random()*canvas.width,
+x:
+Math.random() *
+canvas.width,
 
-y:Math.random()*canvas.height,
+y:
+Math.random() *
+canvas.height,
 
-tamanho:10+Math.random()*18,
+tamanho:
+10 +
+Math.random() *
+18,
 
-alpha:Math.random(),
+alpha:
+Math.random(),
 
-velocidade:0.01+Math.random()*0.03
+velocidade:
+0.01 +
+Math.random() *
+0.03
 
 });
 
 }
+
 
 function animar(){
 
@@ -384,20 +510,35 @@ canvas.width,
 canvas.height
 );
 
-trevos.forEach(function(t){
 
-t.alpha+=t.velocidade;
+trevos.forEach(
+function(t){
 
-ctx.globalAlpha=
-0.20+0.30*Math.sin(t.alpha);
+t.alpha +=
+t.velocidade;
 
-ctx.font=t.tamanho+"px Arial";
+ctx.globalAlpha =
+0.20 +
+0.30 *
+Math.sin(t.alpha);
 
-ctx.fillText("🍀",t.x,t.y);
+ctx.font =
+t.tamanho +
+"px Arial";
 
-});
+ctx.fillText(
+"🍀",
+t.x,
+t.y
+);
 
-requestAnimationFrame(animar);
+}
+);
+
+
+requestAnimationFrame(
+animar
+);
 
 }
 
@@ -405,18 +546,7 @@ animar();
 
 </script>
 
-<br><br>
-
-<button id="botaoConfirmar" onclick="confirmar()">
-✅ Confirmar aposta
-</button>
-
-<br>
-
-<button onclick="limpar()">
-🧹 Limpar seleção
-</button>
-
 </body>
 
 </html>
+```
