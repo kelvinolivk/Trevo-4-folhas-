@@ -900,68 +900,73 @@ alert("Configuração da rifa salva 🍀");
 }
 
 function sortearRifa(){
-if(participantes.length < 100){
 
-let faltam = 100 - participantes.length;
+    let rifa =
+        JSON.parse(localStorage.getItem("rifaParticipantes")) || [];
 
-alert(
-"🍀 Ainda não é possível realizar o sorteio.\n\n" +
-"Foram vendidos apenas " + participantes.length + " números.\n" +
-"Faltam " + faltam + " números para completar a rifa."
-);
 
-return;
+    if(rifa.length < 100){
 
-}
-let participantes = JSON.parse(
-localStorage.getItem("rifaParticipantes")
-) || [];
+        let faltam = 100 - rifa.length;
 
-if(participantes.length === 0){
+        alert(
+            "🍀 Ainda não é possível realizar o sorteio.\n\n" +
+            "Foram vendidos apenas " + rifa.length + " números.\n" +
+            "Faltam " + faltam + " números para completar a rifa."
+        );
 
-alert("Nenhuma rifa foi vendida ainda.");
+        return;
 
-return;
+    }
 
-}
 
-// Sorteia apenas entre os números vendidos
+    if(rifa.length === 0){
 
-let vencedor = participantes[
-Math.floor(Math.random() * participantes.length)
-];
+        alert("Nenhum número da rifa foi vendido ainda.");
 
-// Salva o resultado
+        return;
 
-localStorage.setItem(
+    }
 
-"resultadoRifa",
 
-JSON.stringify({
+    // Sorteia entre os 100 números vendidos
 
-numero: vencedor.numero,
+    let vencedor =
+        rifa[Math.floor(Math.random() * rifa.length)];
 
-nome: vencedor.nome,
 
-whatsapp: vencedor.whatsapp,
+    // Salva o resultado
 
-data: new Date().toLocaleString("pt-BR")
+    localStorage.setItem(
 
-})
+        "resultadoRifa",
 
-);
+        JSON.stringify({
 
-alert(
+            numero: vencedor.numero,
 
-"🎉 RIFA SORTEADA!\n\n" +
+            nome: vencedor.nome,
 
-"🎟️ Número: " + vencedor.numero +
+            whatsapp: vencedor.whatsapp,
 
-"\n👤 Ganhador: " + vencedor.nome +
+            data: new Date().toLocaleString("pt-BR")
 
-"\n📱 " + vencedor.whatsapp
+        })
 
-);
+    );
+
+
+    alert(
+
+        "🎉 RIFA SORTEADA!\n\n" +
+
+        "🎟️ Número: " + vencedor.numero +
+
+        "\n👤 Ganhador: " + vencedor.nome +
+
+        "\n📱 " + vencedor.whatsapp
+
+    );
 
 }
 </script>
