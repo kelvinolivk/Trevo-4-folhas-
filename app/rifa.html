@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
 
 <meta charset="UTF-8">
@@ -10,91 +11,91 @@
 <style>
 
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
 body{
-background:#071307;
-font-family:Arial,sans-serif;
-color:white;
-text-align:center;
-padding:15px;
+    background:#071307;
+    font-family:Arial,sans-serif;
+    color:white;
+    text-align:center;
+    padding:15px;
 }
 
 h1{
-margin-top:20px;
-font-size:34px;
-color:#6dff7d;
-text-shadow:0 0 15px #00ff55;
+    margin-top:20px;
+    font-size:34px;
+    color:#6dff7d;
+    text-shadow:0 0 15px #00ff55;
 }
 
 p{
-margin:15px;
-font-size:18px;
+    margin:15px;
+    font-size:18px;
 }
 
 #contador{
-margin:15px;
-font-size:22px;
-font-weight:bold;
+    margin:15px;
+    font-size:22px;
+    font-weight:bold;
 }
 
 #numeros{
-max-width:430px;
-margin:auto;
-display:grid;
-grid-template-columns:repeat(5,1fr);
-gap:10px;
-padding:10px;
+    max-width:430px;
+    margin:auto;
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:10px;
+    padding:10px;
 }
 
 .numero{
-height:60px;
-background:#114d20;
-border:2px solid #00ff66;
-border-radius:12px;
-display:flex;
-justify-content:center;
-align-items:center;
-font-size:20px;
-font-weight:bold;
-cursor:pointer;
-transition:.25s;
-box-shadow:0 0 10px #0f0;
+    height:60px;
+    background:#114d20;
+    border:2px solid #00ff66;
+    border-radius:12px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:20px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.25s;
+    box-shadow:0 0 10px #0f0;
 }
 
 .numero:hover{
-transform:scale(1.06);
+    transform:scale(1.06);
 }
 
 .escolhido{
-background:#ffd700;
-color:black;
-box-shadow:0 0 20px gold;
+    background:#ffd700;
+    color:black;
+    box-shadow:0 0 20px gold;
 }
 
 .vendido{
-background:#c40000;
-border:2px solid #ff5555;
-color:white;
-cursor:not-allowed;
-box-shadow:0 0 15px red;
+    background:#c40000;
+    border:2px solid #ff5555;
+    color:white;
+    cursor:not-allowed;
+    box-shadow:0 0 15px red;
 }
 
 button{
-margin-top:20px;
-width:90%;
-max-width:400px;
-padding:15px;
-border:none;
-border-radius:12px;
-background:#0b8f3a;
-color:white;
-font-size:18px;
-font-weight:bold;
-cursor:pointer;
+    margin-top:20px;
+    width:90%;
+    max-width:400px;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    background:#0b8f3a;
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
 }
 
 </style>
@@ -112,91 +113,120 @@ Escolha um número de 1 a 100
 <h2 id="contador">
 Número escolhido: Nenhum
 </h2>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js"></script>
 
-<script>
 <div id="numeros"></div>
 
 <button onclick="confirmarRifa()">
 ✅ Confirmar número
 </button>
 
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase.js"></script>
+
+
 <script>
 
-let numeroEscolhido=null;
+let numeroEscolhido = null;
 
-let area=document.getElementById("numeros");
+let area = document.getElementById("numeros");
 
-let participantes=
-JSON.parse(localStorage.getItem("rifaParticipantes"))||[];
 
-for(let i=1;i<=100;i++){
+let participantes =
+JSON.parse(localStorage.getItem("rifaParticipantes")) || [];
 
-let botao=document.createElement("div");
 
-botao.className="numero";
+for(let i = 1; i <= 100; i++){
 
-botao.innerHTML=i.toString().padStart(2,"0");
+    let botao = document.createElement("div");
 
-let reservado=participantes.find(function(p){
+    botao.className = "numero";
 
-return Number(p.numero)===i;
+    botao.innerHTML =
+        i.toString().padStart(2,"0");
 
-});
 
-if(reservado){
+    let reservado =
+        participantes.find(function(p){
 
-botao.classList.add("vendido");
+            return Number(p.numero) === i;
 
-}else{
+        });
 
-botao.onclick=function(){
 
-document.querySelectorAll(".numero").forEach(function(n){
+    if(reservado){
 
-if(!n.classList.contains("vendido")){
+        botao.classList.add("vendido");
 
-n.classList.remove("escolhido");
+    }else{
+
+        botao.onclick = function(){
+
+            document
+            .querySelectorAll(".numero")
+            .forEach(function(n){
+
+                if(!n.classList.contains("vendido")){
+
+                    n.classList.remove("escolhido");
+
+                }
+
+            });
+
+
+            numeroEscolhido = i;
+
+            botao.classList.add("escolhido");
+
+
+            document
+            .getElementById("contador")
+            .innerHTML =
+                "Número escolhido: " +
+                i.toString().padStart(2,"0");
+
+        };
+
+    }
+
+
+    area.appendChild(botao);
 
 }
 
-});
 
-numeroEscolhido=i;
-
-botao.classList.add("escolhido");
-
-document.getElementById("contador").innerHTML=
-"Número escolhido: "+i.toString().padStart(2,"0");
-
-};
-
-}
-
-area.appendChild(botao);
-
-}
 
 async function confirmarRifa(){
 
     if(numeroEscolhido == null){
 
         alert("Escolha um número da rifa 🍀");
+
         return;
 
     }
 
 
     let cadastro =
-        JSON.parse(localStorage.getItem("cadastro"));
+        JSON.parse(
+            localStorage.getItem("cadastro")
+        );
 
 
-    if(!cadastro || !cadastro.nome || !cadastro.whatsapp){
+    if(!cadastro ||
+       !cadastro.nome ||
+       !cadastro.whatsapp){
 
-        alert("Faça o cadastro antes de participar.");
+        alert(
+            "Faça o cadastro antes de participar."
+        );
 
-        location.href = "cadastro.html";
+        location.href =
+            "cadastro.html";
 
         return;
 
@@ -204,19 +234,25 @@ async function confirmarRifa(){
 
 
     let rifa =
-        JSON.parse(localStorage.getItem("rifaParticipantes")) || [];
+        JSON.parse(
+            localStorage.getItem("rifaParticipantes")
+        ) || [];
 
 
-    let existe = rifa.find(function(p){
+    let existe =
+        rifa.find(function(p){
 
-        return Number(p.numero) === Number(numeroEscolhido);
+            return Number(p.numero) ===
+                   Number(numeroEscolhido);
 
-    });
+        });
 
 
     if(existe){
 
-        alert("Esse número já foi reservado.");
+        alert(
+            "Esse número já foi reservado."
+        );
 
         return;
 
@@ -231,87 +267,120 @@ async function confirmarRifa(){
 
         numero: numeroEscolhido,
 
-        pagamento: "🟡 Aguardando pagamento"
+        pagamento:
+            "🟡 Aguardando pagamento"
 
     };
 
 
-    document.getElementById("contador").innerHTML =
+    document
+    .getElementById("contador")
+    .innerHTML =
         "⏳ Salvando sua reserva...";
 
 
-    const { data, error } = await supabaseClient
+    try{
 
-        .from("rifa_participantes")
+        const { data, error } =
 
-        .insert([participante])
+            await supabaseClient
 
-        .select();
+            .from("rifa_participantes")
+
+            .insert([participante])
+            .select();
 
 
-    if(error){
+        if(error){
 
-        console.error(error);
+            console.error(
+                "Erro Supabase:",
+                error
+            );
+
+
+            alert(
+                "❌ Erro ao salvar a Rifa:\n" +
+                error.message
+            );
+
+
+            document
+            .getElementById("contador")
+            .innerHTML =
+                "Número escolhido: " +
+                numeroEscolhido;
+
+            return;
+
+        }
+
+
+        rifa.push(participante);
+
+
+        localStorage.setItem(
+
+            "rifaParticipantes",
+
+            JSON.stringify(rifa)
+
+        );
+
+
+        localStorage.setItem(
+
+            "rifaAtual",
+
+            JSON.stringify({
+
+                nome: cadastro.nome,
+
+                whatsapp: cadastro.whatsapp,
+
+                numero: numeroEscolhido
+
+            })
+
+        );
+
 
         alert(
-            "❌ Erro ao salvar a Rifa:\n" +
+
+            "🍀 Número " +
+            numeroEscolhido +
+            " reservado com sucesso!"
+
+        );
+
+
+        location.href =
+            "pix-rifa.html";
+
+
+    }catch(error){
+
+        console.error(
+            "Erro:",
+            error
+        );
+
+
+        alert(
+            "❌ Erro de conexão com o Supabase:\n" +
             error.message
         );
 
-        document.getElementById("contador").innerHTML =
+
+        document
+        .getElementById("contador")
+        .innerHTML =
             "Número escolhido: " +
             numeroEscolhido;
 
-        return;
-
     }
 
-
-    // Mantém também uma cópia local para a tela funcionar
-
-    rifa.push(participante);
-
-    localStorage.setItem(
-
-        "rifaParticipantes",
-
-        JSON.stringify(rifa)
-
-    );
-
-
-    localStorage.setItem(
-
-        "rifaAtual",
-
-        JSON.stringify({
-
-            nome: cadastro.nome,
-
-            whatsapp: cadastro.whatsapp,
-
-            numero: numeroEscolhido
-
-        })
-
-    );
-
-
-    alert(
-
-        "🍀 Número " +
-
-        numeroEscolhido +
-
-        " reservado com sucesso!"
-
-    );
-
-
-    location.href = "pix-rifa.html";
-
 }
-
 
 </script>
 
