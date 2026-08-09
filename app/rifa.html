@@ -175,110 +175,140 @@ area.appendChild(botao);
 
 }
 
-function confirmarRifa(){
+async function confirmarRifa(){
 
-if(numeroEscolhido==null){
+    if(numeroEscolhido == null){
 
-alert("Escolha um número da rifa 🍀");
+        alert("Escolha um número da rifa 🍀");
+        return;
 
-return;
+    }
+
+
+    let cadastro =
+        JSON.parse(localStorage.getItem("cadastro"));
+
+
+    if(!cadastro || !cadastro.nome || !cadastro.whatsapp){
+
+        alert("Faça o cadastro antes de participar.");
+
+        location.href = "cadastro.html";
+
+        return;
+
+    }
+
+
+    let rifa =
+        JSON.parse(localStorage.getItem("rifaParticipantes")) || [];
+
+
+    let existe = rifa.find(function(p){
+
+        return Number(p.numero) === Number(numeroEscolhido);
+
+    });
+
+
+    if(existe){
+
+        alert("Esse número já foi reservado.");
+
+        return;
+
+    }
+
+
+    let participante = {
+
+        nome: cadastro.nome,
+
+        whatsapp: cadastro.whatsapp,
+
+        numero: numeroEscolhido,
+
+        pagamento: "🟡 Aguardando pagamento"
+
+    };
+
+
+    document.getElementById("contador").innerHTML =
+        "⏳ Salvando sua reserva...";
+
+
+    const { data, error } = await supabaseClient
+
+        .from("rifa_participantes")
+
+        .insert([participante])
+
+        .select();
+
+
+    if(error){
+
+        console.error(error);
+
+        alert(
+            "❌ Erro ao salvar a Rifa:\n" +
+            error.message
+        );
+
+        document.getElementById("contador").innerHTML =
+            "Número escolhido: " +
+            numeroEscolhido;
+
+        return;
+
+    }
+
+
+    // Mantém também uma cópia local para a tela funcionar
+
+    rifa.push(participante);
+
+    localStorage.setItem(
+
+        "rifaParticipantes",
+
+        JSON.stringify(rifa)
+
+    );
+
+
+    localStorage.setItem(
+
+        "rifaAtual",
+
+        JSON.stringify({
+
+            nome: cadastro.nome,
+
+            whatsapp: cadastro.whatsapp,
+
+            numero: numeroEscolhido
+
+        })
+
+    );
+
+
+    alert(
+
+        "🍀 Número " +
+
+        numeroEscolhido +
+
+        " reservado com sucesso!"
+
+    );
+
+
+    location.href = "pix-rifa.html";
 
 }
 
-
-/* PEGA O CADASTRO ATUAL */
-
-let cadastro=
-JSON.parse(localStorage.getItem("cadastro"));
-
-
-if(!cadastro || !cadastro.nome || !cadastro.whatsapp){
-
-alert("Faça o cadastro antes de participar.");
-
-location.href="cadastro.html";
-
-return;
-
-}
-
-
-let nome=cadastro.nome;
-
-let whatsapp=cadastro.whatsapp;
-
-
-let participantes=
-JSON.parse(localStorage.getItem("rifaParticipantes"))||[];
-
-
-let existe=participantes.find(function(p){
-
-return Number(p.numero)===Number(numeroEscolhido);
-
-});
-
-
-if(existe){
-
-alert("Esse número já foi reservado.");
-
-return;
-
-}
-
-
-participantes.push({
-
-nome:nome,
-
-whatsapp:whatsapp,
-
-numero:numeroEscolhido,
-
-pagamento:"🟡 Aguardando pagamento"
-
-});
-
-
-localStorage.setItem(
-
-"rifaParticipantes",
-
-JSON.stringify(participantes)
-
-);
-
-
-localStorage.setItem(
-
-"rifaAtual",
-
-JSON.stringify({
-
-nome:nome,
-
-whatsapp:whatsapp,
-
-numero:numeroEscolhido
-
-})
-
-);
-
-
-alert(
-
-"🍀 Número "+numeroEscolhido+
-
-" reservado com sucesso!"
-
-);
-
-
-location.href="pix-rifa.html";
-
-}
 
 </script>
 
