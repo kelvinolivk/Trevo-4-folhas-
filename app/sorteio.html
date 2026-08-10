@@ -69,7 +69,9 @@ h2{
 <h1>🍀 Resultados dos Sorteios</h1>
 
 
-<!-- LOTERIA -->
+<!-- =====================================
+     LOTERIA
+===================================== -->
 
 <div class="caixa">
 
@@ -84,7 +86,9 @@ Aguardando resultado...
 </div>
 
 
-<!-- RIFA -->
+<!-- =====================================
+     RIFA
+===================================== -->
 
 <div class="caixa">
 
@@ -102,19 +106,33 @@ Aguardando resultado da Rifa...
 <script>
 
 
-/* =========================
-   RESULTADO DA LOTERIA
-========================= */
+// =====================================
+// RESULTADO DA LOTERIA
+// =====================================
 
-let resultadoLoteria =
+let resultadoLoteria = null;
 
-JSON.parse(
-    localStorage.getItem("resultadoSorteio")
-) || null;
+try{
+
+    resultadoLoteria =
+        JSON.parse(
+            localStorage.getItem("resultadoSorteio")
+        );
+
+}catch(error){
+
+    console.error(
+        "Erro ao ler resultado da loteria:",
+        error
+    );
+
+    resultadoLoteria = null;
+
+}
 
 
 let telaLoteria =
-document.getElementById("resultadoLoteria");
+    document.getElementById("resultadoLoteria");
 
 
 if(!resultadoLoteria){
@@ -124,58 +142,90 @@ if(!resultadoLoteria){
 
 }else{
 
+    let numeros =
+        Array.isArray(resultadoLoteria.numeros)
+        ? resultadoLoteria.numeros
+        : [];
+
+    let vencedores =
+        Array.isArray(resultadoLoteria.vencedores)
+        ? resultadoLoteria.vencedores
+        : [];
+
+
     let html = "";
+
 
     html +=
         "📅 <b>Data do sorteio:</b><br>" +
-        resultadoLoteria.data;
+        (resultadoLoteria.data || "Não informado");
+
 
     html += "<br><br>";
+
 
     html +=
         "💰 <b>Prêmio:</b><br>" +
-        resultadoLoteria.premio;
+        (resultadoLoteria.premio || "Não informado");
+
 
     html += "<br><br>";
+
 
     html +=
         "🎲 <b>Números sorteados:</b><br><br>";
 
 
-    resultadoLoteria.numeros.forEach(function(n){
+    if(numeros.length === 0){
 
         html +=
-            "<span class='numero'>" +
-            n +
-            "</span>";
+            "Nenhum número encontrado.";
 
-    });
+    }else{
+
+        numeros.forEach(function(n){
+
+            html +=
+                "<span class='numero'>" +
+                String(n).padStart(2,"0") +
+                "</span>";
+
+        });
+
+    }
 
 
     html += "<br><br>";
 
 
     if(
-        resultadoLoteria.vencedores &&
-        resultadoLoteria.vencedores[0] === "🍀 Acumulou"
+        vencedores.length > 0 &&
+        vencedores[0] === "🍀 Acumulou"
     ){
 
         html +=
             "🍀 <b>Acumulou!</b><br><br>" +
             "Nenhum ganhador neste sorteio.";
 
-    }else{
+    }else if(vencedores.length > 0){
 
         html +=
             "🏆 <b>Vencedor(es):</b><br><br>";
 
 
-        resultadoLoteria.vencedores.forEach(function(v){
+        vencedores.forEach(function(v){
 
             html +=
-                "👤 " + v + "<br>";
+                "👤 " +
+                v +
+                "<br>";
 
         });
+
+    }else{
+
+        html +=
+            "🍀 Nenhum vencedor registrado.";
 
     }
 
@@ -186,19 +236,33 @@ if(!resultadoLoteria){
 
 
 
-/* =========================
-   RESULTADO DA RIFA
-========================= */
+// =====================================
+// RESULTADO DA RIFA
+// =====================================
 
-let resultadoRifa =
+let resultadoRifa = null;
 
-JSON.parse(
-    localStorage.getItem("resultadoRifa")
-) || null;
+try{
+
+    resultadoRifa =
+        JSON.parse(
+            localStorage.getItem("resultadoRifa")
+        );
+
+}catch(error){
+
+    console.error(
+        "Erro ao ler resultado da Rifa:",
+        error
+    );
+
+    resultadoRifa = null;
+
+}
 
 
 let telaRifa =
-document.getElementById("resultadoRifa");
+    document.getElementById("resultadoRifa");
 
 
 if(!resultadoRifa){
@@ -210,9 +274,11 @@ if(!resultadoRifa){
 
     let html = "";
 
+
     html +=
         "📅 <b>Data do sorteio:</b><br>" +
-        resultadoRifa.data;
+        (resultadoRifa.data || "Não informado");
+
 
     html += "<br><br>";
 
@@ -223,7 +289,9 @@ if(!resultadoRifa){
 
     html +=
         "<span class='numero-rifa'>" +
-        String(resultadoRifa.numero).padStart(2,"0") +
+        String(
+            resultadoRifa.numero
+        ).padStart(2,"0") +
         "</span>";
 
 
@@ -250,7 +318,6 @@ if(!resultadoRifa){
 }
 
 </script>
-
 
 </body>
 
