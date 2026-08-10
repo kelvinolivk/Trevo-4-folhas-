@@ -171,10 +171,13 @@ async function carregarConfiguracaoRifa(){
     try{
 
         const { data, error } =
+
             await supabaseClient
-            .from("configuracao")
-            .select("valor_rifa,premio_rifa,pix_rifa")
+            .from("configuracoes")
+            .select("valor,premio,pix")
+            .eq("tipo","rifa")
             .limit(1);
+
 
         if(error){
 
@@ -192,6 +195,83 @@ async function carregarConfiguracaoRifa(){
 
             return;
         }
+
+
+        if(!data || data.length === 0){
+
+            document.getElementById(
+                "configuracao"
+            ).innerHTML =
+
+                "🎟️ <b>Rifa Trevo4Folhas</b><br><br>" +
+
+                "💰 <b>Valor:</b> A definir<br><br>" +
+
+                "🏆 <b>Prêmio:</b> A definir<br><br>" +
+
+                "💳 <b>Pix:</b> A definir";
+
+            return;
+        }
+
+
+        const config = data[0];
+
+
+        // Salva também no aparelho
+        // para o pix-rifa.html utilizar depois
+
+        localStorage.setItem(
+            "configuracaoRifa",
+            JSON.stringify({
+
+                valor:
+                    config.valor || "",
+
+                premio:
+                    config.premio || "",
+
+                pix:
+                    config.pix || ""
+
+            })
+        );
+
+
+        document.getElementById(
+            "configuracao"
+        ).innerHTML =
+
+            "🎟️ <b>Rifa Trevo4Folhas</b><br><br>" +
+
+            "💰 <b>Valor:</b> " +
+            (config.valor || "A definir") +
+
+            "<br><br>" +
+
+            "🏆 <b>Prêmio:</b> " +
+            (config.premio || "A definir") +
+
+            "<br><br>" +
+
+            "💳 <b>Pix:</b> " +
+            (config.pix || "A definir");
+
+
+    }catch(error){
+
+        console.error(error);
+
+        document.getElementById(
+            "configuracao"
+        ).innerHTML =
+
+            "❌ Erro ao carregar informações da Rifa.<br><br>" +
+            error.message;
+
+    }
+
+}
 
 
         if(!data || data.length === 0){
