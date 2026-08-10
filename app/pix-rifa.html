@@ -73,13 +73,9 @@ Carregando...
 
 </div>
 
-
 <script>
 
-
-// =====================================
 // RIFA ATUAL
-// =====================================
 
 let rifa =
 JSON.parse(
@@ -87,9 +83,7 @@ localStorage.getItem("rifaAtual")
 ) || null;
 
 
-// =====================================
-// CADASTRO ATUAL
-// =====================================
+// CADASTRO DO PARTICIPANTE
 
 let cadastro =
 JSON.parse(
@@ -97,9 +91,7 @@ localStorage.getItem("cadastro")
 ) || null;
 
 
-// =====================================
 // CONFIGURAÇÃO DA RIFA
-// =====================================
 
 let configuracao =
 JSON.parse(
@@ -107,9 +99,7 @@ localStorage.getItem("configuracaoRifa")
 ) || {};
 
 
-// =====================================
 // VERIFICAR RIFA
-// =====================================
 
 if(!rifa){
 
@@ -120,19 +110,15 @@ location.href="rifa.html";
 }
 
 
-// =====================================
-// PIX ATUAL DO CADASTRO
-// =====================================
+// PIX PARA PAGAMENTO DA RIFA
+// VEM DO ADMIN, NÃO DO CADASTRO
 
-let pixAtual =
-cadastro && cadastro.pix
-? cadastro.pix
-: "Pix não informado";
+let pixRifa =
+configuracao.pix ||
+"Pix não informado";
 
 
-// =====================================
 // MOSTRAR DADOS
-// =====================================
 
 document.getElementById("dados").innerHTML = `
 
@@ -185,13 +171,13 @@ ${String(rifa.numero).padStart(2,"0")}
 
 <p>
 
-💳 Chave Pix:
+💳 Chave Pix para pagamento:
 
 <br>
 
 <b id="pix">
 
-${pixAtual}
+${pixRifa}
 
 </b>
 
@@ -200,21 +186,22 @@ ${pixAtual}
 `;
 
 
-// =====================================
 // COPIAR PIX
-// =====================================
 
 function copiarPix(){
 
 let pix =
 document.getElementById("pix").innerText;
 
+
 if(
 !pix ||
 pix === "Pix não informado"
 ){
 
-alert("⚠️ O cadastro não possui uma chave Pix.");
+alert(
+"⚠️ A chave Pix da Rifa ainda não foi configurada pelo administrador."
+);
 
 return;
 
@@ -225,7 +212,7 @@ navigator.clipboard.writeText(pix)
 
 .then(function(){
 
-alert("🍀 Pix copiado!");
+alert("🍀 Pix da Rifa copiado!");
 
 })
 
@@ -238,9 +225,7 @@ alert("Não foi possível copiar o Pix.");
 }
 
 
-// =====================================
 // CONFIRMAR PAGAMENTO
-// =====================================
 
 function confirmarPagamento(){
 
@@ -250,21 +235,22 @@ localStorage.getItem("rifaParticipantes")
 ) || [];
 
 
-// Procurar a reserva já existente
+// PROCURAR RESERVA
 
 let indice =
 lista.findIndex(function(p){
 
 return Number(p.numero) ===
-Number(rifa.numero) &&
+Number(rifa.numero)
+
+&&
 
 p.nome === rifa.nome;
 
 });
 
 
-// Se encontrou a reserva,
-// apenas atualiza o pagamento
+// SE JÁ EXISTE
 
 if(indice !== -1){
 
@@ -275,33 +261,37 @@ lista[indice].data =
 new Date().toLocaleString("pt-BR");
 
 
-// Atualiza também o Pix atual
+// SALVA O PIX DA RIFA
 
 lista[indice].pix =
-pixAtual;
+pixRifa;
 
 }
 
 
-// Segurança:
-// se por algum motivo a reserva ainda não existir,
-// cria somente uma vez.
+// SE NÃO EXISTE
 
 else{
 
 lista.push({
 
-nome:rifa.nome,
+nome:
+rifa.nome,
 
-whatsapp:rifa.whatsapp,
+whatsapp:
+rifa.whatsapp,
 
-pix:pixAtual,
+pix:
+pixRifa,
 
-numero:rifa.numero,
+numero:
+rifa.numero,
 
-pagamento:"🟡 Aguardando confirmação",
+pagamento:
+"🟡 Aguardando confirmação",
 
-data:new Date().toLocaleString("pt-BR")
+data:
+new Date().toLocaleString("pt-BR")
 
 });
 
@@ -309,19 +299,14 @@ data:new Date().toLocaleString("pt-BR")
 
 
 localStorage.setItem(
-
 "rifaParticipantes",
-
 JSON.stringify(lista)
-
 );
 
 
 alert(
-
 "🍀 Pagamento informado!\n\n" +
 "Aguarde a confirmação do administrador."
-
 );
 
 
