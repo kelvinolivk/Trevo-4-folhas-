@@ -4,6 +4,7 @@
 <head>
 
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>Rifa Trevo4Folhas 🍀</title>
@@ -128,18 +129,30 @@ button:disabled{
 Escolha um número de 1 a 100
 </p>
 
+
 <div id="configuracao">
-Carregando informações da Rifa...
+
+⏳ Carregando informações da Rifa...
+
 </div>
 
+
 <h2 id="contador">
+
 Carregando números...
+
 </h2>
+
 
 <div id="numeros"></div>
 
-<button id="botaoConfirmar" onclick="confirmarRifa()" disabled>
+
+<button id="botaoConfirmar"
+onclick="confirmarRifa()"
+disabled>
+
 ✅ Confirmar número
+
 </button>
 
 
@@ -169,12 +182,24 @@ async function carregarConfiguracaoRifa(){
 
     try{
 
+        document.getElementById(
+            "configuracao"
+        ).innerHTML =
+            "⏳ Carregando informações da Rifa...";
+
+
         const { data, error } =
+
             await supabaseClient
-            .from("configuracao")
-            .select("valor_rifa,premio_rifa,pix_rifa")
-            .order("id",{ascending:false})
-            .limit(1);
+
+            .from("configuracoes")
+
+            .select("valor,premio,pix")
+
+            .eq("tipo","rifa")
+
+            .single();
+
 
         if(error){
 
@@ -183,41 +208,97 @@ async function carregarConfiguracaoRifa(){
                 error
             );
 
-            document.getElementById("configuracao").innerHTML =
-                "⚠️ Não foi possível carregar as informações da Rifa.";
+
+            document.getElementById(
+                "configuracao"
+            ).innerHTML =
+
+                "❌ Não foi possível carregar as informações da Rifa.<br><br>" +
+
+                error.message;
 
             return;
+
         }
 
-        if(!data || data.length === 0){
 
-            document.getElementById("configuracao").innerHTML =
+        if(!data){
+
+            document.getElementById(
+                "configuracao"
+            ).innerHTML =
+
                 "🎟️ <b>Rifa Trevo4Folhas</b><br><br>" +
+
                 "💰 Valor: A definir<br><br>" +
+
                 "🏆 Prêmio: A definir<br><br>" +
+
                 "💳 Pix: A definir";
 
             return;
+
         }
 
-        let config = data[0];
 
-        document.getElementById("configuracao").innerHTML =
+        // =====================================
+        // SALVA CONFIGURAÇÃO LOCALMENTE
+        // APENAS COMO CÓPIA
+        // =====================================
+
+        localStorage.setItem(
+
+            "configuracaoRifa",
+
+            JSON.stringify({
+
+                valor:data.valor || "",
+
+                premio:data.premio || "",
+
+                pix:data.pix || ""
+
+            })
+
+        );
+
+
+        // =====================================
+        // MOSTRAR CONFIGURAÇÃO
+        // =====================================
+
+        document.getElementById(
+            "configuracao"
+        ).innerHTML =
+
             "🎟️ <b>Rifa Trevo4Folhas</b><br><br>" +
+
             "💰 <b>Valor:</b> " +
-            (config.valor_rifa || "A definir") +
+
+            (data.valor || "A definir") +
+
             "<br><br>" +
+
             "🏆 <b>Prêmio:</b> " +
-            (config.premio_rifa || "A definir") +
+
+            (data.premio || "A definir") +
+
             "<br><br>" +
-            "💳 <b>Pix:</b> " +
-            (config.pix_rifa || "A definir");
+
+            "💳 <b>Pix para pagamento:</b><br>" +
+
+            (data.pix || "A definir");
+
 
     }catch(error){
 
         console.error(error);
 
-        document.getElementById("configuracao").innerHTML =
+
+        document.getElementById(
+            "configuracao"
+        ).innerHTML =
+
             "❌ Erro ao carregar informações da Rifa.";
 
     }
@@ -233,13 +314,22 @@ async function carregarRifa(){
 
     try{
 
-        document.getElementById("contador").innerHTML =
+        document.getElementById(
+            "contador"
+        ).innerHTML =
             "⏳ Carregando números...";
 
+
         const { data, error } =
+
             await supabaseClient
+
             .from("rifa_participantes")
-            .select("nome,whatsapp,numero,pagamento");
+
+            .select(
+                "nome,whatsapp,numero,pagamento"
+            );
+
 
         if(error){
 
@@ -248,32 +338,54 @@ async function carregarRifa(){
                 error
             );
 
-            document.getElementById("contador").innerHTML =
+
+            document.getElementById(
+                "contador"
+            ).innerHTML =
                 "❌ Erro ao carregar a Rifa";
+
 
             alert(
                 "❌ Erro ao carregar a Rifa:\n" +
                 error.message
             );
 
+
             return;
+
         }
 
-        let participantes = data || [];
+
+        let participantes =
+            data || [];
+
 
         localStorage.setItem(
+
             "rifaParticipantes",
-            JSON.stringify(participantes)
+
+            JSON.stringify(
+                participantes
+            )
+
         );
 
-        criarNumeros(participantes);
+
+        criarNumeros(
+            participantes
+        );
+
 
     }catch(error){
 
         console.error(error);
 
-        document.getElementById("contador").innerHTML =
+
+        document.getElementById(
+            "contador"
+        ).innerHTML =
             "❌ Erro de conexão";
+
 
         alert(
             "❌ Erro de conexão com o Supabase:\n" +
@@ -297,63 +409,101 @@ function criarNumeros(participantes){
 
     botaoConfirmar.disabled = true;
 
-    document.getElementById("contador").innerHTML =
+
+    document.getElementById(
+        "contador"
+    ).innerHTML =
         "Número escolhido: Nenhum";
+
 
     for(let i = 1; i <= 100; i++){
 
         let botao =
             document.createElement("div");
 
-        botao.className = "numero";
+
+        botao.className =
+            "numero";
+
 
         botao.innerHTML =
             i.toString().padStart(2,"0");
 
+
         let reservado =
-            participantes.find(function(p){
+            participantes.find(
+                function(p){
 
-                return Number(p.numero) === i;
+                    return Number(p.numero) === i;
 
-            });
+                }
+            );
+
 
         if(reservado){
 
-            botao.classList.add("vendido");
+            botao.classList.add(
+                "vendido"
+            );
 
         }else{
 
-            botao.onclick = function(){
+            botao.onclick =
+                function(){
 
-                document
-                .querySelectorAll(".numero")
-                .forEach(function(n){
+                    document
+                    .querySelectorAll(
+                        ".numero"
+                    )
+                    .forEach(
+                        function(n){
 
-                    if(!n.classList.contains("vendido")){
+                            if(
+                                !n.classList.contains(
+                                    "vendido"
+                                )
+                            ){
 
-                        n.classList.remove("escolhido");
+                                n.classList.remove(
+                                    "escolhido"
+                                );
 
-                    }
+                            }
 
-                });
+                        }
+                    );
 
-                numeroEscolhido = i;
 
-                botao.classList.add("escolhido");
+                    numeroEscolhido =
+                        i;
 
-                document
-                .getElementById("contador")
-                .innerHTML =
-                    "Número escolhido: " +
-                    i.toString().padStart(2,"0");
 
-                botaoConfirmar.disabled = false;
+                    botao.classList.add(
+                        "escolhido"
+                    );
 
-            };
+
+                    document.getElementById(
+                        "contador"
+                    ).innerHTML =
+
+                        "Número escolhido: " +
+
+                        i.toString()
+                        .padStart(2,"0");
+
+
+                    botaoConfirmar.disabled =
+                        false;
+
+                };
 
         }
 
-        area.appendChild(botao);
+
+        area.appendChild(
+            botao
+        );
 
     }
 
@@ -366,19 +516,29 @@ function criarNumeros(participantes){
 
 async function confirmarRifa(){
 
-    if(numeroEscolhido == null){
+    if(
+        numeroEscolhido == null
+    ){
 
         alert(
             "Escolha um número da Rifa 🍀"
         );
 
         return;
+
     }
 
+
     let cadastro =
+
         JSON.parse(
-            localStorage.getItem("cadastro")
+
+            localStorage.getItem(
+                "cadastro"
+            )
+
         );
+
 
     if(
         !cadastro ||
@@ -390,29 +550,55 @@ async function confirmarRifa(){
             "Faça o cadastro antes de participar."
         );
 
+
         location.href =
             "cadastro.html";
 
+
         return;
+
     }
 
-    botaoConfirmar.disabled = true;
+
+    botaoConfirmar.disabled =
+        true;
+
 
     botaoConfirmar.innerHTML =
         "⏳ Salvando...";
 
-    document
-    .getElementById("contador")
-    .innerHTML =
+
+    document.getElementById(
+        "contador"
+    ).innerHTML =
         "⏳ Salvando sua reserva...";
+
 
     try{
 
-        const { data: existente, error: erroBusca } =
+
+        // =====================================
+        // VERIFICA NOVAMENTE NO SUPABASE
+        // =====================================
+
+        const {
+            data:existente,
+            error:erroBusca
+        } =
+
             await supabaseClient
+
             .from("rifa_participantes")
-            .select("id,numero")
-            .eq("numero",numeroEscolhido);
+
+            .select(
+                "id,numero"
+            )
+
+            .eq(
+                "numero",
+                numeroEscolhido
+            );
+
 
         if(erroBusca){
 
@@ -420,21 +606,36 @@ async function confirmarRifa(){
 
         }
 
-        if(existente && existente.length > 0){
+
+        if(
+            existente &&
+            existente.length > 0
+        ){
 
             alert(
                 "⚠️ Esse número acabou de ser reservado por outra pessoa."
             );
 
-            botaoConfirmar.disabled = false;
+
+            botaoConfirmar.disabled =
+                false;
+
 
             botaoConfirmar.innerHTML =
                 "✅ Confirmar número";
 
+
             await carregarRifa();
 
+
             return;
+
         }
+
+
+        // =====================================
+        // NOVA RESERVA
+        // =====================================
 
         let participante = {
 
@@ -452,11 +653,22 @@ async function confirmarRifa(){
 
         };
 
-        const { data, error } =
+
+        const {
+            data,
+            error
+        } =
+
             await supabaseClient
+
             .from("rifa_participantes")
-            .insert([participante])
+
+            .insert([
+                participante
+            ])
+
             .select();
+
 
         if(error){
 
@@ -465,42 +677,76 @@ async function confirmarRifa(){
                 error
             );
 
+
             alert(
                 "❌ Erro ao salvar a Rifa:\n" +
                 error.message
             );
 
-            botaoConfirmar.disabled = false;
+
+            botaoConfirmar.disabled =
+                false;
+
 
             botaoConfirmar.innerHTML =
                 "✅ Confirmar número";
 
+
             return;
+
         }
 
+
+        // =====================================
+        // ATUALIZA LOCAL
+        // =====================================
+
         let rifa =
+
             JSON.parse(
+
                 localStorage.getItem(
                     "rifaParticipantes"
                 )
+
             ) || [];
 
-        rifa = rifa.filter(function(p){
 
-            return Number(p.numero) !==
-                   Number(numeroEscolhido);
+        rifa =
+            rifa.filter(
+                function(p){
 
-        });
+                    return Number(p.numero) !==
+                        Number(numeroEscolhido);
 
-        rifa.push(participante);
+                }
+            );
 
-        localStorage.setItem(
-            "rifaParticipantes",
-            JSON.stringify(rifa)
+
+        rifa.push(
+            participante
         );
 
+
         localStorage.setItem(
+
+            "rifaParticipantes",
+
+            JSON.stringify(
+                rifa
+            )
+
+        );
+
+
+        // =====================================
+        // SALVA RIFA ATUAL
+        // =====================================
+
+        localStorage.setItem(
+
             "rifaAtual",
+
             JSON.stringify({
 
                 nome:
@@ -513,16 +759,24 @@ async function confirmarRifa(){
                     numeroEscolhido
 
             })
+
         );
 
+
         alert(
+
             "🍀 Número " +
+
             numeroEscolhido +
+
             " reservado com sucesso!"
+
         );
+
 
         location.href =
             "pix-rifa.html";
+
 
     }catch(error){
 
@@ -531,15 +785,28 @@ async function confirmarRifa(){
             error
         );
 
+
         alert(
             "❌ Erro de conexão com o Supabase:\n" +
             error.message
         );
 
-        botaoConfirmar.disabled = false;
+
+        botaoConfirmar.disabled =
+            false;
+
 
         botaoConfirmar.innerHTML =
             "✅ Confirmar número";
+
+
+        document.getElementById(
+            "contador"
+        ).innerHTML =
+
+            "Número escolhido: " +
+
+            numeroEscolhido;
 
     }
 
@@ -559,3 +826,4 @@ carregarRifa();
 </body>
 
 </html>
+
