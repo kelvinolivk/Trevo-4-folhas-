@@ -13,7 +13,7 @@
 body{
     background:#111;
     color:white;
-    font-family:Arial;
+    font-family:Arial,sans-serif;
     text-align:center;
     padding:20px;
 }
@@ -35,6 +35,31 @@ h1{
     color:#ffd700;
     font-weight:bold;
     margin:20px;
+}
+
+.info{
+    margin:18px 0;
+    font-size:18px;
+}
+
+.valor{
+    color:#6dff7d;
+    font-size:24px;
+    font-weight:bold;
+}
+
+.premio{
+    color:#ffd700;
+    font-size:22px;
+    font-weight:bold;
+}
+
+.pix{
+    background:#111;
+    padding:12px;
+    border-radius:10px;
+    word-break:break-all;
+    margin-top:8px;
 }
 
 button{
@@ -60,7 +85,7 @@ button{
 <h1>🎟️ Rifa Trevo4Folhas 🍀</h1>
 
 <div id="dados">
-Carregando...
+⏳ Carregando dados da Rifa...
 </div>
 
 <button onclick="copiarPix()">
@@ -94,6 +119,13 @@ JSON.parse(
 
 
 // =====================================
+// CONFIGURAÇÃO
+// =====================================
+
+let configuracaoRifa = {};
+
+
+// =====================================
 // VERIFICAR RIFA
 // =====================================
 
@@ -101,70 +133,92 @@ if(!rifa){
 
     alert("Nenhuma rifa encontrada.");
 
-    location.href="rifa.html";
+    location.href = "rifa.html";
 
 }
 
 
 // =====================================
-// CONFIGURAÇÃO DA RIFA
-// =====================================
-
-let configuracaoRifa = {};
-
-
-// =====================================
-// CARREGAR CONFIGURAÇÃO DO SUPABASE
+// CARREGAR CONFIGURAÇÃO DA RIFA
 // =====================================
 
 async function carregarConfiguracaoRifa(){
 
+    const dados =
+        document.getElementById("dados");
+
+    dados.innerHTML =
+        "⏳ Carregando dados da Rifa...";
+
     try{
 
-        document.getElementById("dados").innerHTML =
-            "⏳ Carregando dados da Rifa...";
-
-
         const { data, error } =
+
             await supabaseClient
+
             .from("configuracoes")
+
             .select("valor,premio,pix")
+
             .eq("tipo","rifa")
-            .single();
+
+            .order("id",{ascending:false})
+
+            .limit(1);
 
 
         if(error){
+
+            console.error(
+                "Erro Supabase:",
+                error
+            );
 
             throw error;
 
         }
 
 
-        if(!data){
+        if(!data || data.length === 0){
 
-            throw new Error(
-                "Configuração da Rifa não encontrada."
-            );
+            dados.innerHTML =
+
+                "⚠️ A configuração da Rifa ainda não foi encontrada.";
+
+            return;
 
         }
 
 
-        configuracaoRifa = data;
+        // =====================================
+        // PEGA A CONFIGURAÇÃO DA RIFA
+        // =====================================
+
+        configuracaoRifa =
+            data[0];
 
 
-        // Guarda uma cópia local somente como apoio
+        // =====================================
+        // SALVA NO CELULAR
+        // =====================================
 
         localStorage.setItem(
+
             "configuracaoRifa",
+
             JSON.stringify({
 
-                valor:data.valor || "",
+                valor:
+                    configuracaoRifa.valor || "",
 
-                premio:data.premio || "",
+                premio:
+                    configuracaoRifa.premio || "",
 
-                pix:data.pix || ""
+                pix:
+                    configuracaoRifa.pix || ""
 
             })
+
         );
 
 
@@ -174,14 +228,16 @@ async function carregarConfiguracaoRifa(){
     }catch(error){
 
         console.error(
-            "Erro ao carregar configuração:",
+            "Erro ao carregar Rifa:",
             error
         );
 
 
-        document.getElementById("dados").innerHTML =
+        dados.innerHTML =
 
-            "❌ Não foi possível carregar os dados da Rifa.<br><br>" +
+            "❌ Não foi possível carregar os dados da Rifa." +
+
+            "<br><br>" +
 
             error.message;
 
@@ -196,91 +252,85 @@ async function carregarConfiguracaoRifa(){
 
 function mostrarDados(){
 
-    let pix =
-        configuracaoRifa.pix || "";
-
     let valor =
-        configuracaoRifa.valor || "10,00";
+        configuracaoRifa.valor || "A definir";
 
     let premio =
         configuracaoRifa.premio || "A definir";
 
-
-    if(!pix){
-
-        pix = "Pix não informado";
-
-    }
+    let pix =
+        configuracaoRifa.pix || "Pix não informado";
 
 
     document.getElementById("dados").innerHTML = `
 
-    <p>
+        <div class="info">
 
-    👤 Participante:
+            👤 Participante:
 
-    <br>
+            <br>
 
-    <b>
-    ${rifa.nome || "Não informado"}
-    </b>
+            <b>
+                ${rifa.nome || "Não informado"}
+            </b>
 
-    </p>
-
-
-    <p>
-
-    🎟️ Número escolhido:
-
-    </p>
+        </div>
 
 
-    <div class="numero">
+        <div class="info">
 
-    ${String(rifa.numero).padStart(2,"0")}
+            🎟️ Número escolhido:
 
-    </div>
-
-
-    <p>
-
-    💰 Valor:
-
-    <br>
-
-    <b>
-    R$ ${valor}
-    </b>
-
-    </p>
+        </div>
 
 
-    <p>
+        <div class="numero">
 
-    🏆 Prêmio:
+            ${String(rifa.numero).padStart(2,"0")}
 
-    <br>
-
-    <b>
-    ${premio}
-    </b>
-
-    </p>
+        </div>
 
 
-    <p>
+        <div class="info">
 
-    💳 Pix para pagamento:
+            💰 Valor da Rifa:
 
-    <br>
+            <br>
 
-    <b id="pix">
+            <span class="valor">
+                R$ ${valor}
+            </span>
 
-    ${pix}
+        </div>
 
-    </b>
 
-    </p>
+        <div class="info">
+
+            🏆 Prêmio:
+
+            <br>
+
+            <span class="premio">
+                ${premio}
+            </span>
+
+        </div>
+
+
+        <div class="info">
+
+            💳 Pix para pagamento:
+
+            <div
+                id="pix"
+                class="pix"
+            >
+
+                ${pix}
+
+            </div>
+
+        </div>
 
     `;
 
@@ -318,7 +368,7 @@ function copiarPix(){
     ){
 
         alert(
-            "⚠️ O administrador ainda não cadastrou a chave Pix da Rifa."
+            "⚠️ O administrador ainda não cadastrou o Pix da Rifa."
         );
 
         return;
@@ -354,21 +404,47 @@ function copiarPix(){
 
 async function confirmarPagamento(){
 
+    if(!rifa){
+
+        alert(
+            "❌ Rifa não encontrada."
+        );
+
+        return;
+
+    }
+
+
+    // =====================================
+    // ATUALIZA LOCALSTORAGE
+    // =====================================
+
     let lista =
+
         JSON.parse(
+
             localStorage.getItem(
                 "rifaParticipantes"
             )
+
         ) || [];
 
 
     let indice =
+
         lista.findIndex(function(p){
 
-            return Number(p.numero) ===
-                Number(rifa.numero) &&
+            return (
 
-                p.nome === rifa.nome;
+                Number(p.numero) ===
+                Number(rifa.numero)
+
+                &&
+
+                p.nome ===
+                rifa.nome
+
+            );
 
         });
 
@@ -386,32 +462,47 @@ async function confirmarPagamento(){
 
 
     localStorage.setItem(
+
         "rifaParticipantes",
+
         JSON.stringify(lista)
+
     );
 
 
     // =====================================
-    // ATUALIZA TAMBÉM NO SUPABASE
+    // ATUALIZA SUPABASE
     // =====================================
 
     try{
 
         const { data, error } =
+
             await supabaseClient
 
             .from("rifa_participantes")
 
-            .select("id,numero,nome")
+            .select("id")
 
-            .eq("numero",rifa.numero)
-            .eq("nome",rifa.nome)
+            .eq(
+                "numero",
+                rifa.numero
+            )
+
+            .eq(
+                "nome",
+                rifa.nome
+            )
+
             .limit(1);
 
 
         if(error){
 
-            console.error(error);
+            console.error(
+                "Erro ao localizar Rifa:",
+                error
+            );
 
         }
 
@@ -435,12 +526,16 @@ async function confirmarPagamento(){
 
                 })
 
-                .eq("id",id);
+                .eq(
+                    "id",
+                    id
+                );
 
 
             if(updateError){
 
                 console.error(
+                    "Erro ao atualizar pagamento:",
                     updateError
                 );
 
@@ -452,7 +547,7 @@ async function confirmarPagamento(){
     }catch(error){
 
         console.error(
-            "Erro ao atualizar pagamento:",
+            "Erro no pagamento:",
             error
         );
 
@@ -485,4 +580,3 @@ carregarConfiguracaoRifa();
 </body>
 
 </html>
-
