@@ -182,24 +182,12 @@ async function carregarConfiguracaoRifa(){
 
     try{
 
-        document.getElementById(
-            "configuracao"
-        ).innerHTML =
-            "⏳ Carregando informações da Rifa...";
-
-
         const { data, error } =
-
             await supabaseClient
-
             .from("configuracoes")
-
             .select("valor,premio,pix")
-
             .eq("tipo","rifa")
-
-            .single();
-
+            .limit(1);
 
         if(error){
 
@@ -208,98 +196,54 @@ async function carregarConfiguracaoRifa(){
                 error
             );
 
-
-            document.getElementById(
-                "configuracao"
-            ).innerHTML =
-
-                "❌ Não foi possível carregar as informações da Rifa.<br><br>" +
-
+            document.getElementById("configuracao").innerHTML =
+                "⚠️ Não foi possível carregar as informações da Rifa.<br><br>" +
                 error.message;
 
             return;
-
         }
 
 
-        if(!data){
+        if(!data || data.length === 0){
 
-            document.getElementById(
-                "configuracao"
-            ).innerHTML =
-
+            document.getElementById("configuracao").innerHTML =
                 "🎟️ <b>Rifa Trevo4Folhas</b><br><br>" +
-
-                "💰 Valor: A definir<br><br>" +
-
-                "🏆 Prêmio: A definir<br><br>" +
-
-                "💳 Pix: A definir";
+                "💰 <b>Valor:</b> A definir<br><br>" +
+                "🏆 <b>Prêmio:</b> A definir<br><br>" +
+                "💳 <b>Pix:</b> A definir";
 
             return;
-
         }
 
 
-        // =====================================
-        // SALVA CONFIGURAÇÃO LOCALMENTE
-        // APENAS COMO CÓPIA
-        // =====================================
-
-        localStorage.setItem(
-
-            "configuracaoRifa",
-
-            JSON.stringify({
-
-                valor:data.valor || "",
-
-                premio:data.premio || "",
-
-                pix:data.pix || ""
-
-            })
-
-        );
+        const config = data[0];
 
 
-        // =====================================
-        // MOSTRAR CONFIGURAÇÃO
-        // =====================================
-
-        document.getElementById(
-            "configuracao"
-        ).innerHTML =
+        document.getElementById("configuracao").innerHTML =
 
             "🎟️ <b>Rifa Trevo4Folhas</b><br><br>" +
 
             "💰 <b>Valor:</b> " +
-
-            (data.valor || "A definir") +
+            (config.valor || "A definir") +
 
             "<br><br>" +
 
             "🏆 <b>Prêmio:</b> " +
-
-            (data.premio || "A definir") +
+            (config.premio || "A definir") +
 
             "<br><br>" +
 
-            "💳 <b>Pix para pagamento:</b><br>" +
-
-            (data.pix || "A definir");
+            "💳 <b>Pix:</b> " +
+            (config.pix || "A definir");
 
 
     }catch(error){
 
         console.error(error);
 
-
-        document.getElementById(
-            "configuracao"
-        ).innerHTML =
-
-            "❌ Erro ao carregar informações da Rifa.";
+        document.getElementById("configuracao").innerHTML =
+            "❌ Erro ao carregar informações da Rifa.<br><br>" +
+            error.message;
 
     }
 
