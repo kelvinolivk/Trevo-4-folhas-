@@ -4,49 +4,49 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>Pagamento Rifa Trevo4Folhas 🍀</title>
 
 <style>
 
 body{
-background:#111;
-color:white;
-font-family:Arial;
-text-align:center;
-padding:20px;
+    background:#111;
+    color:white;
+    font-family:Arial;
+    text-align:center;
+    padding:20px;
 }
 
 .caixa{
-background:#222;
-padding:20px;
-border-radius:15px;
-max-width:400px;
-margin:auto;
+    background:#222;
+    padding:20px;
+    border-radius:15px;
+    max-width:400px;
+    margin:auto;
 }
 
 h1{
-color:#3ddc84;
+    color:#3ddc84;
 }
 
 .numero{
-font-size:45px;
-color:#ffd700;
-font-weight:bold;
-margin:20px;
+    font-size:45px;
+    color:#ffd700;
+    font-weight:bold;
+    margin:20px;
 }
 
 button{
-width:90%;
-padding:15px;
-margin:10px;
-border:none;
-border-radius:10px;
-background:#0b8f3a;
-color:white;
-font-size:18px;
-font-weight:bold;
+    width:90%;
+    padding:15px;
+    margin:10px;
+    border:none;
+    border-radius:10px;
+    background:#0b8f3a;
+    color:white;
+    font-size:18px;
+    font-weight:bold;
 }
 
 </style>
@@ -73,249 +73,416 @@ Carregando...
 
 </div>
 
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase.js"></script>
+
+
 <script>
 
+// =====================================
 // RIFA ATUAL
+// =====================================
 
 let rifa =
 JSON.parse(
-localStorage.getItem("rifaAtual")
+    localStorage.getItem("rifaAtual")
 ) || null;
 
 
-// CADASTRO DO PARTICIPANTE
-
-let cadastro =
-JSON.parse(
-localStorage.getItem("cadastro")
-) || null;
-
-
-// CONFIGURAÇÃO DA RIFA
-
-let configuracao =
-JSON.parse(
-localStorage.getItem("configuracaoRifa")
-) || {};
-
-
+// =====================================
 // VERIFICAR RIFA
+// =====================================
 
 if(!rifa){
 
-alert("Nenhuma rifa encontrada.");
+    alert("Nenhuma rifa encontrada.");
 
-location.href="rifa.html";
+    location.href="rifa.html";
 
 }
 
 
-// PIX PARA PAGAMENTO DA RIFA
-// VEM DO ADMIN, NÃO DO CADASTRO
+// =====================================
+// CONFIGURAÇÃO DA RIFA
+// =====================================
 
-let pixRifa =
-configuracao.pix ||
-"Pix não informado";
+let configuracaoRifa = {};
 
 
+// =====================================
+// CARREGAR CONFIGURAÇÃO DO SUPABASE
+// =====================================
+
+async function carregarConfiguracaoRifa(){
+
+    try{
+
+        document.getElementById("dados").innerHTML =
+            "⏳ Carregando dados da Rifa...";
+
+
+        const { data, error } =
+            await supabaseClient
+            .from("configuracoes")
+            .select("valor,premio,pix")
+            .eq("tipo","rifa")
+            .single();
+
+
+        if(error){
+
+            throw error;
+
+        }
+
+
+        if(!data){
+
+            throw new Error(
+                "Configuração da Rifa não encontrada."
+            );
+
+        }
+
+
+        configuracaoRifa = data;
+
+
+        // Guarda uma cópia local somente como apoio
+
+        localStorage.setItem(
+            "configuracaoRifa",
+            JSON.stringify({
+
+                valor:data.valor || "",
+
+                premio:data.premio || "",
+
+                pix:data.pix || ""
+
+            })
+        );
+
+
+        mostrarDados();
+
+
+    }catch(error){
+
+        console.error(
+            "Erro ao carregar configuração:",
+            error
+        );
+
+
+        document.getElementById("dados").innerHTML =
+
+            "❌ Não foi possível carregar os dados da Rifa.<br><br>" +
+
+            error.message;
+
+    }
+
+}
+
+
+// =====================================
 // MOSTRAR DADOS
+// =====================================
 
-document.getElementById("dados").innerHTML = `
+function mostrarDados(){
 
-<p>
+    let pix =
+        configuracaoRifa.pix || "";
 
-👤 Participante:
+    let valor =
+        configuracaoRifa.valor || "10,00";
 
-<br>
-
-<b>${rifa.nome}</b>
-
-</p>
-
-
-<p>
-
-🎟️ Número escolhido:
-
-</p>
+    let premio =
+        configuracaoRifa.premio || "A definir";
 
 
-<div class="numero">
+    if(!pix){
 
-${String(rifa.numero).padStart(2,"0")}
+        pix = "Pix não informado";
 
-</div>
-
-
-<p>
-
-💰 Valor:
-
-<br>
-
-<b>R$ ${configuracao.valor || "10,00"}</b>
-
-</p>
+    }
 
 
-<p>
+    document.getElementById("dados").innerHTML = `
 
-🏆 Prêmio:
+    <p>
 
-<br>
+    👤 Participante:
 
-<b>${configuracao.premio || "A definir"}</b>
+    <br>
 
-</p>
+    <b>
+    ${rifa.nome || "Não informado"}
+    </b>
 
-
-<p>
-
-💳 Chave Pix para pagamento:
-
-<br>
-
-<b id="pix">
-
-${pixRifa}
-
-</b>
-
-</p>
-
-`;
+    </p>
 
 
+    <p>
+
+    🎟️ Número escolhido:
+
+    </p>
+
+
+    <div class="numero">
+
+    ${String(rifa.numero).padStart(2,"0")}
+
+    </div>
+
+
+    <p>
+
+    💰 Valor:
+
+    <br>
+
+    <b>
+    R$ ${valor}
+    </b>
+
+    </p>
+
+
+    <p>
+
+    🏆 Prêmio:
+
+    <br>
+
+    <b>
+    ${premio}
+    </b>
+
+    </p>
+
+
+    <p>
+
+    💳 Pix para pagamento:
+
+    <br>
+
+    <b id="pix">
+
+    ${pix}
+
+    </b>
+
+    </p>
+
+    `;
+
+}
+
+
+// =====================================
 // COPIAR PIX
+// =====================================
 
 function copiarPix(){
 
-let pix =
-document.getElementById("pix").innerText;
+    let elemento =
+        document.getElementById("pix");
 
 
-if(
-!pix ||
-pix === "Pix não informado"
-){
+    if(!elemento){
 
-alert(
-"⚠️ A chave Pix da Rifa ainda não foi configurada pelo administrador."
-);
+        alert(
+            "⚠️ Chave Pix ainda não carregada."
+        );
 
-return;
+        return;
+
+    }
+
+
+    let pix =
+        elemento.innerText.trim();
+
+
+    if(
+        !pix ||
+        pix === "Pix não informado"
+    ){
+
+        alert(
+            "⚠️ O administrador ainda não cadastrou a chave Pix da Rifa."
+        );
+
+        return;
+
+    }
+
+
+    navigator.clipboard
+    .writeText(pix)
+
+    .then(function(){
+
+        alert(
+            "🍀 Pix da Rifa copiado!"
+        );
+
+    })
+
+    .catch(function(){
+
+        alert(
+            "❌ Não foi possível copiar o Pix."
+        );
+
+    });
 
 }
 
 
-navigator.clipboard.writeText(pix)
-
-.then(function(){
-
-alert("🍀 Pix da Rifa copiado!");
-
-})
-
-.catch(function(){
-
-alert("Não foi possível copiar o Pix.");
-
-});
-
-}
-
-
+// =====================================
 // CONFIRMAR PAGAMENTO
+// =====================================
 
-function confirmarPagamento(){
+async function confirmarPagamento(){
 
-let lista =
-JSON.parse(
-localStorage.getItem("rifaParticipantes")
-) || [];
-
-
-// PROCURAR RESERVA
-
-let indice =
-lista.findIndex(function(p){
-
-return Number(p.numero) ===
-Number(rifa.numero)
-
-&&
-
-p.nome === rifa.nome;
-
-});
+    let lista =
+        JSON.parse(
+            localStorage.getItem(
+                "rifaParticipantes"
+            )
+        ) || [];
 
 
-// SE JÁ EXISTE
+    let indice =
+        lista.findIndex(function(p){
 
-if(indice !== -1){
+            return Number(p.numero) ===
+                Number(rifa.numero) &&
 
-lista[indice].pagamento =
-"🟡 Aguardando confirmação";
+                p.nome === rifa.nome;
 
-lista[indice].data =
-new Date().toLocaleString("pt-BR");
+        });
 
 
-// SALVA O PIX DA RIFA
+    if(indice !== -1){
 
-lista[indice].pix =
-pixRifa;
+        lista[indice].pagamento =
+            "🟡 Aguardando confirmação";
+
+        lista[indice].data =
+            new Date()
+            .toLocaleString("pt-BR");
+
+    }
+
+
+    localStorage.setItem(
+        "rifaParticipantes",
+        JSON.stringify(lista)
+    );
+
+
+    // =====================================
+    // ATUALIZA TAMBÉM NO SUPABASE
+    // =====================================
+
+    try{
+
+        const { data, error } =
+            await supabaseClient
+
+            .from("rifa_participantes")
+
+            .select("id,numero,nome")
+
+            .eq("numero",rifa.numero)
+            .eq("nome",rifa.nome)
+            .limit(1);
+
+
+        if(error){
+
+            console.error(error);
+
+        }
+
+
+        if(data && data.length > 0){
+
+            const id =
+                data[0].id;
+
+
+            const { error:updateError } =
+
+                await supabaseClient
+
+                .from("rifa_participantes")
+
+                .update({
+
+                    pagamento:
+                        "🟡 Aguardando confirmação"
+
+                })
+
+                .eq("id",id);
+
+
+            if(updateError){
+
+                console.error(
+                    updateError
+                );
+
+            }
+
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "Erro ao atualizar pagamento:",
+            error
+        );
+
+    }
+
+
+    alert(
+
+        "🍀 Pagamento informado!\n\n" +
+
+        "Aguarde a confirmação do administrador."
+
+    );
+
+
+    location.href =
+        "rifa.html";
 
 }
 
 
-// SE NÃO EXISTE
+// =====================================
+// INICIAR
+// =====================================
 
-else{
-
-lista.push({
-
-nome:
-rifa.nome,
-
-whatsapp:
-rifa.whatsapp,
-
-pix:
-pixRifa,
-
-numero:
-rifa.numero,
-
-pagamento:
-"🟡 Aguardando confirmação",
-
-data:
-new Date().toLocaleString("pt-BR")
-
-});
-
-}
-
-
-localStorage.setItem(
-"rifaParticipantes",
-JSON.stringify(lista)
-);
-
-
-alert(
-"🍀 Pagamento informado!\n\n" +
-"Aguarde a confirmação do administrador."
-);
-
-
-location.href="rifa.html";
-
-}
+carregarConfiguracaoRifa();
 
 </script>
 
 </body>
 
 </html>
+
