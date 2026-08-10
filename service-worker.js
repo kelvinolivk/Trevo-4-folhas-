@@ -1,58 +1,63 @@
-const CACHE_NAME = "trevo4folhas-v2";
+const CACHE_NAME = "trevo4folhas-v3";
 
-const arquivos = [
-  "./",
-  "./index.html",
-  "./manifest.json"
+const ARQUIVOS = [
+    "./",
+    "./index.html",
+    "./manifest.json"
 ];
 
-self.addEventListener("install", (event) => {
+self.addEventListener("install", function(event) {
 
-  self.skipWaiting();
+    self.skipWaiting();
 
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(arquivos);
-    })
-  );
+    event.waitUntil(
+        caches.open(CACHE_NAME).then(function(cache) {
+            return cache.addAll(ARQUIVOS);
+        })
+    );
 
 });
 
+self.addEventListener("activate", function(event) {
 
-self.addEventListener("activate", (event) => {
+    event.waitUntil(
 
-  event.waitUntil(
+        caches.keys().then(function(keys) {
 
-    caches.keys().then((keys)=>{
+            return Promise.all(
 
-      return Promise.all(
+                keys.map(function(key) {
 
-        keys.map((key)=>{
+                    if(key !== CACHE_NAME) {
+                        return caches.delete(key);
+                    }
 
-          if(key !== CACHE_NAME){
+                })
 
-            return caches.delete(key);
+            );
 
-          }
+        }).then(function() {
+
+            return self.clients.claim();
 
         })
 
-      );
-
-    })
-
-  );
+    );
 
 });
 
+self.addEventListener("fetch", function(event) {
 
-self.addEventListener("fetch", (event) => {
+    event.respondWith(
 
-  event.respondWith(
+        fetch(event.request)
+            .then(function(response) {
+                return response;
+            })
+            .catch(function() {
+                return caches.match(event.request);
+            })
 
-    fetch(event.request)
-    .catch(()=>caches.match(event.request))
-
-  );
+    );
 
 });
