@@ -59,14 +59,6 @@ button{
     display:inline-block;
 }
 
-.erro{
-    color:#ff6666;
-}
-
-.sucesso{
-    color:#6dff7d;
-}
-
 </style>
 
 </head>
@@ -75,9 +67,8 @@ button{
 
 <h1>🔐 Admin Trevo4Folhas 🍀</h1>
 
-
 <!-- ==============================
-CONFIGURAÇÕES DA LOTERIA
+CONFIGURAÇÕES LOTERIA
 ============================== -->
 
 <div class="caixa">
@@ -116,7 +107,7 @@ placeholder="Mensagem">
 
 
 <!-- ==============================
-CONFIGURAÇÃO DA RIFA
+CONFIGURAÇÃO RIFA
 ============================== -->
 
 <div class="caixa">
@@ -232,9 +223,7 @@ Calculando financeiro da rifa...
 </button>
 
 
-<!-- ==============================
-SUPABASE
-============================== -->
+<!-- SUPABASE -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -263,7 +252,29 @@ if(senha !== senhaSalva){
 
 
 // =====================================
-// CARREGAR CONFIGURAÇÕES
+// CONVERTER VALOR
+// =====================================
+
+function numeroValor(valor){
+
+    if(!valor){
+        return 0;
+    }
+
+    let texto =
+        String(valor)
+        .replace("R$","")
+        .replace(/\s/g,"")
+        .replace(/\./g,"")
+        .replace(",", ".");
+
+    return Number(texto) || 0;
+
+}
+
+
+// =====================================
+// CARREGAR CONFIGURAÇÃO
 // =====================================
 
 async function carregarConfiguracoes(){
@@ -272,109 +283,113 @@ async function carregarConfiguracoes(){
 
         const { data, error } =
             await supabaseClient
-            .from("configuracoes")
-            .select("*");
+            .from("configuracao")
+            .select("*")
+            .limit(1);
 
         if(error){
             throw error;
         }
 
-        console.log("Configurações:", data);
+        let config =
+            data && data.length > 0
+            ? data[0]
+            : null;
+
+
+        if(!config){
+
+            console.log(
+                "Nenhuma configuração encontrada."
+            );
+
+            return;
+
+        }
 
 
         // ==============================
         // LOTERIA
         // ==============================
 
-        let loteria =
-            data.find(function(item){
+        document.getElementById("premio").value =
+            config.premio || "";
 
-                return item.tipo === "loteria";
+        document.getElementById("valorAposta").value =
+            config.valor_aposta || "";
 
-            });
+        document.getElementById("pixLoteria").value =
+            config.pix || "";
 
+        document.getElementById("data").value =
+            config.data_sorteio || "";
 
-        if(loteria){
+        document.getElementById("hora").value =
+            config.hora_sorteio || "";
 
-            document.getElementById("premio").value =
-                loteria.premio || "";
-
-            document.getElementById("valorAposta").value =
-                loteria.valor || "";
-
-            document.getElementById("pixLoteria").value =
-                loteria.pix || "";
-
-            document.getElementById("data").value =
-                loteria.data || "";
-
-            document.getElementById("hora").value =
-                loteria.hora || "";
-
-            document.getElementById("mensagem").value =
-                loteria.mensagem || "";
-
-
-            localStorage.setItem(
-                "configuracao",
-                JSON.stringify({
-
-                    premio:loteria.premio || "",
-
-                    valorAposta:loteria.valor || "",
-
-                    pix:loteria.pix || "",
-
-                    data:loteria.data || "",
-
-                    hora:loteria.hora || "",
-
-                    mensagem:loteria.mensagem || ""
-
-                })
-            );
-
-        }
+        document.getElementById("mensagem").value =
+            config.mensagem || "";
 
 
         // ==============================
         // RIFA
         // ==============================
 
-        let rifa =
-            data.find(function(item){
+        document.getElementById("valorRifa").value =
+            config.valor_rifa || "";
 
-                return item.tipo === "rifa";
+        document.getElementById("premioRifa").value =
+            config.premio_rifa || "";
 
-            });
-
-
-        if(rifa){
-
-            document.getElementById("valorRifa").value =
-                rifa.valor || "";
-
-            document.getElementById("premioRifa").value =
-                rifa.premio || "";
-
-            document.getElementById("pixRifa").value =
-                rifa.pix || "";
+        document.getElementById("pixRifa").value =
+            config.pix_rifa || "";
 
 
-            localStorage.setItem(
-                "configuracaoRifa",
-                JSON.stringify({
+        // ==============================
+        // SALVAR CÓPIA LOCAL
+        // ==============================
 
-                    valor:rifa.valor || "",
+        localStorage.setItem(
+            "configuracao",
+            JSON.stringify({
 
-                    premio:rifa.premio || "",
+                premio:
+                    config.premio || "",
 
-                    pix:rifa.pix || ""
+                valorAposta:
+                    config.valor_aposta || "",
 
-                })
-            );
+                pix:
+                    config.pix || "",
 
-        }
+                data:
+                    config.data_sorteio || "",
+
+                hora:
+                    config.hora_sorteio || "",
+
+                mensagem:
+                    config.mensagem || ""
+
+            })
+        );
+
+
+        localStorage.setItem(
+            "configuracaoRifa",
+            JSON.stringify({
+
+                valor:
+                    config.valor_rifa || "",
+
+                premio:
+                    config.premio_rifa || "",
+
+                pix:
+                    config.pix_rifa || ""
+
+            })
+        );
 
 
     }catch(error){
@@ -392,73 +407,130 @@ async function carregarConfiguracoes(){
 
 
 // =====================================
-// SALVAR LOTERIA
+// PEGAR ID DA CONFIGURAÇÃO
+// =====================================
+
+async function pegarConfiguracao(){
+
+    const { data, error } =
+        await supabaseClient
+        .from("configuracao")
+        .select("*")
+        .limit(1);
+
+    if(error){
+        throw error;
+    }
+
+    if(data && data.length > 0){
+
+        return data[0];
+
+    }
+
+    return null;
+
+}
+
+
+// =====================================
+// SALVAR CONFIGURAÇÕES DA LOTERIA
 // =====================================
 
 async function salvarConfiguracoes(){
 
-    let configuracao = {
+    let premio =
+        document.getElementById("premio").value;
 
-        premio:
-            document.getElementById("premio").value,
+    let valorAposta =
+        document.getElementById("valorAposta").value;
 
-        valorAposta:
-            document.getElementById("valorAposta").value,
+    let pix =
+        document.getElementById("pixLoteria").value;
 
-        pix:
-            document.getElementById("pixLoteria").value,
+    let data =
+        document.getElementById("data").value;
 
-        data:
-            document.getElementById("data").value,
+    let hora =
+        document.getElementById("hora").value;
 
-        hora:
-            document.getElementById("hora").value,
-
-        mensagem:
-            document.getElementById("mensagem").value
-
-    };
+    let mensagem =
+        document.getElementById("mensagem").value;
 
 
     try{
 
-        const { error } =
-            await supabaseClient
-            .from("configuracoes")
-            .update({
-
-                valor:configuracao.valorAposta,
-
-                premio:configuracao.premio,
-
-                pix:configuracao.pix,
-
-                data:configuracao.data,
-
-                hora:configuracao.hora,
-
-                mensagem:configuracao.mensagem,
-
-                atualizado_em:
-                    new Date().toISOString()
-
-            })
-            .eq("tipo","loteria");
+        let config =
+            await pegarConfiguracao();
 
 
-        if(error){
-            throw error;
+        let dados = {
+
+            premio:premio,
+
+            valor_aposta:valorAposta,
+
+            pix:pix,
+
+            data_sorteio:data,
+
+            hora_sorteio:hora,
+
+            mensagem:mensagem
+
+        };
+
+
+        let resultado;
+
+
+        if(config){
+
+            resultado =
+                await supabaseClient
+                .from("configuracao")
+                .update(dados)
+                .eq("id",config.id);
+
+        }else{
+
+            resultado =
+                await supabaseClient
+                .from("configuracao")
+                .insert([dados]);
+
+        }
+
+
+        if(resultado.error){
+
+            throw resultado.error;
+
         }
 
 
         localStorage.setItem(
             "configuracao",
-            JSON.stringify(configuracao)
+            JSON.stringify({
+
+                premio:premio,
+
+                valorAposta:valorAposta,
+
+                pix:pix,
+
+                data:data,
+
+                hora:hora,
+
+                mensagem:mensagem
+
+            })
         );
 
 
         alert(
-            "🍀 Configurações da Loteria salvas no servidor!"
+            "🍀 Configurações da Loteria salvas!"
         );
 
 
@@ -482,51 +554,72 @@ async function salvarConfiguracoes(){
 
 async function salvarRifa(){
 
-    let configuracaoRifa = {
+    let valor =
+        document.getElementById("valorRifa").value;
 
-        valor:
-            document.getElementById("valorRifa").value,
+    let premio =
+        document.getElementById("premioRifa").value;
 
-        premio:
-            document.getElementById("premioRifa").value,
-
-        pix:
-            document.getElementById("pixRifa").value
-
-    };
+    let pix =
+        document.getElementById("pixRifa").value;
 
 
     try{
 
-        const { error } =
-            await supabaseClient
-            .from("configuracoes")
-            .update({
-
-                valor:
-                    configuracaoRifa.valor,
-
-                premio:
-                    configuracaoRifa.premio,
-
-                pix:
-                    configuracaoRifa.pix,
-
-                atualizado_em:
-                    new Date().toISOString()
-
-            })
-            .eq("tipo","rifa");
+        let config =
+            await pegarConfiguracao();
 
 
-        if(error){
-            throw error;
+        let dados = {
+
+            valor_rifa:valor,
+
+            premio_rifa:premio,
+
+            pix_rifa:pix
+
+        };
+
+
+        let resultado;
+
+
+        if(config){
+
+            resultado =
+                await supabaseClient
+                .from("configuracao")
+                .update(dados)
+                .eq("id",config.id);
+
+        }else{
+
+            resultado =
+                await supabaseClient
+                .from("configuracao")
+                .insert([dados]);
+
+        }
+
+
+        if(resultado.error){
+
+            throw resultado.error;
+
         }
 
 
         localStorage.setItem(
             "configuracaoRifa",
-            JSON.stringify(configuracaoRifa)
+            JSON.stringify({
+
+                valor:valor,
+
+                premio:premio,
+
+                pix:pix
+
+            })
         );
 
 
@@ -691,11 +784,11 @@ async function carregarApostas(){
 
 
         let valorAposta =
-            Number(
+            numeroValor(
                 document.getElementById(
                     "valorAposta"
                 ).value
-            ) || 0;
+            );
 
 
         let arrecadado =
@@ -703,11 +796,11 @@ async function carregarApostas(){
 
 
         let premio =
-            Number(
+            numeroValor(
                 document.getElementById(
                     "premio"
                 ).value
-            ) || 0;
+            );
 
 
         let saldo =
@@ -729,17 +822,17 @@ async function carregarApostas(){
         "<br><br>" +
 
         "💰 Arrecadado: R$ " +
-        arrecadado.toFixed(2) +
+        arrecadado.toFixed(2).replace(".",",") +
 
         "<br><br>" +
 
         "🏆 Prêmio: R$ " +
-        premio.toFixed(2) +
+        premio.toFixed(2).replace(".",",") +
 
         "<br><br>" +
 
         "📈 Saldo: R$ " +
-        saldo.toFixed(2);
+        saldo.toFixed(2).replace(".",",");
 
 
     }catch(error){
@@ -756,18 +849,19 @@ async function carregarApostas(){
 
 
 // =====================================
-// CONFIRMAR PAGAMENTO
+// CONFIRMAR PAGAMENTO LOTERIA
 // =====================================
 
 async function confirmarPagamento(id){
 
-    let confirmar =
-        confirm(
+    if(
+        !confirm(
             "Confirmar o pagamento desta aposta?"
-        );
+        )
+    ){
 
-    if(!confirmar){
         return;
+
     }
 
 
@@ -800,10 +894,8 @@ async function confirmarPagamento(id){
 
     }catch(error){
 
-        console.error(error);
-
         alert(
-            "❌ Erro ao confirmar pagamento:\n\n" +
+            "❌ Erro:\n\n" +
             error.message
         );
 
@@ -838,7 +930,8 @@ async function carregarRifa(){
         }
 
 
-        let rifa = data || [];
+        let rifa =
+            data || [];
 
 
         if(rifa.length === 0){
@@ -846,24 +939,31 @@ async function carregarRifa(){
             vendas.innerHTML =
                 "Nenhuma venda de rifa realizada.";
 
+            document.getElementById(
+                "financeiroRifa"
+            ).innerHTML =
+                "Nenhuma venda de rifa.";
+
             return;
 
         }
 
 
-        let configRifa =
-            JSON.parse(
-                localStorage.getItem(
-                    "configuracaoRifa"
-                )
-            ) || {};
+        let config =
+            await pegarConfiguracao();
 
 
         let valor =
-            Number(configRifa.valor) || 0;
+            numeroValor(
+                config ? config.valor_rifa : 0
+            );
+
 
         let premio =
-            Number(configRifa.premio) || 0;
+            numeroValor(
+                config ? config.premio_rifa : 0
+            );
+
 
         let pagos = 0;
 
@@ -928,11 +1028,13 @@ async function carregarRifa(){
         });
 
 
-        vendas.innerHTML = html;
+        vendas.innerHTML =
+            html;
 
 
         let arrecadado =
             pagos * valor;
+
 
         let lucro =
             arrecadado - premio;
@@ -943,7 +1045,7 @@ async function carregarRifa(){
         ).innerHTML =
 
         "💰 Valor por número: R$ " +
-        valor.toFixed(2) +
+        valor.toFixed(2).replace(".",",") +
 
         "<br><br>" +
 
@@ -959,17 +1061,17 @@ async function carregarRifa(){
         "<br><br>" +
 
         "💵 Arrecadado: R$ " +
-        arrecadado.toFixed(2) +
+        arrecadado.toFixed(2).replace(".",",") +
 
         "<br><br>" +
 
         "🏆 Prêmio: R$ " +
-        premio.toFixed(2) +
+        premio.toFixed(2).replace(".",",") +
 
         "<br><br>" +
 
         "📈 Lucro: R$ " +
-        lucro.toFixed(2);
+        lucro.toFixed(2).replace(".",",");
 
 
     }catch(error){
@@ -991,13 +1093,14 @@ async function carregarRifa(){
 
 async function confirmarPagamentoRifa(id){
 
-    let confirmar =
-        confirm(
+    if(
+        !confirm(
             "Confirmar pagamento desta Rifa?"
-        );
+        )
+    ){
 
-    if(!confirmar){
         return;
+
     }
 
 
@@ -1029,8 +1132,6 @@ async function confirmarPagamentoRifa(id){
 
 
     }catch(error){
-
-        console.error(error);
 
         alert(
             "❌ Erro ao confirmar pagamento:\n\n" +
@@ -1093,7 +1194,9 @@ async function realizarSorteio(){
                 p.pagamento !==
                 "🟢 Pagamento confirmado"
             ){
+
                 return;
+
             }
 
 
@@ -1148,181 +1251,4 @@ async function realizarSorteio(){
 
             vencedores:
                 vencedores.length > 0
-                ? vencedores
-                : ["🍀 Acumulou"]
-
-        };
-
-
-        localStorage.setItem(
-            "resultadoSorteio",
-            JSON.stringify(resultado)
-        );
-
-
-        let historico =
-            JSON.parse(
-                localStorage.getItem(
-                    "historicoSorteios"
-                )
-            ) || [];
-
-
-        historico.push(resultado);
-
-
-        localStorage.setItem(
-            "historicoSorteios",
-            JSON.stringify(historico)
-        );
-
-
-        alert(
-            "🍀 Sorteio realizado!\n\n" +
-            "Números:\n" +
-            numeros.join(" - ")
-        );
-
-
-    }catch(error){
-
-        console.error(error);
-
-        alert(
-            "❌ Erro ao realizar sorteio:\n\n" +
-            error.message
-        );
-
-    }
-
-}
-
-
-// =====================================
-// SORTEIO RIFA
-// =====================================
-
-async function sortearRifa(){
-
-    try{
-
-        const { data, error } =
-            await supabaseClient
-            .from("rifa_participantes")
-            .select("*");
-
-
-        if(error){
-            throw error;
-        }
-
-
-        let rifa = data || [];
-
-
-        if(rifa.length < 100){
-
-            alert(
-                "🍀 Ainda não é possível realizar o sorteio.\n\n" +
-                "Vendidos: " +
-                rifa.length +
-                "\n\nFaltam: " +
-                (100-rifa.length)
-            );
-
-            return;
-
-        }
-
-
-        let vencedor =
-            rifa[
-                Math.floor(
-                    Math.random() * rifa.length
-                )
-            ];
-
-
-        let resultado = {
-
-            numero:vencedor.numero,
-
-            nome:vencedor.nome,
-
-            whatsapp:vencedor.whatsapp,
-
-            data:
-                new Date()
-                .toLocaleString("pt-BR")
-
-        };
-
-
-        localStorage.setItem(
-            "resultadoRifa",
-            JSON.stringify(resultado)
-        );
-
-
-        alert(
-            "🎉 RIFA SORTEADA!\n\n" +
-            "🎟️ Número: " +
-            vencedor.numero +
-            "\n👤 Ganhador: " +
-            vencedor.nome
-        );
-
-
-    }catch(error){
-
-        console.error(error);
-
-        alert(
-            "❌ Erro ao sortear Rifa:\n\n" +
-            error.message
-        );
-
-    }
-
-}
-
-
-// =====================================
-// APAGAR HISTÓRICO LOCAL
-// =====================================
-
-function apagarHistorico(){
-
-    if(
-        confirm(
-            "Apagar histórico deste aparelho?"
-        )
-    ){
-
-        localStorage.removeItem(
-            "historicoSorteios"
-        );
-
-        alert(
-            "Histórico local apagado 🍀"
-        );
-
-    }
-
-}
-
-
-// =====================================
-// INICIAR
-// =====================================
-
-carregarConfiguracoes();
-
-carregarApostas();
-
-carregarRifa();
-
-</script>
-
-</body>
-</html>
+             
