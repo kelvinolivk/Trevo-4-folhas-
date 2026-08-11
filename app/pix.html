@@ -12,115 +12,64 @@
 <style>
 
 body{
-
 margin:0;
-
 background:#111;
-
 color:white;
-
 font-family:Arial,sans-serif;
-
 }
 
 .container{
-
 max-width:450px;
-
 margin:30px auto;
-
 background:#1d1d1d;
-
 border-radius:20px;
-
 padding:25px;
-
 text-align:center;
-
 }
 
 h1{
-
 color:#3ddc84;
-
 }
 
 .valor{
-
 font-size:30px;
-
 font-weight:bold;
-
 color:#3ddc84;
-
 margin:20px 0;
-
 }
 
 .info{
-
 background:#222;
-
 padding:15px;
-
 border-radius:10px;
-
 margin:15px 0;
-
 text-align:left;
-
 }
 
 .pix{
-
 background:#2b2b2b;
-
 padding:15px;
-
 border-radius:10px;
-
 word-break:break-all;
-
 margin:20px 0;
-
 }
 
 button{
-
 width:100%;
-
 padding:15px;
-
 margin-top:12px;
-
 border:none;
-
 border-radius:10px;
-
 background:#19a34a;
-
 color:white;
-
 font-size:16px;
-
 cursor:pointer;
-
-}
-
-button:hover{
-
-background:#14853c;
-
 }
 
 .aviso{
-
 margin-top:20px;
-
 color:#ccc;
-
 font-size:14px;
-
 }
 
 </style>
@@ -134,63 +83,43 @@ font-size:14px;
 <h1>🍀 Trevo4Folhas</h1>
 
 <p>
-
 Finalize sua aposta realizando o pagamento.
-
 </p>
 
 <div class="valor" id="valor">
-
 Carregando...
-
 </div>
 
 <div class="info" id="dados">
-
 Carregando dados...
-
 </div>
 
 <h3>
-
 Chave Pix
-
 </h3>
 
 <div class="pix" id="chavePix">
-
 Carregando...
-
 </div>
 
 <button onclick="copiarPix()">
-
 📋 Copiar chave Pix
-
 </button>
 
 <button id="botaoPagamento" onclick="confirmarPagamento()">
-
 ✅ Já realizei o pagamento
-
 </button>
 
 <button onclick="enviarWhatsApp()">
-
 📲 Enviar comprovante pelo WhatsApp
-
 </button>
 
 <p class="aviso">
-
 Após a confirmação do administrador sua aposta estará válida.
-
 </p>
 
 </div>
 
-
-<!-- SUPABASE -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -199,107 +128,172 @@ Após a confirmação do administrador sua aposta estará válida.
 
 <script>
 
-
 // =====================================
 // DADOS DO PARTICIPANTE
 // =====================================
 
 let cadastro =
-
 JSON.parse(
-
 localStorage.getItem("cadastro")
-
 ) || {};
 
 
 let numeroEscolhido =
-
 JSON.parse(
-
 localStorage.getItem("numeroEscolhido")
-
 ) || [];
 
 
-let configuracao =
-
-JSON.parse(
-
-localStorage.getItem("configuracao")
-
-) || {};
-
-
 // =====================================
-// VALOR DA APOSTA
-// =====================================
-
-let valorAposta =
-
-configuracao.valorAposta || "5,00";
-
-
-document.getElementById("valor").innerHTML =
-
-"R$ " + valorAposta;
-
-
-// =====================================
-// DADOS DA APOSTA
+// MOSTRAR DADOS DA APOSTA
 // =====================================
 
 document.getElementById("dados").innerHTML =
 
-"👤 <b>"+
+"👤 <b>" +
+(cadastro.nome || "Não informado") +
+"</b><br><br>" +
 
-(cadastro.nome || "Não informado")+
+"📱 " +
+(cadastro.whatsapp || "Não informado") +
+"<br><br>" +
 
-"</b><br><br>"+
+"💳 Pix cadastrado: " +
+(cadastro.pix || "Não informado") +
+"<br><br>" +
 
-"📱 "+
+"📍 " +
+(cadastro.cidade || "Não informado") +
+"<br><br>" +
 
-(cadastro.whatsapp || "")+
-
-"<br><br>"+
-
-"💳 Pix cadastrado: "+
-
-(cadastro.pix || "Não informado")+
-
-"<br><br>"+
-
-"📍 "+
-
-(cadastro.cidade || "")+
-
-"<br><br>"+
-
-"🍀 Números: "+
-
-numeroEscolhido.join(" - ");
+"🍀 Números: " +
+(numeroEscolhido.length > 0
+? numeroEscolhido.join(" - ")
+: "Não informado");
 
 
 // =====================================
-// CHAVE PIX DO ADMIN
+// CARREGAR CONFIGURAÇÃO DO SUPABASE
 // =====================================
 
-// Usa a chave Pix configurada pelo Admin.
-// Se ainda não houver configuração,
-// mostra aviso em vez de usar Pix antigo.
+async function carregarConfiguracao(){
 
-let chavePix =
+    try{
 
-configuracao.pix ||
+        document.getElementById("valor").innerHTML =
+            "⏳ Carregando valor...";
 
-configuracao.chavePix ||
-
-"Pix não configurado pelo administrador";
+        document.getElementById("chavePix").innerText =
+            "⏳ Carregando Pix...";
 
 
-document.getElementById("chavePix").innerText =
+        const { data, error } =
 
-chavePix;
+            await supabaseClient
+
+            .from("configuracao")
+
+            .select("valor_aposta,pix")
+
+            .limit(1);
+
+
+        if(error){
+
+            console.error(
+                "Erro ao carregar configuração:",
+                error
+            );
+
+            throw error;
+
+        }
+
+
+        if(!data || data.length === 0){
+
+            document.getElementById("valor").innerHTML =
+                "R$ A definir";
+
+            document.getElementById("chavePix").innerText =
+                "Pix não configurado";
+
+            return;
+
+        }
+
+
+        let config = data[0];
+
+
+        // =====================================
+        // VALOR DA APOSTA
+        // =====================================
+
+        let valor =
+            config.valor_aposta || "5,00";
+
+
+        document.getElementById("valor").innerHTML =
+            "R$ " + valor;
+
+
+        // =====================================
+        // CHAVE PIX
+        // =====================================
+
+        let pix =
+            config.pix || "";
+
+
+        if(!pix){
+
+            pix =
+                "Pix não configurado pelo administrador";
+
+        }
+
+
+        document.getElementById("chavePix").innerText =
+            pix;
+
+
+        // =====================================
+        // SALVAR CÓPIA LOCAL
+        // =====================================
+
+        localStorage.setItem(
+
+            "configuracao",
+
+            JSON.stringify({
+
+                valorAposta:
+                    config.valor_aposta || "",
+
+                pix:
+                    config.pix || ""
+
+            })
+
+        );
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        document.getElementById("valor").innerHTML =
+            "❌ Erro ao carregar";
+
+
+        document.getElementById("chavePix").innerText =
+            "❌ Não foi possível carregar o Pix";
+
+    }
+
+}
 
 
 // =====================================
@@ -308,43 +302,63 @@ chavePix;
 
 function copiarPix(){
 
-let pix =
-
-document.getElementById("chavePix").innerText;
-
-
-if(
-
-!pix ||
-
-pix === "Pix não configurado pelo administrador"
-
-){
-
-alert(
-
-"⚠️ O administrador ainda não configurou a chave Pix."
-
-);
-
-return;
-
-}
+    let pix =
+        document.getElementById(
+            "chavePix"
+        ).innerText;
 
 
-navigator.clipboard.writeText(pix)
+    if(
 
-.then(function(){
+        !pix ||
 
-alert("🍀 Chave Pix copiada!");
+        pix ===
+        "Pix não configurado pelo administrador"
 
-})
+    ){
 
-.catch(function(){
+        alert(
+            "⚠️ O administrador ainda não configurou a chave Pix."
+        );
 
-alert("Não foi possível copiar a chave Pix.");
+        return;
 
-});
+    }
+
+
+    if(
+        pix ===
+        "❌ Não foi possível carregar o Pix"
+    ){
+
+        alert(
+            "⚠️ Não foi possível carregar a chave Pix."
+        );
+
+        return;
+
+    }
+
+
+    navigator.clipboard
+
+    .writeText(pix)
+
+    .then(function(){
+
+        alert(
+            "🍀 Chave Pix copiada!"
+        );
+
+    })
+
+    .catch(function(){
+
+        alert(
+            "❌ Não foi possível copiar a chave Pix."
+        );
+
+    });
 
 }
 
@@ -355,167 +369,161 @@ alert("Não foi possível copiar a chave Pix.");
 
 async function confirmarPagamento(){
 
+    if(
 
-if(
+        !cadastro.nome ||
 
-!cadastro.nome ||
+        numeroEscolhido.length === 0
 
-numeroEscolhido.length === 0
+    ){
 
-){
+        alert(
+            "⚠️ Não foi possível identificar sua aposta."
+        );
 
-alert(
+        return;
 
-"⚠️ Não foi possível identificar sua aposta."
+    }
 
-);
 
-return;
+    let botao =
+        document.getElementById(
+            "botaoPagamento"
+        );
 
-}
 
+    botao.disabled = true;
 
-let botao =
+    botao.innerText =
+        "⏳ Enviando...";
 
-document.getElementById("botaoPagamento");
 
+    try{
 
-botao.disabled = true;
 
-botao.innerText = "⏳ Enviando...";
+        const numeroTexto =
+            JSON.stringify(
+                numeroEscolhido
+            );
 
 
-try{
+        const { data, error } =
 
+            await supabaseClient
 
-// Procura a aposta no Supabase
+            .from("participantes")
 
-const { data, error } =
+            .select("*")
 
-await supabaseClient
+            .eq(
+                "nome",
+                cadastro.nome
+            )
 
-.from("participantes")
+            .eq(
+                "numeros",
+                numeroTexto
+            )
 
-.select("*")
+            .order(
+                "id",
+                {
+                    ascending:false
+                }
+            )
 
-.eq("nome", cadastro.nome)
+            .limit(1);
 
-.eq(
 
-"numero",
+        if(error){
 
-JSON.stringify(numeroEscolhido)
+            throw error;
 
-)
+        }
 
-.order("id", {
 
-ascending:false
+        if(!data || data.length === 0){
 
-})
+            alert(
+                "❌ Não encontramos sua aposta no sistema."
+            );
 
-.limit(1);
+            botao.disabled = false;
 
+            botao.innerText =
+                "✅ Já realizei o pagamento";
 
-if(error){
+            return;
 
-console.error(error);
+        }
 
-throw error;
 
-}
+        let aposta =
+            data[0];
 
 
-if(!data || data.length === 0){
+        const { error: erroAtualizacao } =
 
-alert(
+            await supabaseClient
 
-"❌ Não encontramos sua aposta no sistema."
+            .from("participantes")
 
-);
+            .update({
 
-botao.disabled = false;
+                pagamento:
+                    "🟡 Aguardando confirmação"
 
-botao.innerText =
+            })
 
-"✅ Já realizei o pagamento";
+            .eq(
+                "id",
+                aposta.id
+            );
 
-return;
 
-}
+        if(erroAtualizacao){
 
+            throw erroAtualizacao;
 
-let aposta = data[0];
+        }
 
 
-// Atualiza o pagamento no Supabase
+        alert(
 
-const { error: erroAtualizacao } =
+            "🍀 Pagamento informado com sucesso!\n\n" +
 
-await supabaseClient
+            "Aguarde a confirmação do administrador."
 
-.from("participantes")
+        );
 
-.update({
 
-pagamento:
+        botao.innerText =
+            "🟡 Pagamento informado";
 
-"🟡 Aguardando confirmação"
 
-})
+    }catch(error){
 
-.eq("id", aposta.id);
+        console.error(
+            "Erro Supabase:",
+            error
+        );
 
 
-if(erroAtualizacao){
+        alert(
 
-console.error(erroAtualizacao);
+            "❌ Não foi possível informar o pagamento:\n\n" +
 
-throw erroAtualizacao;
+            error.message
 
-}
+        );
 
 
-alert(
+        botao.disabled = false;
 
-"🍀 Pagamento informado com sucesso!\n\n"+
+        botao.innerText =
+            "✅ Já realizei o pagamento";
 
-"Aguarde a confirmação do administrador."
-
-);
-
-
-botao.innerText =
-
-"🟡 Pagamento informado";
-
-
-}catch(error){
-
-console.error(
-
-"Erro Supabase:",
-
-error
-
-);
-
-alert(
-
-"❌ Não foi possível informar o pagamento:\n\n"+
-
-error.message
-
-);
-
-
-botao.disabled = false;
-
-botao.innerText =
-
-"✅ Já realizei o pagamento";
-
-}
+    }
 
 }
 
@@ -526,36 +534,36 @@ botao.innerText =
 
 function enviarWhatsApp(){
 
+    let mensagem =
 
-let mensagem =
+        "🍀 Olá! Acabei de realizar o pagamento da minha aposta no Trevo4Folhas.\n\n" +
 
-"🍀 Olá! Acabei de realizar o pagamento da minha aposta no Trevo4Folhas.\n\n"+
+        "👤 Nome: " +
 
-"👤 Nome: "+
+        (cadastro.nome || "") +
 
-(cadastro.nome || "")+
+        "\n📱 WhatsApp: " +
 
-"\n📱 WhatsApp: "+
+        (cadastro.whatsapp || "") +
 
-(cadastro.whatsapp || "")+
+        "\n🍀 Números: " +
 
-"\n🍀 Números: "+
+        numeroEscolhido.join(" - ") +
 
-numeroEscolhido.join(" - ")+
-
-"\n\nEstou enviando o comprovante para confirmação.";
-
-
-let texto =
-
-encodeURIComponent(mensagem);
+        "\n\nEstou enviando o comprovante para confirmação.";
 
 
-window.location.href =
+    let texto =
+        encodeURIComponent(
+            mensagem
+        );
 
-"https://wa.me/5542999330894?text=" +
 
-texto;
+    window.location.href =
+
+        "https://wa.me/5542999330894?text=" +
+
+        texto;
 
 }
 
@@ -566,35 +574,37 @@ texto;
 
 if(!cadastro.nome){
 
-alert(
+    alert(
+        "Faça seu cadastro primeiro 🍀"
+    );
 
-"Faça seu cadastro primeiro 🍀"
-
-);
-
-window.location.href =
-
-"cadastro.html";
+    window.location.href =
+        "cadastro.html";
 
 }
 
 
 if(numeroEscolhido.length === 0){
 
-alert(
+    alert(
+        "Escolha seus números primeiro 🍀"
+    );
 
-"Escolha seus números primeiro 🍀"
-
-);
-
-window.location.href =
-
-"numeros.html";
+    window.location.href =
+        "numeros.html";
 
 }
+
+
+// =====================================
+// INICIAR
+// =====================================
+
+carregarConfiguracao();
 
 </script>
 
 </body>
 
 </html>
+
