@@ -76,14 +76,6 @@ button:active{
     background:#111;
 }
 
-.erro{
-    color:#ff6666;
-}
-
-.sucesso{
-    color:#6dff7d;
-}
-
 .pequeno{
     font-size:14px;
     color:#aaa;
@@ -136,7 +128,7 @@ placeholder="Mensagem">
 </button>
 
 <div class="pequeno">
-O Pix é salvo separadamente para evitar erro de coluna no Supabase.
+As configurações são salvas no Supabase.
 </div>
 
 </div>
@@ -241,7 +233,7 @@ async function carregarConfiguracoes(){
             await supabaseClient
             .from("configuracao")
             .select(
-                "id,premio,valor_aposta,data_sorteio,hora_sorteio,mensagem"
+                "id,premio,valor_aposta,pix,data_sorteio,hora_sorteio,mensagem"
             )
             .limit(1);
 
@@ -255,14 +247,9 @@ async function carregarConfiguracoes(){
 
         if(!data || data.length === 0){
 
-            document.getElementById("premio").value="";
-            document.getElementById("valorAposta").value="";
-            document.getElementById("data").value="";
-            document.getElementById("hora").value="";
-            document.getElementById("mensagem").value="";
-
-            document.getElementById("pixLoteria").value =
-                localStorage.getItem("pixLoteria") || "";
+            alert(
+                "⚠️ Nenhuma configuração encontrada no Supabase."
+            );
 
             return;
 
@@ -282,6 +269,9 @@ async function carregarConfiguracoes(){
         document.getElementById("valorAposta").value =
             config.valor_aposta || "";
 
+        document.getElementById("pixLoteria").value =
+            config.pix || "";
+
         document.getElementById("data").value =
             config.data_sorteio || "";
 
@@ -293,15 +283,7 @@ async function carregarConfiguracoes(){
 
 
         // =================================
-        // PIX
-        // =================================
-
-        document.getElementById("pixLoteria").value =
-            localStorage.getItem("pixLoteria") || "";
-
-
-        // =================================
-        // SALVAR CÓPIA LOCAL
+        // CÓPIA LOCAL
         // =================================
 
         localStorage.setItem(
@@ -315,7 +297,7 @@ async function carregarConfiguracoes(){
                     config.valor_aposta || "",
 
                 pix:
-                    localStorage.getItem("pixLoteria") || "",
+                    config.pix || "",
 
                 data:
                     config.data_sorteio || "",
@@ -327,12 +309,6 @@ async function carregarConfiguracoes(){
                     config.mensagem || ""
 
             })
-        );
-
-
-        console.log(
-            "Configuração carregada:",
-            config
         );
 
 
@@ -380,21 +356,11 @@ async function salvarConfiguracoes(){
         document.getElementById("mensagem").value.trim();
 
 
-    // =================================
-    // PIX NÃO VAI PARA A TABELA
-    // =================================
-
-    localStorage.setItem(
-        "pixLoteria",
-        pix
-    );
-
-
     try{
 
-        // ==============================
-        // VERIFICAR CONFIGURAÇÃO
-        // ==============================
+        // =================================
+        // BUSCAR CONFIGURAÇÃO EXISTENTE
+        // =================================
 
         const { data:existente, error:erroBusca } =
 
@@ -411,9 +377,9 @@ async function salvarConfiguracoes(){
         }
 
 
-        // ==============================
-        // SE NÃO EXISTIR
-        // ==============================
+        // =================================
+        // CRIAR SE NÃO EXISTIR
+        // =================================
 
         if(!existente || existente.length === 0){
 
@@ -428,6 +394,9 @@ async function salvarConfiguracoes(){
 
                     valor_aposta:
                         valorAposta,
+
+                    pix:
+                        pix,
 
                     data_sorteio:
                         data,
@@ -447,11 +416,13 @@ async function salvarConfiguracoes(){
 
             }
 
-        }else{
+        }
 
-            // ==========================
-            // ATUALIZAR
-            // ==========================
+        // =================================
+        // ATUALIZAR EXISTENTE
+        // =================================
+
+        else{
 
             const id =
                 existente[0].id;
@@ -468,6 +439,9 @@ async function salvarConfiguracoes(){
 
                     valor_aposta:
                         valorAposta,
+
+                    pix:
+                        pix,
 
                     data_sorteio:
                         data,
@@ -492,7 +466,7 @@ async function salvarConfiguracoes(){
 
 
         // =================================
-        // SALVAR TUDO LOCALMENTE
+        // SALVAR CÓPIA LOCAL
         // =================================
 
         localStorage.setItem(
@@ -522,7 +496,7 @@ async function salvarConfiguracoes(){
 
 
         alert(
-            "🍀 Configurações salvas com sucesso!"
+            "🍀 Configurações salvas no Supabase com sucesso!"
         );
 
 
@@ -535,7 +509,7 @@ async function salvarConfiguracoes(){
 
 
         alert(
-            "❌ Não foi possível salvar.\n\n" +
+            "❌ Não foi possível salvar:\n\n" +
             error.message
         );
 
@@ -1051,8 +1025,8 @@ carregarConfiguracoes();
 
 carregarApostas();
 
+
 </script>
 
 </body>
-
 </html>
