@@ -2,12 +2,17 @@
 <html lang="pt-BR">
 
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Admin - Trevo4Folhas 🍀</title>
 
 <style>
+
+*{
+    box-sizing:border-box;
+}
 
 body{
     font-family:Arial,sans-serif;
@@ -17,21 +22,26 @@ body{
     padding:20px;
 }
 
+h1{
+    color:#6dff7d;
+    margin-bottom:20px;
+}
+
 .caixa{
     background:#222;
-    padding:15px;
+    padding:18px;
     border-radius:12px;
-    margin:10px auto;
+    margin:15px auto;
     max-width:450px;
 }
 
 input{
-    width:90%;
+    width:100%;
     padding:12px;
-    margin:6px;
+    margin:6px 0;
     border-radius:8px;
     border:none;
-    box-sizing:border-box;
+    font-size:16px;
 }
 
 button{
@@ -39,11 +49,15 @@ button{
     color:white;
     border:none;
     border-radius:8px;
-    padding:12px 15px;
+    padding:12px 18px;
     margin-top:10px;
     cursor:pointer;
     font-weight:bold;
     font-size:16px;
+}
+
+button:hover{
+    opacity:.9;
 }
 
 .aposta{
@@ -51,6 +65,13 @@ button{
     padding:15px;
     border-radius:10px;
     margin-bottom:15px;
+}
+
+.status{
+    display:inline-block;
+    padding:8px;
+    border-radius:8px;
+    background:#111;
 }
 
 .erro{
@@ -61,12 +82,6 @@ button{
     color:#6dff7d;
 }
 
-.status{
-    padding:8px;
-    border-radius:8px;
-    display:inline-block;
-}
-
 </style>
 
 </head>
@@ -75,30 +90,37 @@ button{
 
 <h1>🔐 Admin Trevo4Folhas 🍀</h1>
 
-<!-- =========================
-CONFIGURAÇÃO LOTERIA
-========================= -->
+
+<!-- =====================================
+CONFIGURAÇÃO DA LOTERIA
+===================================== -->
 
 <div class="caixa">
 
 <h3>⚙️ Configurações da Loteria</h3>
 
-<input id="premio"
+<input
+id="premio"
 placeholder="Valor do prêmio">
 
-<input id="valorAposta"
+<input
+id="valorAposta"
 placeholder="Valor da aposta">
 
-<input id="pixLoteria"
+<input
+id="pixLoteria"
 placeholder="Chave Pix da Loteria">
 
-<input id="data"
+<input
+id="data"
 placeholder="Data do sorteio">
 
-<input id="hora"
+<input
+id="hora"
 placeholder="Hora do sorteio">
 
-<input id="mensagem"
+<input
+id="mensagem"
 placeholder="Mensagem">
 
 <button onclick="salvarConfiguracoes()">
@@ -108,9 +130,9 @@ placeholder="Mensagem">
 </div>
 
 
-<!-- =========================
-CONFIGURAÇÃO RIFA
-========================= -->
+<!-- =====================================
+CONFIGURAÇÃO DA RIFA
+===================================== -->
 
 <div class="caixa">
 
@@ -132,14 +154,12 @@ placeholder="Chave Pix da Rifa">
 💾 Salvar Rifa
 </button>
 
-<div id="resultadoRifa"></div>
-
 </div>
 
 
-<!-- =========================
+<!-- =====================================
 FINANCEIRO LOTERIA
-========================= -->
+===================================== -->
 
 <div class="caixa">
 
@@ -152,9 +172,9 @@ FINANCEIRO LOTERIA
 </div>
 
 
-<!-- =========================
-APOSTAS
-========================= -->
+<!-- =====================================
+APOSTAS LOTERIA
+===================================== -->
 
 <div class="caixa">
 
@@ -167,28 +187,29 @@ APOSTAS
 </div>
 
 
-<!-- =========================
+<!-- =====================================
 RIFA
-========================= -->
+===================================== -->
 
 <div class="caixa">
 
-<h3>🎟️ Vendas da Rifa</h3>
+<h3>🎟️ Vendas da Rifa Trevo4Folhas</h3>
 
 <div id="vendasRifa">
 ⏳ Carregando rifa...
 </div>
 
-<div id="financeiroRifa"
+<div
+id="financeiroRifa"
 style="
-background:#181818;
+background:#222;
 padding:15px;
 margin-top:15px;
 border-radius:10px;
 font-size:18px;
 ">
 
-⏳ Calculando financeiro...
+⏳ Calculando financeiro da rifa...
 
 </div>
 
@@ -226,10 +247,20 @@ font-size:18px;
 </button>
 
 
+<!-- =====================================
+SUPABASE
+===================================== -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="supabase.js"></script>
 
+
 <script>
+
+/* =====================================
+SENHA
+===================================== */
 
 let senhaSalva =
 localStorage.getItem("senhaAdmin") || "trevo123";
@@ -246,68 +277,58 @@ if(senha !== senhaSalva){
 }
 
 
-/* =====================================================
-   LOCALIZAR CONFIGURAÇÃO
-===================================================== */
-
-async function buscarConfiguracao(){
-
-    const { data, error } =
-        await supabaseClient
-        .from("configuracao")
-        .select("*")
-        .order("id",{ascending:false})
-        .limit(1);
-
-    if(error){
-
-        throw error;
-
-    }
-
-    if(!data || data.length === 0){
-
-        return null;
-
-    }
-
-    return data[0];
-
-}
-
-
-/* =====================================================
-   CARREGAR CONFIGURAÇÕES
-===================================================== */
+/* =====================================
+CARREGAR CONFIGURAÇÃO
+===================================== */
 
 async function carregarConfiguracoes(){
 
     try{
 
-        const config =
-            await buscarConfiguracao();
+        const { data, error } =
+            await supabaseClient
+            .from("configuracao")
+            .select("*")
+            .limit(1);
 
-        if(!config){
+        if(error){
+
+            console.error(error);
+
+            throw error;
+
+        }
+
+        if(!data || data.length === 0){
 
             console.log(
                 "Nenhuma configuração encontrada."
             );
 
+            document.getElementById("financeiro").innerHTML =
+                "⚠️ Configuração ainda não cadastrada.";
+
             return;
 
         }
 
+        const config = data[0];
 
-        /* LOTERIA */
+        console.log(
+            "CONFIGURAÇÃO CARREGADA:",
+            config
+        );
+
+
+        /* =====================================
+        LOTERIA
+        ===================================== */
 
         document.getElementById("premio").value =
             config.premio || "";
 
         document.getElementById("valorAposta").value =
             config.valor_aposta || "";
-
-        document.getElementById("pixLoteria").value =
-            config.pix || "";
 
         document.getElementById("data").value =
             config.data_sorteio || "";
@@ -319,44 +340,23 @@ async function carregarConfiguracoes(){
             config.mensagem || "";
 
 
-        /* RIFA */
-
-        document.getElementById("valorRifa").value =
-            config.valor_rifa || "";
-
-        document.getElementById("premioRifa").value =
-            config.premio_rifa || "";
-
-        document.getElementById("pixRifa").value =
-            config.pix_rifa || "";
-
-
-        /* SALVA CÓPIA LOCAL */
-
-        localStorage.setItem(
-            "configuracaoRifa",
-            JSON.stringify({
-
-                valor:config.valor_rifa || "",
-
-                premio:config.premio_rifa || "",
-
-                pix:config.pix_rifa || ""
-
-            })
-        );
-
+        /*
+        Mantém a configuração local
+        como apoio.
+        */
 
         localStorage.setItem(
             "configuracao",
             JSON.stringify({
 
-                premio:config.premio || "",
+                premio:
+                    config.premio || "",
 
                 valorAposta:
                     config.valor_aposta || "",
 
-                pix:config.pix || "",
+                pix:
+                    config.pix || "",
 
                 data:
                     config.data_sorteio || "",
@@ -371,15 +371,65 @@ async function carregarConfiguracoes(){
         );
 
 
+        /*
+        Se existir coluna pix,
+        mostra no campo.
+        */
+
+        if(
+            document.getElementById("pixLoteria")
+        ){
+
+            document.getElementById("pixLoteria").value =
+                config.pix || "";
+
+        }
+
+
+        /* =====================================
+        RIFA
+        ===================================== */
+
+        document.getElementById("valorRifa").value =
+            config.valor_rifa || "";
+
+        document.getElementById("premioRifa").value =
+            config.premio_rifa || "";
+
+        document.getElementById("pixRifa").value =
+            config.pix_rifa || "";
+
+
+        /*
+        Guarda também localmente
+        */
+
+        localStorage.setItem(
+            "configuracaoRifa",
+            JSON.stringify({
+
+                valor:
+                    config.valor_rifa || "",
+
+                premio:
+                    config.premio_rifa || "",
+
+                pix:
+                    config.pix_rifa || ""
+
+            })
+        );
+
+
     }catch(error){
 
         console.error(
-            "Erro ao carregar configurações:",
+            "Erro ao carregar configuração:",
             error
         );
 
         alert(
-            "❌ Erro ao carregar configurações:\n\n" +
+            "❌ Erro ao carregar configuração:\n\n" +
             error.message
         );
 
@@ -388,56 +438,84 @@ async function carregarConfiguracoes(){
 }
 
 
-/* =====================================================
-   SALVAR LOTERIA
-===================================================== */
+/* =====================================
+SALVAR LOTERIA
+===================================== */
 
 async function salvarConfiguracoes(){
 
+    let premio =
+        document.getElementById("premio").value;
+
+    let valorAposta =
+        document.getElementById("valorAposta").value;
+
+    let pix =
+        document.getElementById("pixLoteria").value;
+
+    let data =
+        document.getElementById("data").value;
+
+    let hora =
+        document.getElementById("hora").value;
+
+    let mensagem =
+        document.getElementById("mensagem").value;
+
+
     try{
 
-        const config =
-            await buscarConfiguracao();
+        const { data:configAtual, error:erroBusca } =
+            await supabaseClient
+            .from("configuracao")
+            .select("id")
+            .limit(1);
 
-        if(!config){
+        if(erroBusca){
 
-            alert(
-                "❌ Não existe configuração cadastrada no Supabase."
-            );
-
-            return;
+            throw erroBusca;
 
         }
 
 
-        const dados = {
+        if(!configAtual || configAtual.length === 0){
 
-            premio:
-                document.getElementById("premio").value,
+            throw new Error(
+                "A configuração principal ainda não existe no banco."
+            );
 
-            valor_aposta:
-                document.getElementById("valorAposta").value,
+        }
 
-            pix:
-                document.getElementById("pixLoteria").value,
 
-            data_sorteio:
-                document.getElementById("data").value,
-
-            hora_sorteio:
-                document.getElementById("hora").value,
-
-            mensagem:
-                document.getElementById("mensagem").value
-
-        };
+        const id =
+            configAtual[0].id;
 
 
         const { error } =
             await supabaseClient
             .from("configuracao")
-            .update(dados)
-            .eq("id",config.id);
+            .update({
+
+                premio:
+                    premio,
+
+                valor_aposta:
+                    valorAposta,
+
+                pix:
+                    pix,
+
+                data_sorteio:
+                    data,
+
+                hora_sorteio:
+                    hora,
+
+                mensagem:
+                    mensagem
+
+            })
+            .eq("id",id);
 
 
         if(error){
@@ -451,21 +529,23 @@ async function salvarConfiguracoes(){
             "configuracao",
             JSON.stringify({
 
-                premio:dados.premio,
+                premio:
+                    premio,
 
                 valorAposta:
-                    dados.valor_aposta,
+                    valorAposta,
 
-                pix:dados.pix,
+                pix:
+                    pix,
 
                 data:
-                    dados.data_sorteio,
+                    data,
 
                 hora:
-                    dados.hora_sorteio,
+                    hora,
 
                 mensagem:
-                    dados.mensagem
+                    mensagem
 
             })
         );
@@ -490,62 +570,67 @@ async function salvarConfiguracoes(){
 }
 
 
-/* =====================================================
-   SALVAR RIFA
-===================================================== */
+/* =====================================
+SALVAR RIFA
+===================================== */
 
 async function salvarRifa(){
 
+    let valor =
+        document.getElementById("valorRifa").value;
+
+    let premio =
+        document.getElementById("premioRifa").value;
+
+    let pix =
+        document.getElementById("pixRifa").value;
+
+
     try{
 
-        const config =
-            await buscarConfiguracao();
+        const { data:configAtual, error:erroBusca } =
+            await supabaseClient
+            .from("configuracao")
+            .select("id")
+            .limit(1);
 
-        if(!config){
 
-            alert(
-                "❌ Configuração principal não encontrada."
-            );
+        if(erroBusca){
 
-            return;
+            throw erroBusca;
 
         }
 
 
-        const valor =
-            document.getElementById(
-                "valorRifa"
-            ).value.trim();
+        if(!configAtual || configAtual.length === 0){
+
+            throw new Error(
+                "A configuração principal ainda não existe no banco."
+            );
+
+        }
 
 
-        const premio =
-            document.getElementById(
-                "premioRifa"
-            ).value.trim();
-
-
-        const pix =
-            document.getElementById(
-                "pixRifa"
-            ).value.trim();
+        const id =
+            configAtual[0].id;
 
 
         const { error } =
             await supabaseClient
-
             .from("configuracao")
-
             .update({
 
-                valor_rifa:valor,
+                valor_rifa:
+                    valor,
 
-                premio_rifa:premio,
+                premio_rifa:
+                    premio,
 
-                pix_rifa:pix
+                pix_rifa:
+                    pix
 
             })
-
-            .eq("id",config.id);
+            .eq("id",id);
 
 
         if(error){
@@ -559,27 +644,21 @@ async function salvarRifa(){
             "configuracaoRifa",
             JSON.stringify({
 
-                valor:valor,
+                valor:
+                    valor,
 
-                premio:premio,
+                premio:
+                    premio,
 
-                pix:pix
+                pix:
+                    pix
 
             })
         );
 
 
-        document.getElementById(
-            "resultadoRifa"
-        ).innerHTML =
-
-            "<p class='sucesso'>" +
-            "✅ Rifa salva com sucesso!" +
-            "</p>";
-
-
         alert(
-            "🎟️ Configuração da Rifa salva no Supabase! 🍀"
+            "🎟️ Configuração da Rifa salva com sucesso! 🍀"
         );
 
 
@@ -597,9 +676,9 @@ async function salvarRifa(){
 }
 
 
-/* =====================================================
-   ALTERAR SENHA
-===================================================== */
+/* =====================================
+ALTERAR SENHA
+===================================== */
 
 function alterarSenha(){
 
@@ -612,10 +691,12 @@ function alterarSenha(){
 
     }
 
+
     localStorage.setItem(
         "senhaAdmin",
         novaSenha
     );
+
 
     alert(
         "🔐 Senha alterada com sucesso!"
@@ -624,24 +705,22 @@ function alterarSenha(){
 }
 
 
-/* =====================================================
-   APOSTAS LOTERIA
-===================================================== */
+/* =====================================
+CARREGAR APOSTAS
+===================================== */
 
 async function carregarApostas(){
 
-    const lista =
+    let lista =
         document.getElementById("lista");
+
 
     try{
 
-        const { data,error } =
+        const { data, error } =
             await supabaseClient
-
             .from("participantes")
-
             .select("*")
-
             .order("id",{ascending:false});
 
 
@@ -700,6 +779,18 @@ async function carregarApostas(){
 
             <br><br>
 
+            💳 Pix:
+            <br>
+            ${p.pix || "Não informado"}
+
+            <br><br>
+
+            📍 Cidade:
+            <br>
+            ${p.cidade || "Não informado"}
+
+            <br><br>
+
             🍀 Números:
             <br>
             ${p.numeros || "Não informado"}
@@ -734,27 +825,31 @@ async function carregarApostas(){
             html;
 
 
-        const config =
-            await buscarConfiguracao();
-
-
-        const valor =
+        let valorAposta =
             Number(
-                config?.valor_aposta
+                String(
+                    document.getElementById(
+                        "valorAposta"
+                    ).value
+                ).replace(",",".")
             ) || 0;
 
 
-        const premio =
+        let arrecadado =
+            pagos * valorAposta;
+
+
+        let premio =
             Number(
-                config?.premio
+                String(
+                    document.getElementById(
+                        "premio"
+                    ).value
+                ).replace(",",".")
             ) || 0;
 
 
-        const arrecadado =
-            pagos * valor;
-
-
-        const saldo =
+        let saldo =
             arrecadado - premio;
 
 
@@ -799,15 +894,17 @@ async function carregarApostas(){
 }
 
 
-/* =====================================================
-   CONFIRMAR PAGAMENTO
-===================================================== */
+/* =====================================
+CONFIRMAR PAGAMENTO
+===================================== */
 
 async function confirmarPagamento(id){
 
-    if(!confirm(
-        "Confirmar o pagamento desta aposta?"
-    )){
+    if(
+        !confirm(
+            "Confirmar o pagamento desta aposta?"
+        )
+    ){
 
         return;
 
@@ -818,16 +915,13 @@ async function confirmarPagamento(id){
 
         const { error } =
             await supabaseClient
-
             .from("participantes")
-
             .update({
 
                 pagamento:
                     "🟢 Pagamento confirmado"
 
             })
-
             .eq("id",id);
 
 
@@ -848,8 +942,10 @@ async function confirmarPagamento(id){
 
     }catch(error){
 
+        console.error(error);
+
         alert(
-            "❌ Erro:\n\n" +
+            "❌ Erro ao confirmar pagamento:\n\n" +
             error.message
         );
 
@@ -858,13 +954,13 @@ async function confirmarPagamento(id){
 }
 
 
-/* =====================================================
-   CARREGAR RIFA
-===================================================== */
+/* =====================================
+CARREGAR RIFA
+===================================== */
 
 async function carregarRifa(){
 
-    const vendas =
+    let vendas =
         document.getElementById(
             "vendasRifa"
         );
@@ -872,13 +968,10 @@ async function carregarRifa(){
 
     try{
 
-        const { data,error } =
+        const { data, error } =
             await supabaseClient
-
             .from("rifa_participantes")
-
             .select("*")
-
             .order("id",{ascending:false});
 
 
@@ -889,7 +982,7 @@ async function carregarRifa(){
         }
 
 
-        const rifa =
+        let rifa =
             data || [];
 
 
@@ -920,6 +1013,7 @@ async function carregarRifa(){
                 <br><br>
 
                 🎟️ Número:
+
                 <br>
 
                 <b>
@@ -929,10 +1023,13 @@ async function carregarRifa(){
                 <br><br>
 
                 💰 Status:
+
                 <br>
 
+                <span class="status">
                 ${r.pagamento ||
                 "🟡 Aguardando pagamento"}
+                </span>
 
                 <br><br>
 
@@ -956,19 +1053,46 @@ async function carregarRifa(){
         }
 
 
-        const config =
-            await buscarConfiguracao();
+        /* =====================================
+        USA A CONFIGURAÇÃO REAL DO SUPABASE
+        ===================================== */
+
+        const { data:configData, error:configError } =
+            await supabaseClient
+            .from("configuracao")
+            .select(
+                "valor_rifa,premio_rifa,pix_rifa"
+            )
+            .limit(1);
 
 
-        const valor =
+        if(configError){
+
+            throw configError;
+
+        }
+
+
+        let config =
+            configData &&
+            configData.length > 0
+            ? configData[0]
+            : {};
+
+
+        let valor =
             Number(
-                config?.valor_rifa
+                String(
+                    config.valor_rifa || "0"
+                ).replace(",",".")
             ) || 0;
 
 
-        const premio =
+        let premio =
             Number(
-                config?.premio_rifa
+                String(
+                    config.premio_rifa || "0"
+                ).replace(",",".")
             ) || 0;
 
 
@@ -989,11 +1113,11 @@ async function carregarRifa(){
         });
 
 
-        const arrecadado =
+        let arrecadado =
             pagos * valor;
 
 
-        const lucro =
+        let lucro =
             arrecadado - premio;
 
 
@@ -1006,7 +1130,7 @@ async function carregarRifa(){
 
         "<br><br>" +
 
-        "🎟️ Reservados: " +
+        "🎟️ Vendidos: " +
         rifa.length +
         " / 100" +
 
@@ -1022,12 +1146,12 @@ async function carregarRifa(){
 
         "<br><br>" +
 
-        "🏆 Prêmio: R$ " +
-        premio.toFixed(2) +
+        "🏆 Prêmio: " +
+        (config.premio_rifa || "Não informado") +
 
         "<br><br>" +
 
-        "📈 Lucro: R$ " +
+        "📈 Saldo: R$ " +
         lucro.toFixed(2);
 
 
@@ -1044,15 +1168,17 @@ async function carregarRifa(){
 }
 
 
-/* =====================================================
-   CONFIRMAR PAGAMENTO RIFA
-===================================================== */
+/* =====================================
+CONFIRMAR PAGAMENTO RIFA
+===================================== */
 
 async function confirmarPagamentoRifa(id){
 
-    if(!confirm(
-        "Confirmar pagamento desta Rifa?"
-    )){
+    if(
+        !confirm(
+            "Confirmar pagamento desta Rifa?"
+        )
+    ){
 
         return;
 
@@ -1063,16 +1189,13 @@ async function confirmarPagamentoRifa(id){
 
         const { error } =
             await supabaseClient
-
             .from("rifa_participantes")
-
             .update({
 
                 pagamento:
                     "🟢 Pagamento confirmado"
 
             })
-
             .eq("id",id);
 
 
@@ -1093,8 +1216,10 @@ async function confirmarPagamentoRifa(id){
 
     }catch(error){
 
+        console.error(error);
+
         alert(
-            "❌ Erro:\n\n" +
+            "❌ Erro ao confirmar pagamento:\n\n" +
             error.message
         );
 
@@ -1103,158 +1228,9 @@ async function confirmarPagamentoRifa(id){
 }
 
 
-/* =====================================================
-   SORTEIO LOTERIA
-===================================================== */
+/* =====================================
+SORTEIO LOTERIA
+===================================== */
 
 async function realizarSorteio(){
-
-    let numeros = [];
-
-
-    while(numeros.length < 4){
-
-        let n =
-            Math.floor(
-                Math.random() * 15
-            ) + 1;
-
-
-        if(!numeros.includes(n)){
-
-            numeros.push(n);
-
-        }
-
-    }
-
-
-    numeros.sort(
-        (a,b)=>a-b
-    );
-
-
-    alert(
-        "🍀 Sorteio realizado!\n\n" +
-        "Números:\n" +
-        numeros.join(" - ")
-    );
-
-}
-
-
-/* =====================================================
-   SORTEIO RIFA
-===================================================== */
-
-async function sortearRifa(){
-
-    try{
-
-        const { data,error } =
-            await supabaseClient
-
-            .from("rifa_participantes")
-
-            .select("*");
-
-
-        if(error){
-
-            throw error;
-
-        }
-
-
-        const rifa =
-            data || [];
-
-
-        if(rifa.length < 100){
-
-            alert(
-                "🍀 Ainda não é possível realizar o sorteio.\n\n" +
-                "Reservados: " +
-                rifa.length +
-                "\n\nFaltam: " +
-                (100-rifa.length)
-            );
-
-            return;
-
-        }
-
-
-        const vencedor =
-            rifa[
-                Math.floor(
-                    Math.random() *
-                    rifa.length
-                )
-            ];
-
-
-        alert(
-
-            "🎉 RIFA SORTEADA!\n\n" +
-
-            "🎟️ Número: " +
-            vencedor.numero +
-
-            "\n👤 Ganhador: " +
-            vencedor.nome
-
-        );
-
-
-    }catch(error){
-
-        alert(
-            "❌ Erro ao sortear Rifa:\n\n" +
-            error.message
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   HISTÓRICO
-===================================================== */
-
-function apagarHistorico(){
-
-    if(
-        confirm(
-            "Apagar histórico deste aparelho?"
-        )
-    ){
-
-        localStorage.removeItem(
-            "historicoSorteios"
-        );
-
-        alert(
-            "Histórico local apagado 🍀"
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   INICIAR
-===================================================== */
-
-carregarConfiguracoes();
-
-carregarApostas();
-
-carregarRifa();
-
-</script>
-
-</body>
-</html>
+    
