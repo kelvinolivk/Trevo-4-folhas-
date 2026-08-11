@@ -25,6 +25,7 @@ body{
 h1{
     color:#6dff7d;
     margin-bottom:20px;
+    text-shadow:0 0 10px #00ff55;
 }
 
 .caixa{
@@ -33,6 +34,7 @@ h1{
     border-radius:12px;
     margin:15px auto;
     max-width:450px;
+    box-shadow:0 0 12px #000;
 }
 
 input{
@@ -54,6 +56,12 @@ button{
     cursor:pointer;
     font-weight:bold;
     font-size:16px;
+    width:90%;
+    max-width:400px;
+}
+
+button:active{
+    transform:scale(.97);
 }
 
 .aposta{
@@ -70,6 +78,14 @@ button{
     background:#111;
 }
 
+.sucesso{
+    color:#6dff7d;
+}
+
+.erro{
+    color:#ff6666;
+}
+
 </style>
 
 </head>
@@ -78,21 +94,38 @@ button{
 
 <h1>🔐 Admin Trevo4Folhas 🍀</h1>
 
+
+<!-- =====================================
+CONFIGURAÇÕES DA LOTERIA
+===================================== -->
+
 <div class="caixa">
 
 <h3>⚙️ Configurações da Loteria</h3>
 
-<input id="premio" placeholder="Valor do prêmio">
+<input
+id="premio"
+placeholder="Valor do prêmio">
 
-<input id="valorAposta" placeholder="Valor da aposta">
+<input
+id="valorAposta"
+placeholder="Valor da aposta">
 
-<input id="pixLoteria" placeholder="Chave Pix da Loteria">
+<input
+id="pixLoteria"
+placeholder="Chave Pix da Loteria">
 
-<input id="data" placeholder="Data do sorteio">
+<input
+id="data"
+placeholder="Data do sorteio">
 
-<input id="hora" placeholder="Hora do sorteio">
+<input
+id="hora"
+placeholder="Hora do sorteio">
 
-<input id="mensagem" placeholder="Mensagem">
+<input
+id="mensagem"
+placeholder="Mensagem">
 
 <button onclick="salvarConfiguracoes()">
 💾 Salvar Configurações
@@ -100,6 +133,10 @@ button{
 
 </div>
 
+
+<!-- =====================================
+FINANCEIRO
+===================================== -->
 
 <div class="caixa">
 
@@ -111,6 +148,10 @@ button{
 
 </div>
 
+
+<!-- =====================================
+APOSTAS
+===================================== -->
 
 <div class="caixa">
 
@@ -125,28 +166,39 @@ button{
 
 <br>
 
+
 <button onclick="realizarSorteio()">
 🎲 Realizar Sorteio
 </button>
 
+
 <br>
+
 
 <button onclick="apagarHistorico()">
 🗑️ Apagar Histórico
 </button>
 
+
 <br><br>
+
 
 <button onclick="alterarSenha()">
 🔐 Alterar Senha
 </button>
 
+
 <br><br>
+
 
 <button onclick="location.href='../index.html'">
 🏠 Voltar ao início
 </button>
 
+
+<!-- =====================================
+SUPABASE
+===================================== -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -156,7 +208,7 @@ button{
 <script>
 
 // =====================================
-// SENHA
+// SENHA DO ADMIN
 // =====================================
 
 let senhaSalva =
@@ -167,7 +219,7 @@ prompt("Digite a senha do administrador:");
 
 if(senha !== senhaSalva){
 
-    alert("Senha incorreta!");
+    alert("❌ Senha incorreta!");
 
     location.href="../index.html";
 
@@ -182,56 +234,98 @@ async function carregarConfiguracoes(){
 
     try{
 
-        const { data, error } =
+        const resultado =
             await supabaseClient
             .from("configuracao")
-            .select("*")
+            .select(
+                "id,premio,valor_aposta,pix,data_sorteio,hora_sorteio,mensagem"
+            )
             .limit(1);
 
-        if(error){
-            throw error;
+
+        if(resultado.error){
+
+            throw resultado.error;
+
         }
 
-        if(!data || data.length === 0){
 
-            document.getElementById("financeiro").innerHTML =
-                "⚠️ Nenhuma configuração encontrada.";
+        // =================================
+        // SE NÃO EXISTIR CONFIGURAÇÃO
+        // =================================
+
+        if(
+            !resultado.data ||
+            resultado.data.length === 0
+        ){
+
+            document.getElementById("premio").value = "";
+            document.getElementById("valorAposta").value = "";
+            document.getElementById("pixLoteria").value = "";
+            document.getElementById("data").value = "";
+            document.getElementById("hora").value = "";
+            document.getElementById("mensagem").value = "";
+
+
+            document.getElementById(
+                "financeiro"
+            ).innerHTML =
+
+                "⚠️ Nenhuma configuração cadastrada ainda.";
 
             return;
+
         }
 
-        const config = data[0];
 
+        const config =
+            resultado.data[0];
+
+
+        // =================================
+        // PREENCHER CAMPOS
+        // =================================
 
         document.getElementById("premio").value =
             config.premio || "";
 
+
         document.getElementById("valorAposta").value =
             config.valor_aposta || "";
+
 
         document.getElementById("pixLoteria").value =
             config.pix || "";
 
+
         document.getElementById("data").value =
             config.data_sorteio || "";
 
+
         document.getElementById("hora").value =
             config.hora_sorteio || "";
+
 
         document.getElementById("mensagem").value =
             config.mensagem || "";
 
 
+        // =================================
+        // SALVAR CÓPIA LOCAL
+        // =================================
+
         localStorage.setItem(
             "configuracao",
             JSON.stringify({
 
-                premio:config.premio || "",
+                premio:
+                    config.premio || "",
 
                 valorAposta:
                     config.valor_aposta || "",
 
-                pix:config.pix || "",
+                pix:
+                    config.pix || "",
 
                 data:
                     config.data_sorteio || "",
@@ -246,11 +340,23 @@ async function carregarConfiguracoes(){
         );
 
 
+        console.log(
+            "✅ Configuração carregada:",
+            config
+        );
+
+
     }catch(error){
 
-        console.error(error);
+        console.error(
+            "Erro ao carregar configuração:",
+            error
+        );
 
-        document.getElementById("financeiro").innerHTML =
+
+        document.getElementById(
+            "financeiro"
+        ).innerHTML =
 
             "❌ Erro ao carregar configuração:<br><br>" +
             error.message;
@@ -266,116 +372,188 @@ async function carregarConfiguracoes(){
 
 async function salvarConfiguracoes(){
 
-    let premio =
+    const premio =
         document.getElementById("premio").value.trim();
 
-    let valorAposta =
+
+    const valorAposta =
         document.getElementById("valorAposta").value.trim();
 
-    let pix =
+
+    const pix =
         document.getElementById("pixLoteria").value.trim();
 
-    let data =
+
+    const data =
         document.getElementById("data").value.trim();
 
-    let hora =
+
+    const hora =
         document.getElementById("hora").value.trim();
 
-    let mensagem =
+
+    const mensagem =
         document.getElementById("mensagem").value.trim();
 
 
     try{
 
-        const { data:configData, error:configError } =
+        // =================================
+        // PROCURAR CONFIGURAÇÃO
+        // =================================
 
+        const resultado =
             await supabaseClient
             .from("configuracao")
             .select("id")
             .limit(1);
 
 
-        if(configError){
-            throw configError;
-        }
+        if(resultado.error){
 
-
-        if(!configData || configData.length === 0){
-
-            throw new Error(
-                "A configuração principal não existe na tabela configuracao."
-            );
+            throw resultado.error;
 
         }
 
 
-        let id =
-            configData[0].id;
+        // =================================
+        // SE NÃO EXISTIR, CRIA
+        // =================================
+
+        if(
+            !resultado.data ||
+            resultado.data.length === 0
+        ){
+
+            const novo =
+                await supabaseClient
+                .from("configuracao")
+                .insert([{
+
+                    premio:
+                        premio,
+
+                    valor_aposta:
+                        valorAposta,
+
+                    pix:
+                        pix,
+
+                    data_sorteio:
+                        data,
+
+                    hora_sorteio:
+                        hora,
+
+                    mensagem:
+                        mensagem
+
+                }]);
 
 
-        const { error } =
+            if(novo.error){
 
-            await supabaseClient
-            .from("configuracao")
-            .update({
+                throw novo.error;
 
-                premio:premio,
-
-                valor_aposta:valorAposta,
-
-                pix:pix,
-
-                data_sorteio:data,
-
-                hora_sorteio:hora,
-
-                mensagem:mensagem
-
-            })
-            .eq("id",id);
+            }
 
 
-        if(error){
-            throw error;
+        }else{
+
+            // =================================
+            // SE EXISTIR, ATUALIZA
+            // =================================
+
+            const id =
+                resultado.data[0].id;
+
+
+            const atualizacao =
+                await supabaseClient
+                .from("configuracao")
+                .update({
+
+                    premio:
+                        premio,
+
+                    valor_aposta:
+                        valorAposta,
+
+                    pix:
+                        pix,
+
+                    data_sorteio:
+                        data,
+
+                    hora_sorteio:
+                        hora,
+
+                    mensagem:
+                        mensagem
+
+                })
+                .eq("id",id);
+
+
+            if(atualizacao.error){
+
+                throw atualizacao.error;
+
+            }
+
         }
 
+
+        // =================================
+        // SALVAR LOCALMENTE
+        // =================================
 
         localStorage.setItem(
             "configuracao",
             JSON.stringify({
 
-                premio:premio,
+                premio:
+                    premio,
 
-                valorAposta:valorAposta,
+                valorAposta:
+                    valorAposta,
 
-                pix:pix,
+                pix:
+                    pix,
 
-                data:data,
+                data:
+                    data,
 
-                hora:hora,
+                hora:
+                    hora,
 
-                mensagem:mensagem
+                mensagem:
+                    mensagem
 
             })
         );
 
 
         alert(
-            "🍀 Configurações salvas com sucesso!"
+            "✅ Configurações salvas com sucesso! 🍀"
         );
 
 
-        carregarConfiguracoes();
+        await carregarConfiguracoes();
 
-        carregarApostas();
+        await carregarApostas();
 
 
     }catch(error){
 
-        console.error(error);
+        console.error(
+            "ERRO AO SALVAR:",
+            error
+        );
+
 
         alert(
-            "❌ Erro ao salvar configurações:\n\n" +
+            "❌ Não foi possível salvar as configurações.\n\n" +
             error.message
         );
 
@@ -397,10 +575,12 @@ function alterarSenha(){
         return;
     }
 
+
     localStorage.setItem(
         "senhaAdmin",
         novaSenha
     );
+
 
     alert(
         "🔐 Senha alterada com sucesso!"
@@ -415,29 +595,40 @@ function alterarSenha(){
 
 async function carregarApostas(){
 
-    let lista =
+    const lista =
         document.getElementById("lista");
 
 
     try{
 
-        const { data, error } =
-
+        const resultado =
             await supabaseClient
             .from("participantes")
             .select("*")
-            .order("id",{ascending:false});
+            .order(
+                "id",
+                {
+                    ascending:false
+                }
+            );
 
 
-        if(error){
-            throw error;
+        if(resultado.error){
+
+            throw resultado.error;
+
         }
 
 
-        if(!data || data.length === 0){
+        const data =
+            resultado.data || [];
+
+
+        if(data.length === 0){
 
             lista.innerHTML =
                 "Nenhuma aposta registrada 🍀";
+
 
             document.getElementById(
                 "financeiro"
@@ -445,6 +636,7 @@ async function carregarApostas(){
                 "Nenhuma aposta registrada.";
 
             return;
+
         }
 
 
@@ -477,24 +669,28 @@ async function carregarApostas(){
 
             📱 WhatsApp:
             <br>
+
             ${p.whatsapp || "Não informado"}
 
             <br><br>
 
             💳 Pix:
             <br>
+
             ${p.pix || "Não informado"}
 
             <br><br>
 
             📍 Cidade:
             <br>
+
             ${p.cidade || "Não informado"}
 
             <br><br>
 
             🍀 Números:
             <br>
+
             ${p.numeros || "Não informado"}
 
             <br><br>
@@ -503,8 +699,10 @@ async function carregarApostas(){
             <br>
 
             <span class="status">
+
             ${p.pagamento ||
             "🟡 Aguardando pagamento"}
+
             </span>
 
             <br><br>
@@ -523,49 +721,81 @@ async function carregarApostas(){
         });
 
 
-        lista.innerHTML = html;
+        lista.innerHTML =
+            html;
 
 
-        let valorAposta =
-            Number(
-                String(
-                    document.getElementById(
-                        "valorAposta"
-                    ).value
-                )
-                .replace("R$","")
-                .replace(/\./g,"")
-                .replace(",",".")
-            ) || 0;
+        calcularFinanceiro(
+            data.length,
+            pagos
+        );
 
 
-        let premio =
-            Number(
-                String(
-                    document.getElementById(
-                        "premio"
-                    ).value
-                )
-                .replace("R$","")
-                .replace(/\./g,"")
-                .replace(",",".")
-            ) || 0;
+    }catch(error){
+
+        console.error(
+            "Erro ao carregar apostas:",
+            error
+        );
 
 
-        let arrecadado =
-            pagos * valorAposta;
+        lista.innerHTML =
+
+            "❌ Erro ao carregar apostas:<br><br>" +
+            error.message;
+
+    }
+
+}
 
 
-        let saldo =
-            arrecadado - premio;
+// =====================================
+// CALCULAR FINANCEIRO
+// =====================================
 
+function calcularFinanceiro(
+    totalApostas,
+    pagos
+){
 
+    let valorTexto =
         document.getElementById(
-            "financeiro"
-        ).innerHTML =
+            "valorAposta"
+        ).value;
+
+
+    let premioTexto =
+        document.getElementById(
+            "premio"
+        ).value;
+
+
+    let valor =
+        converterNumero(
+            valorTexto
+        );
+
+
+    let premio =
+        converterNumero(
+            premioTexto
+        );
+
+
+    let arrecadado =
+        pagos * valor;
+
+
+    let saldo =
+        arrecadado - premio;
+
+
+    document.getElementById(
+        "financeiro"
+    ).innerHTML =
 
         "🎟️ Total de apostas: " +
-        data.length +
+        totalApostas +
 
         "<br><br>" +
 
@@ -575,29 +805,73 @@ async function carregarApostas(){
         "<br><br>" +
 
         "💰 Arrecadado: R$ " +
-        arrecadado.toFixed(2).replace(".",",") +
+        formatarNumero(arrecadado) +
 
         "<br><br>" +
 
         "🏆 Prêmio: R$ " +
-        premio.toFixed(2).replace(".",",") +
+        formatarNumero(premio) +
 
         "<br><br>" +
 
         "📈 Saldo: R$ " +
-        saldo.toFixed(2).replace(".",",");
+        formatarNumero(saldo);
+
+}
 
 
-    }catch(error){
+// =====================================
+// CONVERTER VALOR
+// =====================================
 
-        console.error(error);
+function converterNumero(valor){
 
-        lista.innerHTML =
-
-            "❌ Erro ao carregar apostas:<br><br>" +
-            error.message;
-
+    if(!valor){
+        return 0;
     }
+
+
+    let texto =
+        String(valor)
+        .trim()
+        .replace("R$","")
+        .trim();
+
+
+    if(
+        texto.includes(",") &&
+        texto.includes(".")
+    ){
+
+        texto =
+            texto
+            .replace(/\./g,"")
+            .replace(",",".");
+    }
+
+    else if(
+        texto.includes(",")
+    ){
+
+        texto =
+            texto.replace(",",".");
+    }
+
+
+    return Number(texto) || 0;
+
+}
+
+
+// =====================================
+// FORMATAR VALOR
+// =====================================
+
+function formatarNumero(valor){
+
+    return Number(valor)
+        .toFixed(2)
+        .replace(".",",");
 
 }
 
@@ -613,14 +887,15 @@ async function confirmarPagamento(id){
             "Confirmar o pagamento desta aposta?"
         )
     ){
+
         return;
+
     }
 
 
     try{
 
-        const { error } =
-
+        const resultado =
             await supabaseClient
             .from("participantes")
             .update({
@@ -632,8 +907,10 @@ async function confirmarPagamento(id){
             .eq("id",id);
 
 
-        if(error){
-            throw error;
+        if(resultado.error){
+
+            throw resultado.error;
+
         }
 
 
@@ -642,12 +919,13 @@ async function confirmarPagamento(id){
         );
 
 
-        carregarApostas();
+        await carregarApostas();
 
 
     }catch(error){
 
         console.error(error);
+
 
         alert(
             "❌ Erro ao confirmar pagamento:\n\n" +
@@ -660,7 +938,7 @@ async function confirmarPagamento(id){
 
 
 // =====================================
-// SORTEIO
+// REALIZAR SORTEIO
 // =====================================
 
 async function realizarSorteio(){
@@ -668,7 +946,9 @@ async function realizarSorteio(){
     let numeros = [];
 
 
-    while(numeros.length < 4){
+    while(
+        numeros.length < 4
+    ){
 
         let n =
             Math.floor(
@@ -676,7 +956,9 @@ async function realizarSorteio(){
             ) + 1;
 
 
-        if(!numeros.includes(n)){
+        if(
+            !numeros.includes(n)
+        ){
 
             numeros.push(n);
 
@@ -692,16 +974,21 @@ async function realizarSorteio(){
 
     try{
 
-        const { data, error } =
-
+        const resultadoBusca =
             await supabaseClient
             .from("participantes")
             .select("*");
 
 
-        if(error){
-            throw error;
+        if(resultadoBusca.error){
+
+            throw resultadoBusca.error;
+
         }
+
+
+        const data =
+            resultadoBusca.data || [];
 
 
         let vencedores = [];
@@ -713,7 +1000,9 @@ async function realizarSorteio(){
                 p.pagamento !==
                 "🟢 Pagamento confirmado"
             ){
+
                 return;
+
             }
 
 
@@ -736,10 +1025,13 @@ async function realizarSorteio(){
                 Array.isArray(aposta) &&
                 aposta.length === 4 &&
                 aposta.every(
-                    n =>
-                    numeros.includes(
-                        Number(n)
-                    )
+                    function(n){
+
+                        return numeros.includes(
+                            Number(n)
+                        );
+
+                    }
                 )
             ){
 
@@ -762,11 +1054,14 @@ async function realizarSorteio(){
 
         let resultado = {
 
-            numeros:numeros,
+            numeros:
+                numeros,
 
             data:
                 new Date()
-                .toLocaleString("pt-BR"),
+                .toLocaleString(
+                    "pt-BR"
+                ),
 
             premio:
                 configuracao.premio ||
@@ -782,7 +1077,9 @@ async function realizarSorteio(){
 
         localStorage.setItem(
             "resultadoSorteio",
-            JSON.stringify(resultado)
+            JSON.stringify(
+                resultado
+            )
         );
 
 
@@ -794,19 +1091,25 @@ async function realizarSorteio(){
             ) || [];
 
 
-        historico.push(resultado);
+        historico.push(
+            resultado
+        );
 
 
         localStorage.setItem(
             "historicoSorteios",
-            JSON.stringify(historico)
+            JSON.stringify(
+                historico
+            )
         );
 
 
         alert(
 
             "🍀 Sorteio realizado!\n\n" +
+
             "Números:\n" +
+
             numeros.join(" - ")
 
         );
@@ -816,9 +1119,11 @@ async function realizarSorteio(){
 
         console.error(error);
 
+
         alert(
 
             "❌ Erro ao realizar sorteio:\n\n" +
+
             error.message
 
         );
@@ -844,9 +1149,11 @@ function apagarHistorico(){
             "historicoSorteios"
         );
 
+
         localStorage.removeItem(
             "resultadoSorteio"
         );
+
 
         alert(
             "📚 Histórico apagado!"
