@@ -4,7 +4,9 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
 
 <title>Rifa Trevo4Folhas 🍀</title>
 
@@ -26,7 +28,7 @@ body{
 
 h1{
     margin-top:20px;
-    font-size:34px;
+    font-size:32px;
     color:#6dff7d;
     text-shadow:0 0 15px #00ff55;
 }
@@ -42,14 +44,13 @@ p{
     background:#111f14;
     border:1px solid #00ff66;
     border-radius:15px;
-    padding:15px;
-    font-size:18px;
+    padding:18px;
     line-height:1.5;
 }
 
 #contador{
     margin:15px;
-    font-size:22px;
+    font-size:21px;
     font-weight:bold;
 }
 
@@ -111,13 +112,11 @@ button{
 
 button:disabled{
     opacity:.6;
-    cursor:not-allowed;
 }
 
 </style>
 
 </head>
-
 
 <body>
 
@@ -127,146 +126,152 @@ button:disabled{
 Escolha um número de 1 a 100
 </p>
 
-
 <div id="configuracao">
 ⏳ Carregando informações da Rifa...
 </div>
-
 
 <h2 id="contador">
 ⏳ Carregando números...
 </h2>
 
-
 <div id="numeros"></div>
 
-
 <button
-    id="botaoConfirmar"
-    onclick="confirmarRifa()"
-    disabled
->
-    ✅ Confirmar número
+id="botaoConfirmar"
+onclick="confirmarRifa()"
+disabled>
+
+✅ Confirmar número
+
 </button>
 
 
-<!-- SUPABASE -->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script src="supabase.js"></script>
-
 
 <script>
 
 let numeroEscolhido = null;
 
 const area =
-    document.getElementById("numeros");
+document.getElementById("numeros");
 
 const botaoConfirmar =
-    document.getElementById("botaoConfirmar");
+document.getElementById("botaoConfirmar");
 
 
-// ==================================================
-// CARREGAR CONFIGURAÇÃO DA RIFA
-// ==================================================
+/* =========================================
+   CONFIGURAÇÃO
+========================================= */
 
 async function carregarConfiguracaoRifa(){
 
-    const configuracao =
-        document.getElementById("configuracao");
+    const caixa =
+        document.getElementById(
+            "configuracao"
+        );
+
 
     try{
 
-        const { data, error } =
+        const { data,error } =
+
             await supabaseClient
-            .from("configuracoes")
-            .select("valor,premio,pix")
-            .eq("tipo","rifa")
+
+            .from("configuracao")
+
+            .select(
+                "valor_rifa,premio_rifa,pix_rifa"
+            )
+
+            .order(
+                "id",
+                {ascending:false}
+            )
+
             .limit(1);
+
 
         if(error){
 
-            console.error(
-                "Erro ao carregar configuração da Rifa:",
-                error
-            );
+            throw error;
 
-            configuracao.innerHTML =
-                "❌ Erro ao carregar a configuração da Rifa.<br><br>" +
-                error.message;
-
-            return;
         }
 
 
         if(!data || data.length === 0){
 
-            configuracao.innerHTML =
+            caixa.innerHTML =
                 "🎟️ <b>Rifa Trevo4Folhas</b><br><br>" +
-                "💰 <b>Valor:</b> A definir<br><br>" +
-                "🏆 <b>Prêmio:</b> A definir<br><br>" +
-                "💳 <b>Pix:</b> A definir";
+                "💰 Valor: A definir<br><br>" +
+                "🏆 Prêmio: A definir<br><br>" +
+                "💳 Pix: A definir";
 
             return;
+
         }
 
 
-        const config = data[0];
+        const config =
+            data[0];
 
 
-        // Guarda a configuração para o pix-rifa.html
+        const valor =
+            config.valor_rifa || "A definir";
 
-        const configuracaoRifa = {
 
-            valor:
-                config.valor || "",
+        const premio =
+            config.premio_rifa || "A definir";
 
-            premio:
-                config.premio || "",
 
-            pix:
-                config.pix || ""
-
-        };
+        const pix =
+            config.pix_rifa || "A definir";
 
 
         localStorage.setItem(
             "configuracaoRifa",
-            JSON.stringify(configuracaoRifa)
+            JSON.stringify({
+
+                valor:valor,
+
+                premio:premio,
+
+                pix:pix
+
+            })
         );
 
 
-        // Mostra na tela
+        caixa.innerHTML =
 
-        configuracao.innerHTML =
+            "🎟️ <b>Rifa Trevo4Folhas</b>" +
 
-            "🎟️ <b>Rifa Trevo4Folhas</b><br><br>" +
+            "<br><br>" +
 
-            "💰 <b>Valor:</b> " +
-            (config.valor || "A definir") +
+            "💰 <b>Valor:</b> R$ " +
+            valor +
 
             "<br><br>" +
 
             "🏆 <b>Prêmio:</b> " +
-            (config.premio || "A definir") +
+            premio +
 
             "<br><br>" +
 
-            "💳 <b>Pix:</b> " +
-            (config.pix || "A definir");
+            "💳 <b>Pix:</b><br>" +
+            pix;
 
 
     }catch(error){
 
-        console.error(
-            "Erro inesperado:",
-            error
-        );
+        console.error(error);
 
-        configuracao.innerHTML =
-            "❌ Erro ao carregar a Rifa.<br><br>" +
+        caixa.innerHTML =
+
+            "❌ Erro ao carregar a configuração." +
+
+            "<br><br>" +
+
             error.message;
 
     }
@@ -274,43 +279,35 @@ async function carregarConfiguracaoRifa(){
 }
 
 
-// ==================================================
-// CARREGAR NÚMEROS DA RIFA
-// ==================================================
+/* =========================================
+   CARREGAR NÚMEROS
+========================================= */
 
 async function carregarRifa(){
 
     const contador =
-        document.getElementById("contador");
+        document.getElementById(
+            "contador"
+        );
+
 
     try{
 
-        contador.innerHTML =
-            "⏳ Carregando números...";
+        const { data,error } =
 
-
-        const { data, error } =
             await supabaseClient
+
             .from("rifa_participantes")
-            .select("nome,whatsapp,numero,pagamento");
+
+            .select(
+                "id,nome,whatsapp,numero,pagamento"
+            );
 
 
         if(error){
 
-            console.error(
-                "Erro ao carregar números:",
-                error
-            );
+            throw error;
 
-            contador.innerHTML =
-                "❌ Erro ao carregar os números.";
-
-            area.innerHTML =
-                "<div style='grid-column:1/-1;padding:20px'>" +
-                error.message +
-                "</div>";
-
-            return;
         }
 
 
@@ -320,38 +317,38 @@ async function carregarRifa(){
 
         localStorage.setItem(
             "rifaParticipantes",
-            JSON.stringify(participantes)
+            JSON.stringify(
+                participantes
+            )
         );
 
 
-        criarNumeros(participantes);
+        criarNumeros(
+            participantes
+        );
 
 
     }catch(error){
 
-        console.error(
-            "Erro de conexão:",
-            error
-        );
+        console.error(error);
 
         contador.innerHTML =
-            "❌ Erro de conexão.";
+            "❌ Erro ao carregar números";
 
-        area.innerHTML =
-            "<div style='grid-column:1/-1;padding:20px'>" +
-            error.message +
-            "</div>";
+        criarNumeros([]);
 
     }
 
 }
 
 
-// ==================================================
-// CRIAR NÚMEROS 1 A 100
-// ==================================================
+/* =========================================
+   CRIAR 100 NÚMEROS
+========================================= */
 
-function criarNumeros(participantes){
+function criarNumeros(
+    participantes
+){
 
     area.innerHTML = "";
 
@@ -359,35 +356,50 @@ function criarNumeros(participantes){
 
     botaoConfirmar.disabled = true;
 
-    document.getElementById("contador").innerHTML =
+
+    document.getElementById(
+        "contador"
+    ).innerHTML =
         "Número escolhido: Nenhum";
 
 
-    for(let i = 1; i <= 100; i++){
+    for(
+        let i=1;
+        i<=100;
+        i++
+    ){
 
         const botao =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
 
         botao.className =
             "numero";
 
 
-        botao.innerHTML =
-            i.toString().padStart(2,"0");
+        botao.textContent =
+            String(i).padStart(2,"0");
 
 
         const reservado =
-            participantes.some(function(p){
+            participantes.some(
+                function(p){
 
-                return Number(p.numero) === i;
+                    return Number(
+                        p.numero
+                    ) === i;
 
-            });
+                }
+            );
 
 
         if(reservado){
 
-            botao.classList.add("vendido");
+            botao.classList.add(
+                "vendido"
+            );
 
         }else{
 
@@ -395,23 +407,22 @@ function criarNumeros(participantes){
                 function(){
 
                     document
-                    .querySelectorAll(".numero")
-                    .forEach(function(n){
-
-                        if(
-                            !n.classList.contains("vendido")
-                        ){
+                    .querySelectorAll(
+                        ".numero"
+                    )
+                    .forEach(
+                        function(n){
 
                             n.classList.remove(
                                 "escolhido"
                             );
 
                         }
+                    );
 
-                    });
 
-
-                    numeroEscolhido = i;
+                    numeroEscolhido =
+                        i;
 
 
                     botao.classList.add(
@@ -424,8 +435,7 @@ function criarNumeros(participantes){
                     ).innerHTML =
 
                         "Número escolhido: " +
-
-                        i.toString().padStart(2,"0");
+                        String(i).padStart(2,"0");
 
 
                     botaoConfirmar.disabled =
@@ -436,32 +446,37 @@ function criarNumeros(participantes){
         }
 
 
-        area.appendChild(botao);
+        area.appendChild(
+            botao
+        );
 
     }
 
 }
 
 
-// ==================================================
-// CONFIRMAR NÚMERO
-// ==================================================
+/* =========================================
+   CONFIRMAR
+========================================= */
 
 async function confirmarRifa(){
 
     if(numeroEscolhido === null){
 
         alert(
-            "🍀 Escolha um número da Rifa."
+            "Escolha um número da Rifa 🍀"
         );
 
         return;
+
     }
 
 
     const cadastro =
         JSON.parse(
-            localStorage.getItem("cadastro")
+            localStorage.getItem(
+                "cadastro"
+            )
         );
 
 
@@ -479,6 +494,7 @@ async function confirmarRifa(){
             "cadastro.html";
 
         return;
+
     }
 
 
@@ -491,23 +507,23 @@ async function confirmarRifa(){
 
     try{
 
-        // Verifica novamente se o número
-        // já foi reservado
-
-        const {
-            data: existente,
-            error: erroBusca
-        } =
+        const { data:existente,error } =
 
             await supabaseClient
+
             .from("rifa_participantes")
+
             .select("id,numero")
-            .eq("numero",numeroEscolhido);
+
+            .eq(
+                "numero",
+                numeroEscolhido
+            );
 
 
-        if(erroBusca){
+        if(error){
 
-            throw erroBusca;
+            throw error;
 
         }
 
@@ -518,22 +534,18 @@ async function confirmarRifa(){
         ){
 
             alert(
-                "⚠️ Esse número acabou de ser reservado por outra pessoa."
+                "⚠️ Esse número acabou de ser reservado."
             );
 
-            botaoConfirmar.disabled =
-                false;
+            await carregarRifa();
 
             botaoConfirmar.innerHTML =
                 "✅ Confirmar número";
 
-            await carregarRifa();
-
             return;
+
         }
 
-
-        // Reserva
 
         const participante = {
 
@@ -552,57 +564,23 @@ async function confirmarRifa(){
         };
 
 
-        const {
-            data,
-            error
-        } =
+        const { error:erroInsert } =
 
             await supabaseClient
+
             .from("rifa_participantes")
+
             .insert([
                 participante
-            ])
-            .select();
+            ]);
 
 
-        if(error){
+        if(erroInsert){
 
-            throw error;
+            throw erroInsert;
 
         }
 
-
-        // Guarda localmente também
-
-        let rifa =
-            JSON.parse(
-                localStorage.getItem(
-                    "rifaParticipantes"
-                )
-            ) || [];
-
-
-        rifa =
-            rifa.filter(function(p){
-
-                return Number(p.numero) !==
-                    Number(numeroEscolhido);
-
-            });
-
-
-        rifa.push(
-            participante
-        );
-
-
-        localStorage.setItem(
-            "rifaParticipantes",
-            JSON.stringify(rifa)
-        );
-
-
-        // Guarda a rifa atual
 
         localStorage.setItem(
             "rifaAtual",
@@ -628,21 +606,16 @@ async function confirmarRifa(){
         );
 
 
-        // Vai para o pagamento da Rifa
-
         location.href =
             "pix-rifa.html";
 
 
     }catch(error){
 
-        console.error(
-            "Erro ao reservar:",
-            error
-        );
+        console.error(error);
 
         alert(
-            "❌ Erro ao reservar o número:\n\n" +
+            "❌ Não foi possível reservar o número:\n\n" +
             error.message
         );
 
@@ -658,9 +631,9 @@ async function confirmarRifa(){
 }
 
 
-// ==================================================
-// INICIAR
-// ==================================================
+/* =========================================
+   INICIAR
+========================================= */
 
 carregarConfiguracaoRifa();
 
@@ -669,5 +642,4 @@ carregarRifa();
 </script>
 
 </body>
-
 </html>
