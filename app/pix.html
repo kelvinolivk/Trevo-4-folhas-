@@ -534,6 +534,7 @@ async function confirmarPagamento(){
 
 
 
+
 function enviarWhatsApp(){
 
     let mensagem =
@@ -555,27 +556,18 @@ function enviarWhatsApp(){
         encodeURIComponent(mensagem);
 
 
-    // Tenta abrir diretamente o aplicativo WhatsApp
-    let whatsappApp =
-        "whatsapp://send?phone=5542999330894&text=" +
+    // WhatsApp usando endereço HTTPS
+    let url =
+        "https://api.whatsapp.com/send?phone=5542999330894&text=" +
         texto;
 
 
-    // Abre o aplicativo WhatsApp
-    window.location.href = whatsappApp;
-
-
-    // Caso o APK não consiga abrir o aplicativo,
-    // tenta abrir o WhatsApp pelo navegador.
-    setTimeout(function(){
-
-        window.location.href =
-            "https://wa.me/5542999330894?text=" +
-            texto;
-
-    }, 1500);
+    // Abre o WhatsApp
+    window.open(url, "_blank");
 
 }
+
+    
 
 
 
