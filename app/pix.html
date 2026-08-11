@@ -532,40 +532,51 @@ async function confirmarPagamento(){
 // WHATSAPP
 // =====================================
 
+
+
 function enviarWhatsApp(){
 
     let mensagem =
-
         "🍀 Olá! Acabei de realizar o pagamento da minha aposta no Trevo4Folhas.\n\n" +
 
         "👤 Nome: " +
-
         (cadastro.nome || "") +
 
         "\n📱 WhatsApp: " +
-
         (cadastro.whatsapp || "") +
 
         "\n🍀 Números: " +
-
         numeroEscolhido.join(" - ") +
 
         "\n\nEstou enviando o comprovante para confirmação.";
 
 
     let texto =
-        encodeURIComponent(
-            mensagem
-        );
+        encodeURIComponent(mensagem);
 
 
-    window.location.href =
-
-        "https://wa.me/5542999330894?text=" +
-
+    // Tenta abrir diretamente o aplicativo WhatsApp
+    let whatsappApp =
+        "whatsapp://send?phone=5542999330894&text=" +
         texto;
 
+
+    // Abre o aplicativo WhatsApp
+    window.location.href = whatsappApp;
+
+
+    // Caso o APK não consiga abrir o aplicativo,
+    // tenta abrir o WhatsApp pelo navegador.
+    setTimeout(function(){
+
+        window.location.href =
+            "https://wa.me/5542999330894?text=" +
+            texto;
+
+    }, 1500);
+
 }
+
 
 
 // =====================================
