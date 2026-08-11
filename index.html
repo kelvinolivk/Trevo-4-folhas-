@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b8f3a">
+
 <style>
 
 body {
@@ -15,9 +16,6 @@ body {
     padding:30px;
     overflow-x:hidden;
 }
-
-
-/* Trevos no fundo */
 
 body::before{
     content:"🍀  🍀  🍀  🍀  🍀  🍀  🍀  🍀";
@@ -31,7 +29,6 @@ body::before{
     line-height:100px;
 }
 
-
 h1 {
     font-size:45px;
     margin-bottom:5px;
@@ -39,12 +36,10 @@ h1 {
     text-shadow:0 0 10px black;
 }
 
-
 .subtitulo{
     font-size:18px;
     color:#ddd;
 }
-
 
 .caixa{
     background:#222;
@@ -56,12 +51,10 @@ h1 {
     border:1px solid #333;
 }
 
-
 #contador{
     font-size:22px;
     font-weight:bold;
 }
-
 
 button {
     width:90%;
@@ -76,29 +69,22 @@ button {
     box-shadow:0 5px 10px #000;
 }
 
-
 button:active{
     transform:scale(0.97);
 }
-
 
 .logo{
     font-size:70px;
 }
 
-
 </style>
-
 </head>
 
-
 <body>
-
 
 <div class="logo">
 🍀
 </div>
-
 
 <h1>Trevo4Folhas</h1>
 
@@ -106,68 +92,48 @@ button:active{
 Loteria privada do grupo
 </p>
 
-
-
 <div class="caixa" id="informacoes">
 Carregando informações...
 </div>
-
 
 <div class="caixa" id="contador">
 Calculando tempo...
 </div>
 
-
-
 <button onclick="location.href='app/cadastro.html'">
 👤 Cadastro
 </button>
 
-
 <button onclick="location.href='app/numeros.html'">
 🎟️ Escolher número
-</button>
-<button onclick="location.href='app/rifa.html'">
-🎟️ Rifa 1 a 100
 </button>
 
 <button onclick="location.href='app/minhas-apostas.html'">
 📋 Minhas Apostas
 </button>
 
-
 <button onclick="location.href='app/pix.html'">
 💰 Pagamento Pix
 </button>
-
 
 <button onclick="location.href='app/sorteio.html'">
 🎲 Sorteio
 </button>
 
-
 <button onclick="location.href='app/historico.html'">
 📚 Histórico de Sorteios
 </button>
-
 
 <button onclick="location.href='app/admin.html'">
 🔐 Área do Administrador
 </button>
 
-
-
-
 <script>
-
 
 let configuracao =
 JSON.parse(localStorage.getItem("configuracao")) || {};
 
-
-
 document.getElementById("informacoes").innerHTML = `
-
 
 🏆 <b>Prêmio atual:</b><br>
 
@@ -175,13 +141,11 @@ ${configuracao.premio || "A definir"}
 
 <br><br>
 
-
 📅 <b>Próximo sorteio:</b><br>
 
 ${configuracao.data || "A definir"}
 
 <br><br>
-
 
 ⏰ <b>Horário:</b><br>
 
@@ -189,126 +153,98 @@ ${configuracao.hora || "A definir"}
 
 <br><br>
 
-
 🍀 ${configuracao.mensagem || "Boa sorte!"}
-
 
 `;
 
-
-
 function atualizarContador(){
 
+    if(!configuracao.data || !configuracao.hora){
 
-if(!configuracao.data || !configuracao.hora){
+        document.getElementById("contador").innerHTML =
+        "⏳ Data do sorteio ainda não definida";
 
-document.getElementById("contador").innerHTML =
-"⏳ Data do sorteio ainda não definida";
+        return;
 
-return;
+    }
 
-}
+    let partesData = configuracao.data.split("/");
 
+    let hora = configuracao.hora.split(":");
 
-let partesData = configuracao.data.split("/");
+    let dataSorteio = new Date(
+        partesData[2],
+        partesData[1] - 1,
+        partesData[0],
+        hora[0],
+        hora[1]
+    );
 
+    let agora = new Date();
 
-let hora = configuracao.hora.split(":");
+    let diferenca = dataSorteio - agora;
 
+    if(diferenca <= 0){
 
+        document.getElementById("contador").innerHTML =
+        "🎲 Sorteio realizado!";
 
-let dataSorteio = new Date(
+        return;
 
-partesData[2],
+    }
 
-partesData[1] - 1,
+    let dias = Math.floor(
+        diferenca / (1000 * 60 * 60 * 24)
+    );
 
-partesData[0],
+    let horas = Math.floor(
+        (diferenca % (1000 * 60 * 60 * 24))
+        / (1000 * 60 * 60)
+    );
 
-hora[0],
+    let minutos = Math.floor(
+        (diferenca % (1000 * 60 * 60))
+        / (1000 * 60)
+    );
 
-hora[1]
+    let segundos = Math.floor(
+        (diferenca % (1000 * 60))
+        / 1000
+    );
 
-);
+    document.getElementById("contador").innerHTML =
 
+    "⏳ Faltam:<br><br>" +
 
+    dias + " dias | " +
 
-let agora = new Date();
+    horas + " horas | " +
 
+    minutos + " min | " +
 
-let diferenca = dataSorteio - agora;
-
-
-
-if(diferenca <= 0){
-
-document.getElementById("contador").innerHTML =
-"🎲 Sorteio realizado!";
-
-return;
-
-}
-
-
-
-let dias = Math.floor(
-diferenca / (1000 * 60 * 60 * 24)
-);
-
-
-let horas = Math.floor(
-(diferenca % (1000 * 60 * 60 * 24))
-/ (1000 * 60 * 60)
-);
-
-
-let minutos = Math.floor(
-(diferenca % (1000 * 60 * 60))
-/ (1000 * 60)
-);
-
-
-let segundos = Math.floor(
-(diferenca % (1000 * 60))
-/ 1000
-);
-
-
-
-document.getElementById("contador").innerHTML =
-
-"⏳ Faltam:<br><br>" +
-
-dias + " dias | " +
-
-horas + " horas | " +
-
-minutos + " min | " +
-
-segundos + " seg";
-
+    segundos + " seg";
 
 }
-
-
 
 setInterval(atualizarContador,1000);
 
 atualizarContador();
 
-
 </script>
 
 <script>
+
 if ("serviceWorker" in navigator) {
 
-window.addEventListener("load", function(){
+    window.addEventListener("load", function(){
 
-navigator.serviceWorker.register("service-worker.js");
+        navigator.serviceWorker.register("service-worker.js");
 
-});
+    });
 
 }
+
 </script>
+
 </body>
 </html>
